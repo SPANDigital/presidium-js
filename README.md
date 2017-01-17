@@ -1,2 +1,2 @@
 # presidium-js
-Custom javascript components for presidium
+React js components for Presidium
