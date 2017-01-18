@@ -1,7 +1,7 @@
 {
-  "name": "jekyll-webpack-es6-boilerplate",
-  "version": "0.0.0",
-  "description": "Integrate React with Jekyll.",
+  "name": "presidium-js",
+  "version": "0.0.1",
+  "description": "React components for Presidium.",
   "authors": [
     {
       "name": "Dominic Follett-Smith",
@@ -14,10 +14,10 @@
   ],
   "scripts": {
     "clean": "rimraf dist",
-    "start": "babel-node bin/server.js",
     "lint": "eslint src",
     "build:webpack": "webpack --config etc/webpack.config.js",
-    "build": "npm run clean && npm run build:webpack"
+    "build": "npm run clean && npm run build:webpack",
+    "watch": "webpack --watch --config etc/webpack.config.js"
   },
   "license": "TBD",
   "devDependencies": {

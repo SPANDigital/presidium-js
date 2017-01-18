@@ -1,9 +1,8 @@
 module.exports = {
     entry: './src/index.js',
     output: {
-        // Put the generated file in the jekyll assets directory.
         path: '../presidium/assets/shared/js/',
-        filename: 'bundle.js'
+        filename: 'presidium.js'
     },
     module: {
         loaders: [
