@@ -1,7 +1,10 @@
+var path = require('path');
+
 module.exports = {
     entry: './src/index.js',
     output: {
-        path: '../presidium-core/assets/shared/js/',
+        path:  path.join(__dirname, '../presidium-core/assets/shared/js/'),
+        // path:  path.join(__dirname, '../test'),
         filename: 'presidium.js'
     },
     module: {
