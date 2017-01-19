@@ -6,5 +6,4 @@ var presidium = {
         load : loadMenu,
     }
 };
-
 window.presidium = presidium;
