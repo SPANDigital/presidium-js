@@ -1,10 +1,9 @@
 import React, { Component } from 'react';
-import {render} from 'react-dom';
-import List from '../containers/list';
+import ReactDOM from 'react-dom';
 
 class Menu extends Component {
+
     render() {
-        debugger;
         return (
             <nav id="sidenav">
                 <h2>DOCUMENTATION</h2>
@@ -42,4 +41,8 @@ class Menu extends Component {
     }
 }
 
-export default Menu;
+function loadMenu(element = 'nav-container') {
+    ReactDOM.render(<Menu/>, document.getElementById(element));
+}
+
+export {Menu, loadMenu};

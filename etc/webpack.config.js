@@ -6,19 +6,19 @@ module.exports = {
     },
     module: {
         loaders: [
-            { exclude: /node_modules/, loader: 'babel', query: { presets: ['react', 'es2015'] }},
-            { test: /\.css$/, loader: "style-loader!css-loader" },
-            { test: /\.less$/, loader: "style-loader!css-loader!less-loader" },
-            { test: /\.gif$/, loader: "url-loader?mimetype=image/png" },
-            { test: /\.woff(2)?(\?v=[0-9].[0-9].[0-9])?$/, loader: "url-loader?mimetype=application/font-woff" },
-            { test: /\.(ttf|eot|svg)(\?v=[0-9].[0-9].[0-9])?$/, loader: "file-loader?name=[name].[ext]" }
+            {
+                loader: 'babel',
+                exclude: /node_modules/,
+                query: {
+                    presets: ['react', 'es2015']
+                }}
         ]
     },
     resolve: {
-        extensions: ['', '.js', '.jsx', '.css', '.less']
+        extensions: ['', '.js', '.jsx']
     },
     devServer: {
         historyApiFallback: true,
-        contentBase: './'
+        contentBase: '/'
     }
 };
