@@ -1,7 +1,7 @@
 module.exports = {
     entry: './src/index.js',
     output: {
-        path: '../presidium/assets/shared/js/',
+        path: '../presidium-core/assets/shared/js/',
         filename: 'presidium.js'
     },
     module: {
