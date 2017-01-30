@@ -7,6 +7,9 @@ class Menu extends Component {
         return this.props.baseurl + target;
     }
 
+    isActive(path) {
+        return this.props.pageurl == path ? "active" : "";
+    }
     render() {
         return (
             //TODO Break up into components and generate dynamically
@@ -28,17 +31,17 @@ class Menu extends Component {
 
                     <div className="collapse navbar-collapse">
                         <ul className="nav navbar-nav">
-                            <li className="active">
+                            <li className={this.isActive("/")}>
                                 <a href={ this.path("/") }>Overview</a>
                             </li>
-                            <li>
-                                <a href={ this.path("/key-concepts") }>Key Concepts</a>
+                            <li className={this.isActive("/key-concepts/")}>
+                                <a href={ this.path("/key-concepts/") }>Key Concepts</a>
                             </li>
-                            <li>
-                                <a href={ this.path("/prerequisites")}>Prerequisites</a>
+                            <li className={this.isActive("/prerequisites/")}>
+                                <a href={ this.path("/prerequisites/")}>Prerequisites</a>
                             </li>
-                            <li>
-                                <a href={ this.path("/getting-started")}>Getting started</a>
+                            <li className={this.isActive("/getting-started/")}>
+                                <a href={ this.path("/getting-started/")}>Getting started</a>
                             </li>
                             <li>
                                 <a href={ this.path("/references")}>Reference</a>
@@ -75,8 +78,8 @@ class Menu extends Component {
 
 }
 
-function loadMenu(baseurl = "/", element = 'nav-container') {
-    ReactDOM.render(<Menu baseurl={ baseurl }/>, document.getElementById(element));
+function loadMenu(baseurl = "/", pageurl = "/", element = 'nav-container') {
+    ReactDOM.render(<Menu baseurl={ baseurl } pageurl = { pageurl }/>, document.getElementById(element));
 }
 
 export {Menu, loadMenu};

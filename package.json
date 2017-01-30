@@ -15,12 +15,13 @@
   "scripts": {
     "clean": "rimraf dist",
     "lint": "eslint src",
-    "build": "npm run clean && npm run build:webpack",
     "build:webpack": "webpack --config etc/webpack.config.js",
+    "build": "npm run clean && npm run build:webpack",
     "copy:core": "cpx ./dist/presidium.js ../presidium-core/media/presidium/js",
     "publish:core": "npm run build && npm run copy:core",
     "watch:local": "webpack --watch --config etc/webpack.config.js",
     "watch:core": "cpx --watch ./dist/presidium.js ../presidium-core/media/presidium/js",
+    "watch": "npm run watch:local & npm run watch:core & wait",
     "start": "babel-node bin/server.js"
   },
   "license": "TBD",
