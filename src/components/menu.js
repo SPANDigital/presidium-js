@@ -1,85 +1,75 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
+import MenuItem from './menu_item';
 
+/**
+ * A two level boostrap menu. Doesn't rely on bootstrap or jquery js.
+ */
 class Menu extends Component {
 
-    path(target) {
-        return this.props.baseurl + target;
+    constructor(props) {
+        super(props);
+        this.state = {
+            expand: false
+        }
     }
 
-    isActive(path) {
-        return this.props.pageurl == path ? "active" : "";
-    }
     render() {
+        const menu = this.props.menu;
         return (
-            //TODO Break up into components and generate dynamically
             <nav className="navbar navbar-default navbar-fixed-side">
-
                 <div className="container">
+
                     <div className="navbar-header">
                         <a href="./" className="navbar-brand">
-                            <img src={this.path("/media/images/logo.png")} alt="" />
+                            <img src={menu.baseUrl + "media/images/logo.png"} alt="" />
                         </a>
-
-                        <button className="navbar-toggle" data-target=".navbar-collapse" data-toggle="collapse">
+                        <button className="navbar-toggle" onClick={() => this.toggleExpand()}>
                             <span className="sr-only">Toggle navigation</span>
                             <span className="icon-bar" />
                             <span className="icon-bar" />
                             <span className="icon-bar" />
                         </button>
                     </div>
-
-                    <div className="collapse navbar-collapse">
+                    <div className={"collapse navbar-collapse " + (this.state.expand == true ? "in" : "")}>
                         <ul className="nav navbar-nav">
-                            <li className={this.isActive("/")}>
-                                <a href={ this.path("/") }>Overview</a>
-                            </li>
-                            <li className={this.isActive("/key-concepts/")}>
-                                <a href={ this.path("/key-concepts/") }>Key Concepts</a>
-                            </li>
-                            <li className={this.isActive("/prerequisites/")}>
-                                <a href={ this.path("/prerequisites/")}>Prerequisites</a>
-                            </li>
-                            <li className={this.isActive("/getting-started/")}>
-                                <a href={ this.path("/getting-started/")}>Getting started</a>
-                            </li>
-                            <li>
-                                <a href={ this.path("/references")}>Reference</a>
-                            </li>
-                            <li>
-                                <a href={ this.path("/cookbook")}>Cookbook</a>
-                            </li>
-                            <li>
-                                <a href={ this.path("/tools")}>Tools</a>
-                            </li>
-                            <li>
-                                <a href={ this.path("/testing")}>Testing & Debugging</a>
-                            </li>
-                            <li>
-                                <a href={ this.path("/updates")}>Updates</a>
-                            </li>
-
-                            <li className="dropdown">
-                                <a className="dropdown-toggle" data-toggle="dropdown" href="#">References <b className="caret" /></a>
-                                <ul className="dropdown-menu"><li><a href="#">Sub-page 1</a></li>
-                                    <li><a href="#">Sub-page 2</a></li>
-                                    <li className="divider" />
-                                    <li className="dropdown-header">Sub Header</li>
-                                    <li><a href="#">Sub-page 3</a></li>
-                                </ul>
-                            </li>
+                            {
+                                Object.keys(menu.structure).map(k => {
+                                    const item = menu.structure[k];
+                                    return <MenuItem
+                                        key = { k }
+                                        item = { item }
+                                        baseUrl = { menu.baseUrl }
+                                        isActive = { this.isActive(item.path) }
+                                    />
+                                })
+                            }
                         </ul>
-
                     </div>
                 </div>
             </nav>
         )
     }
 
+    isActive(page) {
+        return this.state.currentPage == page;
+    }
+
+    toggleExpand() {
+        this.setState({expand: !this.state.expand})
+    }
 }
 
-function loadMenu(baseurl = "/", pageurl = "/", element = 'nav-container') {
-    ReactDOM.render(<Menu baseurl={ baseurl } pageurl = { pageurl }/>, document.getElementById(element));
+Menu.propTypes = {
+    menu: React.PropTypes.shape({
+        structure: React.PropTypes.object,
+        baseUrl: React.PropTypes.string,
+        currentPage: React.PropTypes.string
+    }).isRequired,
+};
+
+function loadMenu(menu = {}, element = 'nav-container') {
+    ReactDOM.render(<Menu menu = { menu } />, document.getElementById(element));
 }
 
 export {Menu, loadMenu};
