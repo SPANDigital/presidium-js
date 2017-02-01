@@ -15,6 +15,7 @@ class Menu extends Component {
     }
 
     render() {
+
         const menu = this.props.menu;
         return (
             <nav className="navbar navbar-default navbar-fixed-side">
@@ -34,10 +35,9 @@ class Menu extends Component {
                     <div className={"collapse navbar-collapse " + (this.state.expand == true ? "in" : "")}>
                         <ul className="nav navbar-nav">
                             {
-                                Object.keys(menu.structure).map(k => {
-                                    const item = menu.structure[k];
+                                menu.structure.map(item => {
                                     return <MenuItem
-                                        key = { k }
+                                        key = { item.path }
                                         item = { item }
                                         baseUrl = { menu.baseUrl }
                                         isActive = { this.isActive(item.path) }
@@ -52,7 +52,7 @@ class Menu extends Component {
     }
 
     isActive(page) {
-        return this.state.currentPage == page;
+        return this.props.menu.currentPage == page;
     }
 
     toggleExpand() {
@@ -62,7 +62,7 @@ class Menu extends Component {
 
 Menu.propTypes = {
     menu: React.PropTypes.shape({
-        structure: React.PropTypes.object,
+        structure: React.PropTypes.array,
         baseUrl: React.PropTypes.string,
         currentPage: React.PropTypes.string
     }).isRequired,

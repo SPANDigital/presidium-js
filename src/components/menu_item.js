@@ -9,7 +9,7 @@ export default class MenuItem extends Component {
             path: concat_path(props.baseUrl, props.item.path),
             isActive: props.isActive,
             expand: false,
-            hasChildren: this.props.item[1] != null
+            hasChildren: false //TODO this.props.item[1] != null
         };
     }
 
