@@ -1,15 +1,15 @@
 import React, { Component } from 'react';
-import { concat_path } from '../util/path';
+import paths from '../util/paths';
 
 export default class MenuItem extends Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            path: concat_path(props.baseUrl, props.item.path),
+            path: paths.concat(props.baseUrl, props.item.path),
             isActive: props.isActive,
             expand: false,
-            hasChildren: false //TODO this.props.item[1] != null
+            hasChildren: Object.prototype.hasOwnProperty.call(props.item, 'articles')
         };
     }
 
@@ -42,14 +42,11 @@ export default class MenuItem extends Component {
     }
 
     children(parent) {
-        return Object.keys(parent)
-            .filter(k => k >= 1)
-            .map(k => {
-                const child = parent[k];
-                const path = concat_path(this.props.baseUrl, child.path);
+        return parent.articles.map(article => {
+                const path = paths.concat(this.props.baseUrl, article.path);
                 return (
-                    <li key={ k } >
-                        <a href={ path }>{ child.title }</a>
+                    <li key={ path } >
+                        <a href={ path }>{ article.title }</a>
                     </li>
                 )
         })
