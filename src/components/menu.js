@@ -23,7 +23,7 @@ class Menu extends Component {
 
                     <div className="navbar-header">
                         <a href={ this.props.menu.baseUrl != null ? this.props.menu.baseUrl : "#"} className="navbar-brand">
-                            <img src={paths.concat(menu.baseUrl, "media/images/logo.png")} alt="" />
+                            <img src={paths.concat(menu.baseUrl, menu.logo)} alt="" />
                         </a>
                         {this.props.menu.brandName ? <p className="navbar-brand-name">{ this.props.menu.brandName }</p> : ""}
                         <button className="navbar-toggle" onClick={() => this.toggleExpand()}>
