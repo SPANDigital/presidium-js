@@ -41,7 +41,7 @@ class Menu extends Component {
                                         key = { item.path }
                                         item = { item }
                                         baseUrl = { menu.baseUrl }
-                                        isActive = { this.isActive(item.path) }
+                                        currentPage = {menu.currentPage}
                                     />
                                 })
                             }
@@ -50,15 +50,6 @@ class Menu extends Component {
                 </div>
             </nav>
         )
-    }
-
-    isActive(path) {
-        if (this.props.menu.currentPage == "/") {
-            return path == this.props.menu.currentPage
-        } else {
-            return path.startsWith(this.props.menu.currentPage);
-        }
-
     }
 
     toggleExpand() {
