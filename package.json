@@ -2,6 +2,14 @@
   "name": "presidium-js",
   "version": "0.0.1",
   "description": "React components for Presidium",
+  "license": "apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/SPANDigital/presidium-js"
+  },
+  "bugs": {
+    "url": "https://github.com/SPANDigital/presidium-js/issues"
+  },
   "authors": [
     {
       "name": "Dominic Follett-Smith",
@@ -24,7 +32,7 @@
     "watch": "npm run watch:local & npm run watch:core & wait",
     "start": "babel-node bin/server.js"
   },
-  "license": "TBD",
+
   "devDependencies": {
     "babel-cli": "^6.9.0",
     "babel-core": "^6.20.0",

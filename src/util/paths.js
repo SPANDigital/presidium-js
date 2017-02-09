@@ -13,6 +13,6 @@ var path = {
     removeLeading: function(path) {
         return path == null ? "" : (path.substr(0, 1) == "/" ? path.substr(1) : path)
     }
-}
+};
 
 export default path;

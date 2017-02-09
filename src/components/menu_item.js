@@ -6,7 +6,8 @@ export default class MenuItem extends Component {
     constructor(props) {
         super(props);
         const path = paths.concat(props.baseUrl, props.item.path);
-        const isActive = this.isActive(path, this.props.currentPage);
+        const current = paths.concat(props.baseUrl, props.currentPage);
+        const isActive = this.isActive(path, current);
         const hasChildren = Object.prototype.hasOwnProperty.call(props.item, 'articles');
         this.state = {
             path: path,
@@ -23,10 +24,10 @@ export default class MenuItem extends Component {
                 className={
                 (this.state.isActive? "active" : "") + " " +
                 (this.state.expand? "open" : "")}>
-                <a className="dropdown-toggle">
-                    <span onClick={() => this.navigate()}>{ this.props.item.title }</span>
+                <a onClick={(e) => this.navigate(e) } className="dropdown-toggle">
+                    <span>{ this.props.item.title }</span>
                     {this.state.hasChildren &&
-                        <span onClick={() => this.toggleExpand()}
+                        <span onClick={(e) => this.toggleExpand(e)}
                               className={this.state.expand ? "glyphicon glyphicon-chevron-down" : "glyphicon glyphicon-chevron-right"} />}
                 </a>
                 { this.state.expand && this.state.hasChildren && (
@@ -39,20 +40,21 @@ export default class MenuItem extends Component {
     }
 
     isActive(path, currentPage) {
-        if (currentPage == "/") {
+        if (currentPage == this.props.baseUrl) {
             return path == currentPage
         } else {
             return path.startsWith(currentPage);
         }
     }
 
-    navigate() {
+    navigate(e) {
         if (!this.state.isActive) {
             window.location = this.state.path;
         }
     }
 
-    toggleExpand() {
+    toggleExpand(e) {
+        e.stopPropagation();
         if (this.state.hasChildren) {
             this.setState({expand : !this.state.expand})
         }
