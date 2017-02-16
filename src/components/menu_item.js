@@ -83,6 +83,11 @@ export default class MenuItem extends Component {
         }
     }
 
+    navigateArticle(path, e) {
+        window.location = path;
+        this.props.onNavigate(e);
+    }
+
     toggleExpand(e) {
         e.stopPropagation();
         if (this.state.hasArticles || this.state.hasGroups) {
@@ -92,7 +97,7 @@ export default class MenuItem extends Component {
 
     groups() {
         return this.props.item.groups.map(item => {
-            return <MenuItem key = { item.path } item= { item } baseUrl={ this.props.baseUrl } currentPage={ this.props.currentPage } expanded={ false }/>
+            return <MenuItem key = { item.path } item= { item } baseUrl={ this.props.baseUrl } currentPage={ this.props.currentPage } expanded={ false } onNavigate={ this.props.onNavigate }/>
         });
     }
 
@@ -103,7 +108,7 @@ export default class MenuItem extends Component {
             const path = paths.concat(this.props.baseUrl, article.path);
             return (
                 <li key={ path } className={ active }>
-                    <a href={ path } className={ this.levelClass(article.level) }>{ article.title }</a>
+                    <a onClick={() => this.navigateArticle(path) } href={ path } className={ this.levelClass(article.level) }>{ article.title }</a>
                 </li>
             )
         });
@@ -115,7 +120,8 @@ MenuItem.propTypes = {
     item: React.PropTypes.object.isRequired,
     baseUrl: React.PropTypes.string.isRequired,
     currentPage: React.PropTypes.string.isRequired,
-    expanded: React.PropTypes.bool
+    expanded: React.PropTypes.bool,
+    onNavigate: React.PropTypes.func
 };
 
 MenuItem.defaultProps = {

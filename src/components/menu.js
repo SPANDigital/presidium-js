@@ -43,7 +43,7 @@ class Menu extends Component {
                                         baseUrl = { menu.baseUrl }
                                         currentPage = { menu.currentPage }
                                         expanded = { true }
-                                        navigate = {() => this.toggleExpand()}
+                                        onNavigate = {() => this.toggleExpand()}
                                     />
                                 })
                             }
