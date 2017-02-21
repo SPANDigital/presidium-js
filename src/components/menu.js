@@ -2,9 +2,9 @@ import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import MenuItem from './menu_item';
 import paths from '../util/paths';
-
+import {groupByCategory} from './menu_structure';
 /**
- * A two level boostrap menu. Doesn't rely on bootstrap or jquery js.
+ * A two level boostrap menu. Doesn't rely on bootstrap.js or jquery js.
  */
 class Menu extends Component {
 
@@ -37,14 +37,7 @@ class Menu extends Component {
                         <ul className="nav navbar-nav">
                             {
                                 menu.structure.map(item => {
-                                    return <MenuItem
-                                        key = { item.path }
-                                        item = { item }
-                                        baseUrl = { menu.baseUrl }
-                                        currentPage = { menu.currentPage }
-                                        expanded = { true }
-                                        onNavigate = {() => this.toggleExpand()}
-                                    />
+                                    return <MenuItem key = { item.id } item = { item } onNavigate = {() => this.toggleExpand()} />
                                 })
                             }
                         </ul>
@@ -63,12 +56,13 @@ Menu.propTypes = {
     menu: React.PropTypes.shape({
         brandName: React.PropTypes.string,
         structure: React.PropTypes.array,
-        baseUrl: React.PropTypes.string,
-        currentPage: React.PropTypes.string
     }).isRequired,
 };
 
 function loadMenu(menu = {}, element = 'nav-container') {
+
+    menu.structure = menu.structure.map(section => groupByCategory(section));
+
     ReactDOM.render(<Menu menu = { menu } />, document.getElementById(element));
 }
 
