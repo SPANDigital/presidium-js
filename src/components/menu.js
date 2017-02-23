@@ -3,6 +3,8 @@ import ReactDOM from 'react-dom';
 import MenuItem from './menu_item';
 import paths from '../util/paths';
 import {groupByCategory} from './menu_structure';
+import gumshoe from 'gumshoe';
+
 /**
  * A two level boostrap menu. Doesn't rely on bootstrap.js or jquery js.
  */
@@ -59,11 +61,25 @@ Menu.propTypes = {
     }).isRequired,
 };
 
+function spy() {
+    gumshoe.init({
+        selector: '[data-gumshoe] a', // Default link selector (must use a valid CSS selector)
+        selectorHeader: '[data-gumshoe-header]', // Fixed header selector (must use a valid CSS selector)
+        container: window, // The element to spy on scrolling in (must be a valid DOM Node)
+        offset: 100, // Distance in pixels to offset calculations
+        activeClass: 'on-article', // Class to apply to active navigation link and it's parent list item
+        callback: function (nav) {} // Callback to run after setting active link
+    });
+}
+
 function loadMenu(menu = {}, element = 'nav-container') {
 
     menu.structure = menu.structure.map(section => groupByCategory(section));
 
     ReactDOM.render(<Menu menu = { menu } />, document.getElementById(element));
+
+    spy();
+
 }
 
 export {Menu, loadMenu};

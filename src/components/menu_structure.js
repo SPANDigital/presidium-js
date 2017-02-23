@@ -8,13 +8,14 @@ export const MENU_TYPE = {
     ARTICLE: 'article'
 };
 
-function menuSection(item, children) {
+function menuSection(section, children) {
     return {
         type: MENU_TYPE.SECTION,
-        id: item.path,
+        id: section.path,
         level: level1,
-        title: item.title,
-        path: item.path,
+        title: section.title,
+        slug: section.slug,
+        path: section.path,
         children : children
     }
 }
@@ -24,6 +25,7 @@ function menuArticle(article, level) {
         type: MENU_TYPE.ARTICLE,
         id: article.id,
         path: article.path,
+        slug: article.slug,
         title: article.title,
         level: level
     }
@@ -35,6 +37,7 @@ function menuCategory(section, category, path, level) {
         id: section.path + category,
         level: level,
         title: category,
+        slug: path,
         path: path, // first article in category
         children: []
     };

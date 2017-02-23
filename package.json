@@ -32,7 +32,6 @@
     "watch": "npm run watch:local & npm run watch:core & wait",
     "start": "babel-node bin/server.js"
   },
-
   "devDependencies": {
     "babel-cli": "^6.9.0",
     "babel-core": "^6.20.0",
@@ -51,5 +50,6 @@
     "cpx": "^1.5.0"
   },
   "dependencies": {
+    "gumshoe": "3.3.2"
   }
 }
