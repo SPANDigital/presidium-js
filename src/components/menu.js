@@ -20,30 +20,29 @@ class Menu extends Component {
     render() {
         const menu = this.props.menu;
         return (
-            <nav className="navbar">
-                <div className="container">
-
-                    <div className="navbar-header">
-                        <a href={ this.props.menu.baseUrl != null ? this.props.menu.baseUrl : "#"} className="brand">
-                            <img src={paths.concat(menu.baseUrl, menu.logo)} alt="" />
-                        </a>
-                        {this.props.menu.brandName ? <p className="brand-name">{ this.props.menu.brandName }</p> : ""}
-                        <button className="navbar-toggle" onClick={() => this.toggleExpand()}>
-                            <span className="sr-only">Toggle navigation</span>
-                            <span className="icon-bar" />
-                            <span className="icon-bar" />
-                            <span className="icon-bar" />
-                        </button>
-                    </div>
-                    <div className={"navbar-items" + (this.state.expanded == true ? " in" : "")}>
-                        <ul>
-                            {
-                                menu.structure.map(item => {
-                                    return <MenuItem key={ item.id } item={ item } onNavigate={ () => this.toggleExpand() } />
-                                })
-                            }
-                        </ul>
-                    </div>
+            <nav>
+                <div className="navbar-header">
+                    <a href={ this.props.menu.baseUrl != null ? this.props.menu.baseUrl : "#"} className="brand">
+                        <img src={paths.concat(menu.baseUrl, menu.logo)} alt="" />
+                    </a>
+                    { this.props.menu.brandName &&
+                    <p className="brand-name">{ this.props.menu.brandName }</p>
+                    }
+                    <button className="toggle" onClick={() => this.toggleExpand()}>
+                        <span className="sr-only">Toggle navigation</span>
+                        <span className="icon-bar" />
+                        <span className="icon-bar" />
+                        <span className="icon-bar" />
+                    </button>
+                </div>
+                <div className={"navbar-items" + (this.state.expanded == true ? " expanded" : "")}>
+                    <ul>
+                        {
+                            menu.structure.map(item => {
+                                return <MenuItem key={ item.id } item={ item } onNavigate={ () => this.toggleExpand() } />
+                            })
+                        }
+                    </ul>
                 </div>
             </nav>
         )

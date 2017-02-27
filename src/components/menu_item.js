@@ -134,6 +134,7 @@ export default class MenuItem extends Component {
     }
 
     clickChild(path) {
+        this.props.onNavigate();
         window.location = path;
     }
 
