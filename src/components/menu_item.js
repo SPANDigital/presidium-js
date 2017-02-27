@@ -1,62 +1,102 @@
 import React, { Component } from 'react';
 import { MENU_TYPE } from './menu_structure';
+import gumshoe from './gumshoe';
 
 /**
- * Menu item that may have one or more articles or groups of articles
+ * Menu item that may have one or more articles or nested groups of articles.
  */
 export default class MenuItem extends Component {
 
     constructor(props) {
         super(props);
 
-        const onPage = this.onPage();
+        const isRootSection = this.isRootSection();
         const hasChildren = props.item.children.length > 0;
 
         this.state = {
-            onPage: onPage,
+            isRootSection: isRootSection,
+            inSection: isRootSection || this.props.inSection,
             hasChildren: hasChildren,
-            isExpanded: onPage && hasChildren
+            activeArticle: this.props.activeArticle,
+            isExpanded: isRootSection && hasChildren
         };
     }
 
-    onPage() {
-        switch(this.props.item.type) {
-            case MENU_TYPE.SECTION:
-            case MENU_TYPE.ARTICLE:
-                return this.props.item.path == window.location.pathname;
-            case MENU_TYPE.CATEGORY:
-                // return item.children.findIndex(child => child.path == (window.location.pathname + window.location.hash)) > -1
-            default:
-                return false;
+    isRootSection() {
+        return this.props.item.type == MENU_TYPE.SECTION && this.props.item.path == window.location.pathname;
+    }
+
+    componentDidMount() {
+        if (this.state.isRootSection) {
+            this.initializeScrollSpy()
         }
+    }
+
+    initializeScrollSpy() {
+        gumshoe.init({
+            selector: '[data-spy] a',
+            selectorHeader: '[data-gumshoe-header]',
+            container: window,
+            offset: 100,
+            activeClass: 'on-article',
+            callback: (active) => {
+                if (active) {
+                    const activeArticle = active.nav.getAttribute("href");
+                    if (this.state.activeArticle !== activeArticle) {
+                        this.setState({activeArticle : activeArticle})
+                    }
+                }
+            }
+        });
+    }
+
+    componentWillReceiveProps(props) {
+        this.setState({activeArticle : props.activeArticle})
     }
 
     render() {
         const item = this.props.item;
         return (
-            <li key={ item.id } className={ this.liClass() }>
-                <a onClick={ (e) => this.clickParent(e) } href={ item.path } className={ this.levelClass(item.level) + "" }>
-                    {this.expander()}
-                    <span>{ item.title }</span>
-                </a>
-                <ul className="dropdown-menu" data-gumshoe>
-                    { this.state.isExpanded && this.state.hasChildren && (
-                        this.children()
-                    )}
+            <li key={ item.id } className={ this.isActive()? "in-section" : "" }>
+                <div className={"menu-row " + this.levelClass(item.level) }>
+                    <div className="menu-expander">
+                        {this.expander()}
+                    </div>
+                    <div className="menu-title">
+                        <a onClick={ (e) => this.clickParent(e) }>
+                            { item.title }
+                        </a>
+                    </div>
+                </div>
+                <ul data-spy className={ this.state.isExpanded? "dropdown expanded" : "dropdown" } >
+                    { this.children() }
                 </ul>
             </li>
         )
+    }
+
+    isActive() {
+        if (this.state.isRootSection)
+            return true;
+        else {
+            if (this.state.inSection && this.props.item.type == MENU_TYPE.CATEGORY) {
+                return this.props.item.children.findIndex(child => child.slug == this.state.activeArticle) > -1;
+            }
+        }
     }
 
     children() {
         return this.props.item.children.map(item => {
             switch(item.type) {
                 case MENU_TYPE.CATEGORY:
-                    return  <MenuItem key={ item.title } item={ item } onNavigate={ this.props.onNavigate } />;
-
+                    return  <MenuItem key={ item.title } item={ item } inSection={ this.state.inSection } activeArticle={ this.state.activeArticle } onNavigate={ this.props.onNavigate } />;
                 case MENU_TYPE.ARTICLE:
                     return  <li key={ item.id }>
-                                <a onClick={ () => this.clickChild(item.path) } href={ item.slug } className={ this.levelClass(item.level) }>{item.title }</a>
+                                <div className={"menu-row " + this.levelClass(item.level) }>
+                                    <div className="menu-title">
+                                        <a onClick={ () => this.clickChild(item.path) } href={ item.slug }>{item.title }</a>
+                                    </div>
+                                </div>
                             </li>;
             }
         });
@@ -66,7 +106,7 @@ export default class MenuItem extends Component {
         if (this.state.hasChildren) {
             return <span onClick={(e) => this.toggleExpand(e)} className={this.state.isExpanded ? "glyphicon glyphicon-chevron-down" : "glyphicon glyphicon-chevron-right"}/>
         } else {
-            return <span className="expand-placeholder"/>
+            return ""
         }
     }
 
@@ -79,37 +119,30 @@ export default class MenuItem extends Component {
         return "";
     }
 
-    liClass() {
-        return  (this.state.onPage? "on-page" : "") + " " +
-                (this.state.isExpanded? "open" : "")
-    }
-
-    clickParent(e) {
-         e.preventDefault();
-        if (!this.isOnSection()) {
-            window.location = this.props.item.path;
-        }
-    }
-
-    clickChild(path, e) {
-        window.location = path;
-        this.props.onNavigate(e);
-    }
-
-    toggleExpand(e) {
-        e.stopPropagation();
-        e.preventDefault();
-        if (this.state.hasChildren && !this.isOnSection()) {
+    toggleExpand() {
+        if (this.state.hasChildren) {
             this.setState({isExpanded : !this.state.isExpanded})
         }
     }
 
-    isOnSection() {
-        return this.state.onPage && this.props.item.type == MENU_TYPE.SECTION;
+    clickParent(e) {
+        if (this.state.isRootSection) {
+            e.stopPropagation();
+        } else {
+            window.location = this.props.item.path;
+        }
     }
+
+    clickChild(path) {
+        window.location = path;
+    }
+
 }
 
 MenuItem.propTypes = {
     item: React.PropTypes.object.isRequired,
-    onNavigate: React.PropTypes.func
+    inSection: React.PropTypes.bool,
+    activeArticle: React.PropTypes.string,
+    onNavigate: React.PropTypes.func,
+
 };

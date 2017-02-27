@@ -50,6 +50,5 @@
     "cpx": "^1.5.0"
   },
   "dependencies": {
-    "gumshoe": "3.3.2"
   }
 }
