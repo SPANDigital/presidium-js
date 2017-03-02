@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-import MenuItem from './menu_item';
-import paths from '../util/paths';
-import {groupByCategory} from './menu_structure';
+import MenuItem from './menu-item';
+import paths from '../../util/paths';
+import {groupByCategory} from './menu-structure';
 
 
 /**
@@ -61,7 +61,7 @@ Menu.propTypes = {
     }).isRequired,
 };
 
-function loadMenu(menu = {}, element = 'nav-container') {
+function loadMenu(menu = {}, element = 'presidium-navigation') {
 
     menu.structure = menu.structure.map(section => groupByCategory(section));
 

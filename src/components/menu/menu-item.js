@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { MENU_TYPE } from './menu_structure';
-import gumshoe from './gumshoe';
+import { MENU_TYPE } from './menu-structure';
+import gumshoe from './scroll-spy';
 
 /**
  * Menu item that may have one or more articles or nested groups of articles.
