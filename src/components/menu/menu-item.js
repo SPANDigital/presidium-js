@@ -93,6 +93,7 @@ export default class MenuItem extends Component {
                 case MENU_TYPE.ARTICLE:
                     return  <li key={ item.id }>
                                 <div className={"menu-row " + this.levelClass(item.level) }>
+                                    <div className="menu-expander"></div>
                                     <div className="menu-title">
                                         <a onClick={ () => this.clickChild(item.path) } href={ item.slug }>{item.title }</a>
                                     </div>
