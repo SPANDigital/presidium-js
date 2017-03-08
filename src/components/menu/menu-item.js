@@ -10,24 +10,35 @@ export default class MenuItem extends Component {
     constructor(props) {
         super(props);
 
-        const isRootSection = this.isRootSection();
+        const isRootSection = this.props.item.type == MENU_TYPE.SECTION && this.props.item.path == window.location.pathname;
         const hasChildren = props.item.children.length > 0;
 
         this.state = {
             isRootSection: isRootSection,
             inSection: isRootSection || this.props.inSection,
+            isExpandable: this.props.item.expandable,
             hasChildren: hasChildren,
             activeArticle: this.props.activeArticle,
-            isExpanded: isRootSection && hasChildren
+            isExpanded: isRootSection && hasChildren,
+            selectedFilter: this.props.filter.selected
         };
-    }
-
-    isRootSection() {
-        return this.props.item.type == MENU_TYPE.SECTION && this.props.item.path == window.location.pathname;
     }
 
     componentDidMount() {
         if (this.state.isRootSection) {
+            this.initializeScrollSpy()
+        }
+    }
+
+    componentWillReceiveProps(props) {
+        this.setState({
+            activeArticle : props.activeArticle, //Sub menu scroll spy
+            selectedFilter: props.filter.selected
+        });
+    }
+
+    componentDidUpdate(prevProps, prevState){
+        if (this.state.isRootSection && prevState.selectedFilter != this.state.selectedFilter) {
             this.initializeScrollSpy()
         }
     }
@@ -43,22 +54,18 @@ export default class MenuItem extends Component {
                 if (active) {
                     const activeArticle = active.nav.getAttribute("href");
                     if (this.state.activeArticle !== activeArticle) {
-                        this.setState({activeArticle : activeArticle})
+                        this.setState({activeArticle: activeArticle})
                     }
                 }
             }
         });
     }
 
-    componentWillReceiveProps(props) {
-        this.setState({activeArticle : props.activeArticle})
-    }
-
     render() {
         const item = this.props.item;
         return (
-            <li key={ item.id } className={ this.isActive()? "in-section" : "" }>
-                <div className={"menu-row " + this.levelClass(item.level) }>
+            <li key={ item.id } className={ this.parentStyle(item) }>
+                <div className={"menu-row " + this.levelStyle(item.level) }>
                     <div className="menu-expander">
                         {this.expander()}
                     </div>
@@ -68,11 +75,39 @@ export default class MenuItem extends Component {
                         </a>
                     </div>
                 </div>
-                <ul data-spy className={ this.state.isExpanded? "dropdown expanded" : "dropdown" } >
+                { this.state.isExpandable &&
+                <ul data-spy className={ this.state.isExpanded ? "dropdown expanded" : "dropdown" }>
                     { this.children() }
                 </ul>
+                }
             </li>
         )
+    }
+
+    children() {
+        return this.props.item.children.map(item => {
+            switch(item.type) {
+                case MENU_TYPE.CATEGORY:
+                    return  <MenuItem key={ item.title } item={ item } filter = { this.props.filter } inSection={ this.state.inSection } activeArticle={ this.state.activeArticle } onNavigate={ this.props.onNavigate } />;
+                case MENU_TYPE.ARTICLE:
+                    return <li key={ item.id } className={ this.articleStyle(item) }>
+                                <div className={"menu-row " + this.levelStyle(item.level) }>
+                                    <div className="menu-expander"></div>
+                                    <div className="menu-title">
+                                        <a onClick={ () => this.clickChild(item.path) } href={ item.slug }>{item.title }</a>
+                                    </div>
+                                </div>
+                            </li>;
+            }
+        });
+    }
+
+    expander() {
+        if (this.state.isExpandable && this.state.hasChildren) {
+            return <span onClick={(e) => this.toggleExpand(e)} className={this.state.isExpanded ? "glyphicon glyphicon-chevron-down" : "glyphicon glyphicon-chevron-right"}/>
+        } else {
+            return ""
+        }
     }
 
     isActive() {
@@ -85,33 +120,29 @@ export default class MenuItem extends Component {
         }
     }
 
-    children() {
-        return this.props.item.children.map(item => {
-            switch(item.type) {
-                case MENU_TYPE.CATEGORY:
-                    return  <MenuItem key={ item.title } item={ item } inSection={ this.state.inSection } activeArticle={ this.state.activeArticle } onNavigate={ this.props.onNavigate } />;
-                case MENU_TYPE.ARTICLE:
-                    return  <li key={ item.id }>
-                                <div className={"menu-row " + this.levelClass(item.level) }>
-                                    <div className="menu-expander"></div>
-                                    <div className="menu-title">
-                                        <a onClick={ () => this.clickChild(item.path) } href={ item.slug }>{item.title }</a>
-                                    </div>
-                                </div>
-                            </li>;
-            }
-        });
+    inFilter(item) {
+        return this.props.filter.selected == this.props.filter.all ||
+            item.filter.has(this.props.filter.all) ||
+            item.filter.has(this.props.filter.selected);
     }
 
-    expander() {
-        if (this.state.hasChildren) {
-            return <span onClick={(e) => this.toggleExpand(e)} className={this.state.isExpanded ? "glyphicon glyphicon-chevron-down" : "glyphicon glyphicon-chevron-right"}/>
-        } else {
-            return ""
+    parentStyle(item) {
+        var style = "";
+        if (this.isActive()) {
+            style += "in-section";
         }
+        if (!this.inFilter(item)) {
+            style += " hidden";
+        }
+        return style;
     }
 
-    levelClass(level) {
+    articleStyle(item) {
+        return this.inFilter((item)) ? "" : "hidden";
+    }
+
+
+    levelStyle(level) {
         switch(level) {
             case 1: return 'level-one';
             case 2: return 'level-two';
