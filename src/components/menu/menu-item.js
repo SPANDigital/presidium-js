@@ -65,9 +65,9 @@ export default class MenuItem extends Component {
         const item = this.props.item;
         return (
             <li key={ item.id } className={ this.parentStyle(item) }>
-                <div className={"menu-row " + this.levelStyle(item.level) }>
+                <div className={ "menu-row " + this.levelStyle(item.level) }>
                     <div className="menu-expander">
-                        {this.expander()}
+                        { this.expander() }
                     </div>
                     <div className="menu-title">
                         <a onClick={ (e) => this.clickParent(e) }>
@@ -91,7 +91,7 @@ export default class MenuItem extends Component {
                     return  <MenuItem key={ item.title } item={ item } filter = { this.props.filter } inSection={ this.state.inSection } activeArticle={ this.state.activeArticle } onNavigate={ this.props.onNavigate } />;
                 case MENU_TYPE.ARTICLE:
                     return <li key={ item.id } className={ this.articleStyle(item) }>
-                                <div className={"menu-row " + this.levelStyle(item.level) }>
+                                <div className={ "menu-row " + this.levelStyle(item.level) }>
                                     <div className="menu-expander"></div>
                                     <div className="menu-title">
                                         <a onClick={ () => this.clickChild(item.path) } href={ item.slug }>{item.title }</a>
@@ -104,16 +104,16 @@ export default class MenuItem extends Component {
 
     expander() {
         if (this.state.isExpandable && this.state.hasChildren) {
-            return <span onClick={(e) => this.toggleExpand(e)} className={this.state.isExpanded ? "glyphicon glyphicon-chevron-down" : "glyphicon glyphicon-chevron-right"}/>
+            return <span onClick={(e) => this.toggleExpand(e)} className={ this.state.isExpanded ? "glyphicon glyphicon-chevron-down" : "glyphicon glyphicon-chevron-right" }/>
         } else {
             return ""
         }
     }
 
     isActive() {
-        if (this.state.isRootSection)
+        if (this.state.isRootSection) {
             return true;
-        else {
+        } else {
             if (this.state.inSection && this.props.item.type == MENU_TYPE.CATEGORY) {
                 return this.props.item.children.findIndex(child => child.slug == this.state.activeArticle) > -1;
             }
@@ -178,5 +178,5 @@ MenuItem.propTypes = {
     inSection: React.PropTypes.bool,
     activeArticle: React.PropTypes.string,
     onNavigate: React.PropTypes.func,
-
+    filter: React.PropTypes.object
 };

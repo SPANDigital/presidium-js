@@ -5,10 +5,13 @@ import paths from '../../util/paths';
 import {groupByCategory} from './menu-structure';
 import { Router, Route, Link } from 'react-router';
 
+/**
+ * Locale storage key
+ */
 const FILTER_SELECTED_RECORD = "filter.selected";
 
 /**
- * A two level boostrap menu. Doesn't rely on bootstrap.js or jquery js.
+ * Root navigation menu.
  */
 class Menu extends Component {
 
@@ -19,7 +22,7 @@ class Menu extends Component {
             filter: this.menuFilter(),
             expanded: false,
         };
-        this.toggleArticles(this.state.filter.selected);
+        this.filterArticles(this.state.filter.selected);
     }
 
     menuStructure() {
@@ -97,13 +100,13 @@ class Menu extends Component {
 
     onFilter(e) {
         var selected = e.target.value;
+        this.filterArticles(selected);
         const filter = Object.assign({}, this.state.filter, {selected : selected});
-        this.toggleArticles(selected);
         this.setState({ filter : filter});
         sessionStorage.setItem('filter.selected', selected);
     }
 
-    toggleArticles(selected) {
+    filterArticles(selected) {
         document.querySelectorAll('#presidium-content .article').forEach(article => {
             if (selected == this.state.filter.all) {
                 article.style.display = "block";
@@ -122,7 +125,7 @@ class Menu extends Component {
 Menu.propTypes = {
     menu: React.PropTypes.shape({
         brandName: React.PropTypes.string,
-        structure: React.PropTypes.array,
+        filter: React.PropTypes.object
     }).isRequired,
 };
 
