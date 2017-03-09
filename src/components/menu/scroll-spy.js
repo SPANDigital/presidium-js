@@ -30,6 +30,7 @@
 	var defaults = {
 		selector: '[data-gumshoe] a',
 		selectorHeader: '[data-gumshoe-header]',
+		selectorTarget: '',
 		container: root,
 		offset: 0,
 		activeClass: 'active',
@@ -213,7 +214,8 @@
 		// For each link, create an object of attributes and push to an array
 		forEach( navLinks, (function (nav) {
 			if ( !nav.hash ) return;
-			var target = document.querySelector( nav.hash );
+			//Restrict nav targets
+			var target = document.querySelector(settings.selectorTarget + nav.hash );
 			if ( !target ) return;
 			navs.push({
 				nav: nav,

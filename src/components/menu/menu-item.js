@@ -46,7 +46,7 @@ export default class MenuItem extends Component {
     initializeScrollSpy() {
         gumshoe.init({
             selector: '[data-spy] a',
-            selectorHeader: '[data-gumshoe-header]',
+            selectorTarget: "#presidium-content .article > .anchor",
             container: window,
             offset: 100,
             activeClass: 'on-article',
@@ -163,6 +163,10 @@ export default class MenuItem extends Component {
         } else {
             this.props.onNavigate();
             window.location = this.props.item.path;
+
+            if (this.props.item.type == MENU_TYPE.CATEGORY && !this.state.isExpanded) {
+                this.setState({ isExpanded : true });
+            }
         }
     }
 
