@@ -31,8 +31,11 @@ export default class MenuItem extends Component {
     }
 
     componentWillReceiveProps(props) {
+        //Propagate active article and filter down the chain
+        //TODO move higher
+        const activeArticle = this.state.isRootSection? this.state.activeArticle : props.activeArticle;
         this.setState({
-            activeArticle : props.activeArticle, //Sub menu scroll spy
+            activeArticle : activeArticle,
             selectedFilter: props.filter.selected
         });
     }
@@ -74,7 +77,7 @@ export default class MenuItem extends Component {
                     </div>
                 </div>
                 { this.state.isExpandable &&
-                <ul data-spy={ this.state.isRootSection } className={ this.state.isExpanded ? "dropdown expanded" : "dropdown" }>
+                <ul {...this.spyOnMe()} className={ this.state.isExpanded ? "dropdown expanded" : "dropdown" }>
                     { this.children() }
                 </ul>
                 }
@@ -108,6 +111,10 @@ export default class MenuItem extends Component {
         }
     }
 
+    spyOnMe() {
+        return this.state.isRootSection ? {"data-spy" : ""} : {};
+    }
+
     parentStyle(item) {
         var style = "";
         if (this.inSection()) {
@@ -120,9 +127,8 @@ export default class MenuItem extends Component {
     }
 
     articleStyle(item) {
-        return this.inFilter((item)) ? "" : "hidden";
+        return this.inFilter((item)) ? "" : " hidden";
     }
-
 
     levelStyle(level) {
         switch(level) {
@@ -136,7 +142,7 @@ export default class MenuItem extends Component {
 
     inSection() {
         if (!this.state.inSection) {
-            return false; //Eliminates most cases
+            return false; //most cases
         }
         return this.state.isRootSection || (this.state.hasChildren && this.containsArticle());
     }
