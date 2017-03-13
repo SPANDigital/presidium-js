@@ -51,11 +51,9 @@ export default class MenuItem extends Component {
             offset: 100,
             activeClass: 'on-article',
             callback: (active) => {
-                if (active) {
-                    const activeArticle = active.nav.getAttribute("href");
-                    if (this.state.activeArticle !== activeArticle) {
-                        this.setState({activeArticle: activeArticle})
-                    }
+                const activeArticle = active ? active.nav.getAttribute("data-id") : undefined;
+                if (this.state.activeArticle !== activeArticle) {
+                    this.setState({activeArticle: activeArticle})
                 }
             }
         });
@@ -76,7 +74,7 @@ export default class MenuItem extends Component {
                     </div>
                 </div>
                 { this.state.isExpandable &&
-                <ul data-spy className={ this.state.isExpanded ? "dropdown expanded" : "dropdown" }>
+                <ul data-spy={ this.state.isRootSection } className={ this.state.isExpanded ? "dropdown expanded" : "dropdown" }>
                     { this.children() }
                 </ul>
                 }
@@ -94,7 +92,7 @@ export default class MenuItem extends Component {
                                 <div className={ "menu-row " + this.levelStyle(item.level) }>
                                     <div className="menu-expander"></div>
                                     <div className="menu-title">
-                                        <a onClick={ () => this.clickChild(item.path) } href={ item.slug }>{item.title }</a>
+                                        <a onClick={ () => this.clickChild(item.path) } data-id={ item.id } href={ item.slug }>{item.title }</a>
                                     </div>
                                 </div>
                             </li>;
@@ -104,32 +102,16 @@ export default class MenuItem extends Component {
 
     expander() {
         if (this.state.isExpandable && this.state.hasChildren) {
-            return <span onClick={(e) => this.toggleExpand(e)} className={ this.state.isExpanded ? "glyphicon glyphicon-chevron-down" : "glyphicon glyphicon-chevron-right" }/>
+            return <span onClick={ (e) => this.toggleExpand(e) } className={ this.state.isExpanded ? "glyphicon glyphicon-chevron-down" : "glyphicon glyphicon-chevron-right" }/>
         } else {
             return ""
         }
     }
 
-    isActive() {
-        if (this.state.isRootSection) {
-            return true;
-        } else {
-            if (this.state.inSection && this.props.item.type == MENU_TYPE.CATEGORY) {
-                return this.props.item.children.findIndex(child => child.slug == this.state.activeArticle) > -1;
-            }
-        }
-    }
-
-    inFilter(item) {
-        return this.props.filter.selected == this.props.filter.all ||
-            item.filter.has(this.props.filter.all) ||
-            item.filter.has(this.props.filter.selected);
-    }
-
     parentStyle(item) {
         var style = "";
-        if (this.isActive()) {
-            style += "in-section";
+        if (this.inSection()) {
+            style += " in-section";
         }
         if (!this.inFilter(item)) {
             style += " hidden";
@@ -147,8 +129,39 @@ export default class MenuItem extends Component {
             case 1: return 'level-one';
             case 2: return 'level-two';
             case 3: return 'level-three';
+            case 4: return 'level-four';
         }
         return "";
+    }
+
+    inSection() {
+        if (!this.state.inSection) {
+            return false; //Eliminates most cases
+        }
+        return this.state.isRootSection || (this.state.hasChildren && this.containsArticle());
+    }
+
+    containsArticle() {
+        if (!this.state.activeArticle) {
+            return false;
+        }
+        return this.props.item.children.find(child => {
+            if (child.type == MENU_TYPE.ARTICLE && child.id == this.state.activeArticle) {
+                return true;
+            } else if (child.children) {
+                return child.children.find(article => {
+                    if (article.id == this.state.activeArticle) {
+                        return true;
+                    }
+                });
+            }
+        });
+    }
+
+    inFilter(item) {
+        return this.props.filter.selected == this.props.filter.all ||
+            item.filters.has(this.props.filter.all) ||
+            item.filters.has(this.props.filter.selected);
     }
 
     toggleExpand() {
@@ -183,4 +196,8 @@ MenuItem.propTypes = {
     activeArticle: React.PropTypes.string,
     onNavigate: React.PropTypes.func,
     filter: React.PropTypes.object
+};
+
+MenuItem.defaultProps = {
+    inSection: false
 };

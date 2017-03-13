@@ -39,6 +39,8 @@ class Menu extends Component {
                 selected = filter.all;
                 sessionStorage.setItem(FILTER_SELECTED_RECORD, selected);
             }
+        } else {
+            selected = filter.all;
         }
         return {
             label: filter.label,
@@ -59,7 +61,7 @@ class Menu extends Component {
                     { this.props.menu.brandName &&
                     <p className="brand-name">{ this.props.menu.brandName }</p>
                     }
-                    <button className="toggle" onClick={() => this.toggleExpand()}>
+                    <button className="toggle" onClick={() => this.toggleMenu()}>
                         <span className="sr-only">Toggle navigation</span>
                         <span className="icon-bar" />
                         <span className="icon-bar" />
@@ -73,7 +75,7 @@ class Menu extends Component {
                     <ul>
                         {
                             this.state.structure.map(item => {
-                                return <MenuItem key={ item.id } item={ item } filter = { this.state.filter } onNavigate={ () => this.toggleExpand() } />
+                                return <MenuItem key={ item.id } item={ item } filter = { this.state.filter } onNavigate={ () => this.collapseMenu() } />
                             })
                         }
                     </ul>
@@ -82,8 +84,12 @@ class Menu extends Component {
         )
     }
 
-    toggleExpand() {
+    toggleMenu() {
         this.setState({expanded: !this.state.expanded})
+    }
+
+    collapseMenu() {
+        this.setState({expanded: false})
     }
 
     renderFilter() {
@@ -103,7 +109,7 @@ class Menu extends Component {
         this.filterArticles(selected);
         const filter = Object.assign({}, this.state.filter, {selected : selected});
         this.setState({ filter : filter});
-        sessionStorage.setItem('filter.selected', selected);
+        sessionStorage.setItem(FILTER_SELECTED_RECORD, selected);
     }
 
     filterArticles(selected) {
@@ -112,8 +118,8 @@ class Menu extends Component {
                 article.style.display = "block";
                 return;
             }
-            const filter = article.getAttribute('data-filter').split(",");
-            if (filter.includes(selected) || filter.includes(this.state.filter.all)) {
+            const filters = article.getAttribute('data-filters').split(",");
+            if (filters.includes(selected) || filters.includes(this.state.filter.all)) {
                 article.style.display = "block";
             } else {
                 article.style.display = "none";
