@@ -32,7 +32,6 @@ export default class MenuItem extends Component {
 
     componentWillReceiveProps(props) {
         //Propagate active article and filter down the chain
-        //TODO move higher
         const activeArticle = this.state.isRootSection? this.state.activeArticle : props.activeArticle;
         this.setState({
             activeArticle : activeArticle,
@@ -66,14 +65,12 @@ export default class MenuItem extends Component {
         const item = this.props.item;
         return (
             <li key={ item.id } className={ this.parentStyle(item) }>
-                <div className={ "menu-row " + this.levelStyle(item.level) }>
+                <div onClick={ (e) => this.clickParent(e) } className={ "menu-row " + this.levelClass(item.level) }>
                     <div className="menu-expander">
                         { this.expander() }
                     </div>
                     <div className="menu-title">
-                        <a onClick={ (e) => this.clickParent(e) }>
-                            { item.title }
-                        </a>
+                        <a>{ item.title }</a>
                     </div>
                 </div>
                 { this.state.isExpandable &&
@@ -91,11 +88,11 @@ export default class MenuItem extends Component {
                 case MENU_TYPE.CATEGORY:
                     return  <MenuItem key={ item.title } item={ item } filter = { this.props.filter } inSection={ this.state.inSection } activeArticle={ this.state.activeArticle } onNavigate={ this.props.onNavigate } />;
                 case MENU_TYPE.ARTICLE:
-                    return <li key={ item.id } className={ this.articleStyle(item) }>
-                                <div className={ "menu-row " + this.levelStyle(item.level) }>
+                    return <li key={ item.id } className={ this.childStyle(item) }>
+                                <div onClick={ () => this.clickChild(item.path) } className={ "menu-row " + this.articleStyle(item) }>
                                     <div className="menu-expander"></div>
                                     <div className="menu-title">
-                                        <a onClick={ () => this.clickChild(item.path) } data-id={ item.id } href={ item.slug }>{item.title }</a>
+                                        <a data-id={ item.id } href={ item.slug }>{item.title }</a>
                                     </div>
                                 </div>
                             </li>;
@@ -118,7 +115,18 @@ export default class MenuItem extends Component {
     parentStyle(item) {
         var style = "";
         if (this.inSection()) {
-            style += " in-section";
+            style += (this.state.isExpanded) ? " in-section expanded" : " in-section";
+        }
+        if (!this.inFilter(item)) {
+            style += " hidden";
+        }
+        return style;
+    }
+
+    childStyle(item) {
+        var style = "";
+        if (this.state.activeArticle == item.id) {
+            style += " on-article";
         }
         if (!this.inFilter(item)) {
             style += " hidden";
@@ -127,15 +135,19 @@ export default class MenuItem extends Component {
     }
 
     articleStyle(item) {
-        return this.inFilter((item)) ? "" : " hidden";
+        return this.levelClass(item.level) + this.activeClass(item);
     }
 
-    levelStyle(level) {
+    activeClass(item) {
+        return this.state.activeArticle == item.id ? ' on-article' : '';
+    }
+
+    levelClass(level) {
         switch(level) {
-            case 1: return 'level-one';
-            case 2: return 'level-two';
-            case 3: return 'level-three';
-            case 4: return 'level-four';
+            case 1: return ' level-one';
+            case 2: return ' level-two';
+            case 3: return ' level-three';
+            case 4: return ' level-four';
         }
         return "";
     }
@@ -170,7 +182,8 @@ export default class MenuItem extends Component {
             item.filters.has(this.props.filter.selected);
     }
 
-    toggleExpand() {
+    toggleExpand(e) {
+        e.stopPropagation();
         if (this.state.hasChildren) {
             this.setState({isExpanded : !this.state.isExpanded})
         }
