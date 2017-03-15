@@ -53,34 +53,36 @@ class Menu extends Component {
     render() {
         const menu = this.props.menu;
         return (
-            <nav>
-                <div className="navbar-header">
-                    <a href={ this.props.menu.baseUrl != null ? this.props.menu.baseUrl : "#"} className="brand">
-                        <img src={paths.concat(menu.baseUrl, menu.logo)} alt="" />
-                    </a>
-                    { this.props.menu.brandName &&
-                    <p className="brand-name">{ this.props.menu.brandName }</p>
-                    }
-                    <button className="toggle" onClick={() => this.toggleMenu()}>
-                        <span className="sr-only">Toggle navigation</span>
-                        <span className="icon-bar" />
-                        <span className="icon-bar" />
-                        <span className="icon-bar" />
-                    </button>
-
-                </div>
-
-                <div className={"navbar-items" + (this.state.expanded == true ? " expanded" : "")}>
-                    {this.renderFilter()}
-                    <ul>
-                        {
-                            this.state.structure.map(item => {
-                                return <MenuItem key={ item.id } item={ item } filter = { this.state.filter } onNavigate={ () => this.collapseMenu() } />
-                            })
+            <div className="scrollable-container">
+                <nav>
+                    <div className="navbar-header">
+                        <a href={ this.props.menu.baseUrl != null ? this.props.menu.baseUrl : "#"} className="brand">
+                            <img src={paths.concat(menu.baseUrl, menu.logo)} alt="" />
+                        </a>
+                        { this.props.menu.brandName &&
+                        <p className="brand-name">{ this.props.menu.brandName }</p>
                         }
-                    </ul>
-                </div>
-            </nav>
+                        <button className="toggle" onClick={() => this.toggleMenu()}>
+                            <span className="sr-only">Toggle navigation</span>
+                            <span className="icon-bar" />
+                            <span className="icon-bar" />
+                            <span className="icon-bar" />
+                        </button>
+
+                    </div>
+
+                    <div className={"navbar-items" + (this.state.expanded == true ? " expanded" : "")}>
+                        {this.renderFilter()}
+                        <ul>
+                            {
+                                this.state.structure.map(item => {
+                                    return <MenuItem key={ item.id } item={ item } filter = { this.state.filter } onNavigate={ () => this.collapseMenu() } />
+                                })
+                            }
+                        </ul>
+                    </div>
+                </nav>
+            </div>
         )
     }
 
