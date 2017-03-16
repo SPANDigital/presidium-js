@@ -8,7 +8,7 @@ import { Router, Route, Link } from 'react-router';
 /**
  * Locale storage key
  */
-const FILTER_SELECTED_RECORD = "filter.selected";
+const SELECTED_ROLE = "role.selected";
 
 /**
  * Root navigation menu.
@@ -19,34 +19,34 @@ class Menu extends Component {
         super(props);
         this.state = {
             structure: this.menuStructure(),
-            filter: this.menuFilter(),
+            roles: this.roleFilter(),
             expanded: false,
         };
-        this.filterArticles(this.state.filter.selected);
+        this.filterByRole(this.state.roles.selected);
     }
 
     menuStructure() {
-        var all = this.props.menu.filter.all;
-        return this.props.menu.structure.map(section => groupByCategory(section, all));
+        var allRoles = this.props.menu.roles.all;
+        return this.props.menu.structure.map(section => groupByCategory(section, allRoles));
     }
 
-    menuFilter() {
+    roleFilter() {
         var selected;
-        var filter = this.props.menu.filter;
-        if (filter.options.length > 0) {
-            selected = sessionStorage.getItem(FILTER_SELECTED_RECORD);
+        var roles = this.props.menu.roles;
+        if (roles.options.length > 0) {
+            selected = sessionStorage.getItem(SELECTED_ROLE);
             if (!selected) {
-                selected = filter.all;
-                sessionStorage.setItem(FILTER_SELECTED_RECORD, selected);
+                selected = roles.all;
+                sessionStorage.setItem(SELECTED_ROLE, selected);
             }
         } else {
-            selected = filter.all;
+            selected = roles.all;
         }
         return {
-            label: filter.label,
-            all: filter.all,
+            label: roles.label,
+            all: roles.all,
             selected: selected,
-            options: [filter.all, ...filter.options]
+            options: [roles.all, ...roles.options]
         }
     }
 
@@ -76,7 +76,7 @@ class Menu extends Component {
                         <ul>
                             {
                                 this.state.structure.map(item => {
-                                    return <MenuItem key={ item.id } item={ item } filter = { this.state.filter } onNavigate={ () => this.collapseMenu() } />
+                                    return <MenuItem key={ item.id } item={ item } roles = { this.state.roles } onNavigate={ () => this.collapseMenu() } />
                                 })
                             }
                         </ul>
@@ -95,33 +95,33 @@ class Menu extends Component {
     }
 
     renderFilter() {
-        return this.state.filter.selected && (
+        return this.state.roles.selected && (
             <div className="filter form-group">
-                {this.state.filter.label && <label className="control-label" htmlFor="filter-select">{this.state.filter.label}:</label>}
-                <select id="filter-select" className="form-control" value={ this.state.filter.selected } onChange={(e) => this.onFilter(e)}>
-                    {this.state.filter.options.map(filter => {
-                        return <option key={ filter } value={ filter }>{ filter }</option>
+                {this.state.roles.label && <label className="control-label" htmlFor="roles-select">{this.state.roles.label}:</label>}
+                <select id="roles-select" className="form-control" value={ this.state.roles.selected } onChange={(e) => this.onFilterRole(e)}>
+                    {this.state.roles.options.map(role => {
+                        return <option key={ role } value={ role }>{ role }</option>
                     })}
                 </select>
             </div>)
     }
 
-    onFilter(e) {
+    onFilterRole(e) {
         var selected = e.target.value;
-        this.filterArticles(selected);
-        const filter = Object.assign({}, this.state.filter, {selected : selected});
-        this.setState({ filter : filter});
-        sessionStorage.setItem(FILTER_SELECTED_RECORD, selected);
+        this.filterByRole(selected);
+        const roles = Object.assign({}, this.state.roles, {selected : selected});
+        this.setState({ roles : roles});
+        sessionStorage.setItem(SELECTED_ROLE, selected);
     }
 
-    filterArticles(selected) {
+    filterByRole(selected) {
         document.querySelectorAll('#presidium-content .article').forEach(article => {
-            if (selected == this.state.filter.all) {
+            if (selected == this.state.roles.all) {
                 article.style.display = "block";
                 return;
             }
-            const filters = article.getAttribute('data-filters').split(",");
-            if (filters.includes(selected) || filters.includes(this.state.filter.all)) {
+            const roles = article.getAttribute('data-roles').split(",");
+            if (roles.includes(selected) || roles.includes(this.state.roles.all)) {
                 article.style.display = "block";
             } else {
                 article.style.display = "none";
@@ -133,7 +133,7 @@ class Menu extends Component {
 Menu.propTypes = {
     menu: React.PropTypes.shape({
         brandName: React.PropTypes.string,
-        filter: React.PropTypes.object
+        roles: React.PropTypes.object
     }).isRequired,
 };
 

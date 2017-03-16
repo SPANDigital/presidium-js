@@ -1,6 +1,6 @@
 import paths from '../../util/paths';
 
-const level1 = 1;
+const LEVEL_1 = 1;
 const LEVEL_2 = 2;
 const LEVEL_3 = 3;
 const LEVEL_4 = 4;
@@ -15,14 +15,14 @@ function menuSection(section) {
     return {
         type: MENU_TYPE.SECTION,
         id: section.path,
-        level: level1,
+        level: LEVEL_1,
         expandable: section.expandable,
         title: section.title,
         slug: section.slug,
         path: section.path,
         categories: {},
         children : [],
-        filters : new Set()
+        roles : new Set()
     }
 }
 
@@ -37,11 +37,11 @@ function menuCategory(key, id, path, level) {
         path: path,
         categories: {},
         children: [],
-        filters : new Set()
+        roles : new Set()
     };
 }
 
-function menuArticle(article, level, defaultFilter) {
+function menuArticle(article, level, defaultRole) {
     return {
         type: MENU_TYPE.ARTICLE,
         id: article.id,
@@ -50,13 +50,13 @@ function menuArticle(article, level, defaultFilter) {
         title: article.title,
         level: level,
         expandable: false,
-        filters: article.filters.length > 0 ? new Set(article.filters) : new Set([defaultFilter])
+        roles: article.roles.length > 0 ? new Set(article.roles) : new Set([defaultRole])
     }
 }
 
 /**
  * Returns a new Set of the merged current and additional filters.
- * Merges the default filters ff no additional filters are provided.
+ * Merges the default filters if no additional filters are provided.
  */
 function mergeSets(current, additional, defaultFilter) {
     if (additional.length > 0) {
@@ -89,27 +89,27 @@ function hasSub(categories) {
  *  Group articles in a section by a distinct category and optional sub category
  *  Filters for each subsection are merged to a parents for filtering.
  */
-export function groupByCategory(root, defaultFilter) {
+export function groupByCategory(root, defaultRole) {
 
     const section = menuSection(root);
 
     root.articles.forEach(article => {
 
-        section.filters = mergeSets(section.filters, article.filters, defaultFilter);
+        section.roles = mergeSets(section.roles, article.roles, defaultRole);
 
         if (!article.category) {
-            section.children.push(menuArticle(article, LEVEL_2, defaultFilter));
+            section.children.push(menuArticle(article, LEVEL_2, defaultRole));
         } else {
             const categories = article.category.split('/');
             const category = getOrCreateCategory(section, categories[0], article.path, LEVEL_2);
-            category.filters = mergeSets(category.filters, article.filters, defaultFilter);
+            category.roles = mergeSets(category.roles, article.roles, defaultRole);
 
             if (!hasSub(categories)) {
-                category.children.push(menuArticle(article, LEVEL_3, defaultFilter));
+                category.children.push(menuArticle(article, LEVEL_3, defaultRole));
             } else {
                 const subCategory = getOrCreateCategory(category, categories[1], article.path, LEVEL_3);
-                subCategory.filters = mergeSets(subCategory.filters, article.filters, defaultFilter);
-                subCategory.children.push(menuArticle(article, LEVEL_4, defaultFilter));
+                subCategory.roles = mergeSets(subCategory.roles, article.roles, defaultRole);
+                subCategory.children.push(menuArticle(article, LEVEL_4, defaultRole));
             }
         }
     });

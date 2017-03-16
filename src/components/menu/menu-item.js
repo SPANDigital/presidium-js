@@ -20,7 +20,7 @@ export default class MenuItem extends Component {
             hasChildren: hasChildren,
             activeArticle: this.props.activeArticle,
             isExpanded: isRootSection && hasChildren,
-            selectedFilter: this.props.filter.selected
+            selectedRole: this.props.roles.selected
         };
     }
 
@@ -31,16 +31,16 @@ export default class MenuItem extends Component {
     }
 
     componentWillReceiveProps(props) {
-        //Propagate active article and filter down the chain
+        //Propagate active article and roles down the menu chain
         const activeArticle = this.state.isRootSection? this.state.activeArticle : props.activeArticle;
         this.setState({
             activeArticle : activeArticle,
-            selectedFilter: props.filter.selected
+            selectedRole: props.roles.selected
         });
     }
 
     componentDidUpdate(prevProps, prevState){
-        if (this.state.isRootSection && prevState.selectedFilter != this.state.selectedFilter) {
+        if (this.state.isRootSection && prevState.selectedRole != this.state.selectedRole) {
             this.initializeScrollSpy()
         }
     }
@@ -86,7 +86,7 @@ export default class MenuItem extends Component {
         return this.props.item.children.map(item => {
             switch(item.type) {
                 case MENU_TYPE.CATEGORY:
-                    return  <MenuItem key={ item.title } item={ item } filter = { this.props.filter } inSection={ this.state.inSection } activeArticle={ this.state.activeArticle } onNavigate={ this.props.onNavigate } />;
+                    return  <MenuItem key={ item.title } item={ item } roles = { this.props.roles } inSection={ this.state.inSection } activeArticle={ this.state.activeArticle } onNavigate={ this.props.onNavigate } />;
                 case MENU_TYPE.ARTICLE:
                     return <li key={ item.id } className={ this.childStyle(item) }>
                                 <div onClick={ () => this.clickChild(item.path) } className={ "menu-row " + this.articleStyle(item) }>
@@ -117,7 +117,7 @@ export default class MenuItem extends Component {
         if (this.inSection()) {
             style += (this.state.isExpanded) ? " in-section expanded" : " in-section";
         }
-        if (!this.inFilter(item)) {
+        if (!this.hasRole(item)) {
             style += " hidden";
         }
         return style;
@@ -128,7 +128,7 @@ export default class MenuItem extends Component {
         if (this.state.activeArticle == item.id) {
             style += " on-article";
         }
-        if (!this.inFilter(item)) {
+        if (!this.hasRole(item)) {
             style += " hidden";
         }
         return style;
@@ -176,10 +176,10 @@ export default class MenuItem extends Component {
         });
     }
 
-    inFilter(item) {
-        return this.props.filter.selected == this.props.filter.all ||
-            item.filters.has(this.props.filter.all) ||
-            item.filters.has(this.props.filter.selected);
+    hasRole(item) {
+        return this.props.roles.selected == this.props.roles.all ||
+            item.roles.has(this.props.roles.all) ||
+            item.roles.has(this.props.roles.selected);
     }
 
     toggleExpand(e) {
@@ -214,7 +214,7 @@ MenuItem.propTypes = {
     inSection: React.PropTypes.bool,
     activeArticle: React.PropTypes.string,
     onNavigate: React.PropTypes.func,
-    filter: React.PropTypes.object
+    roles: React.PropTypes.object
 };
 
 MenuItem.defaultProps = {
