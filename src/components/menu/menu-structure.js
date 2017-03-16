@@ -11,7 +11,7 @@ export const MENU_TYPE = {
     ARTICLE:  'article'
 };
 
-function menuSection(section) {
+function menuSection(section, defaultRole) {
     return {
         type: MENU_TYPE.SECTION,
         id: section.path,
@@ -22,7 +22,7 @@ function menuSection(section) {
         path: section.path,
         categories: {},
         children : [],
-        roles : new Set()
+        roles : new Set([defaultRole])
     }
 }
 
@@ -91,7 +91,7 @@ function hasSub(categories) {
  */
 export function groupByCategory(root, defaultRole) {
 
-    const section = menuSection(root);
+    const section = menuSection(root, defaultRole);
 
     root.articles.forEach(article => {
 
