@@ -10,37 +10,38 @@ export default class MenuItem extends Component {
     constructor(props) {
         super(props);
 
-        const isRootSection = this.props.item.type == MENU_TYPE.SECTION && this.props.item.path == window.location.pathname;
+        const onPage = this.props.item.url == window.location.pathname;
         const hasChildren = props.item.children.length > 0;
 
         this.state = {
-            isRootSection: isRootSection,
-            inSection: isRootSection || this.props.inSection,
+            onPage: onPage,
+            // inSection: onPage || this.props.inSection,
             isExpandable: this.props.item.expandable,
             hasChildren: hasChildren,
             activeArticle: this.props.activeArticle,
-            isExpanded: isRootSection && hasChildren,
+            //TODO check all children
+            isExpanded: onPage && hasChildren,
             selectedRole: this.props.roles.selected
         };
     }
 
     componentDidMount() {
-        if (this.state.isRootSection) {
+        if (this.state.onPage) {
             this.initializeScrollSpy()
         }
     }
 
     componentWillReceiveProps(props) {
         //Propagate active article and roles down the menu chain
-        const activeArticle = this.state.isRootSection? this.state.activeArticle : props.activeArticle;
+        // const activeArticle = this.state.onPage? this.state.activeArticle : props.activeArticle;
         this.setState({
-            activeArticle : activeArticle,
+            // activeArticle : activeArticle,
             selectedRole: props.roles.selected
         });
     }
 
     componentDidUpdate(prevProps, prevState){
-        if (this.state.isRootSection && prevState.selectedRole != this.state.selectedRole) {
+        if (this.state.onPage && prevState.selectedRole != this.state.selectedRole) {
             this.initializeScrollSpy()
         }
     }
@@ -70,7 +71,7 @@ export default class MenuItem extends Component {
                         { this.expander() }
                     </div>
                     <div className="menu-title">
-                        <a>{ item.title }</a>
+                        <a data-id={ item.id }  href={ item.url }>{ item.title }</a>
                     </div>
                 </div>
                 { this.state.isExpandable &&
@@ -89,10 +90,10 @@ export default class MenuItem extends Component {
                     return  <MenuItem key={ item.title } item={ item } roles = { this.props.roles } inSection={ this.state.inSection } activeArticle={ this.state.activeArticle } onNavigate={ this.props.onNavigate } />;
                 case MENU_TYPE.ARTICLE:
                     return <li key={ item.id } className={ this.childStyle(item) }>
-                                <div onClick={ () => this.clickChild(item.path) } className={ "menu-row " + this.articleStyle(item) }>
+                                <div onClick={ () => this.clickChild(item.url) } className={ "menu-row " + this.articleStyle(item) }>
                                     <div className="menu-expander"></div>
                                     <div className="menu-title">
-                                        <a data-id={ item.id } href={ item.slug }>{item.title }</a>
+                                        <a data-id={ item.id } href={ `#${item.slug}` }>{item.title }</a>
                                     </div>
                                 </div>
                             </li>;
@@ -109,7 +110,7 @@ export default class MenuItem extends Component {
     }
 
     spyOnMe() {
-        return this.state.isRootSection ? {"data-spy" : ""} : {};
+        return this.state.onPage ? {"data-spy" : ""} : {};
     }
 
     parentStyle(item) {
@@ -153,16 +154,18 @@ export default class MenuItem extends Component {
     }
 
     inSection() {
-        if (!this.state.inSection) {
-            return false; //most cases
-        }
-        return this.state.isRootSection || (this.state.hasChildren && this.containsArticle());
+        //TODO optimize cases outside of hierarchy
+        // if (!this.state.inSection) {
+        //     return false; //most cases
+        // }
+        return this.state.onPage || (this.state.hasChildren && this.containsArticle());
     }
 
     containsArticle() {
         if (!this.state.activeArticle) {
             return false;
         }
+        //TODO recursive optimize
         return this.props.item.children.find(child => {
             if (child.type == MENU_TYPE.ARTICLE && child.id == this.state.activeArticle) {
                 return true;
@@ -190,15 +193,15 @@ export default class MenuItem extends Component {
     }
 
     clickParent(e) {
-        if (this.state.isRootSection) {
+        if (this.state.onPage) {
             e.stopPropagation();
         } else {
             this.props.onNavigate();
-            window.location = this.props.item.path;
+            window.location = this.props.item.url;
 
-            if (this.props.item.type == MENU_TYPE.CATEGORY && !this.state.isExpanded) {
-                this.setState({ isExpanded : true });
-            }
+            // if (this.props.item.type == MENU_TYPE.CATEGORY && !this.state.isExpanded) {
+            //     this.setState({ isExpanded : true });
+            // }
         }
     }
 

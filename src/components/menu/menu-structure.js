@@ -95,6 +95,10 @@ export function groupByCategory(root, defaultRole) {
 
     root.articles.forEach(article => {
 
+        if (article.id.endsWith("index")) {
+            return;
+        }
+
         section.roles = mergeSets(section.roles, article.roles, defaultRole);
 
         if (!article.category) {

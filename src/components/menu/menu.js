@@ -18,16 +18,11 @@ class Menu extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            structure: this.menuStructure(),
+            children: this.props.menu.children,
             roles: this.roleFilter(),
             expanded: false,
         };
         this.filterByRole(this.state.roles.selected);
-    }
-
-    menuStructure() {
-        var allRoles = this.props.menu.roles.all;
-        return this.props.menu.structure.map(section => groupByCategory(section, allRoles));
     }
 
     roleFilter() {
@@ -75,7 +70,7 @@ class Menu extends Component {
                         {this.renderFilter()}
                         <ul>
                             {
-                                this.state.structure.map(item => {
+                                this.state.children.map(item => {
                                     return <MenuItem key={ item.id } item={ item } roles = { this.state.roles } onNavigate={ () => this.collapseMenu() } />
                                 })
                             }
@@ -109,7 +104,7 @@ class Menu extends Component {
     onFilterRole(e) {
         var selected = e.target.value;
         this.filterByRole(selected);
-        const roles = Object.assign({}, this.state.roles, {selected : selected});
+        const roles = Object.assign({}, this.state.roles, { selected : selected });
         this.setState({ roles : roles});
         sessionStorage.setItem(SELECTED_ROLE, selected);
     }

@@ -1,4 +1,6 @@
 /*!
+ * Based on:
+ *
  * gumshoe v3.3.2: A simple, framework-agnostic scrollspy script.
  * (c) 2016 Chris Ferdinandi
  * MIT License
@@ -213,9 +215,9 @@
 
 		// For each link, create an object of attributes and push to an array
 		forEach( navLinks, (function (nav) {
-			if ( !nav.hash ) return;
 			//Restrict nav targets
-			var target = document.querySelector(settings.selectorTarget + nav.hash );
+			var id = nav.getAttribute("data-id");
+			var target = document.querySelector(settings.selectorTarget + `[data-id="${id}"]` );
 			if ( !target ) return;
 			navs.push({
 				nav: nav,
