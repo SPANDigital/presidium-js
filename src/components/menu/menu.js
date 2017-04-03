@@ -71,7 +71,7 @@ class Menu extends Component {
                         <ul>
                             {
                                 this.state.children.map(item => {
-                                    return <MenuItem key={ item.id } item={ item } roles = { this.state.roles } onNavigate={ () => this.collapseMenu() } />
+                                    return <MenuItem key={ item.id } baseUrl={ this.props.menu.baseUrl } item={ item } roles = { this.state.roles } onNavigate={ () => this.collapseMenu() } />
                                 })
                             }
                         </ul>
@@ -110,7 +110,8 @@ class Menu extends Component {
     }
 
     filterByRole(selected) {
-        document.querySelectorAll('#presidium-content .article').forEach(article => {
+        const articles = document.querySelectorAll('#presidium-content .article');
+        articles.forEach(article => {
             if (selected == this.state.roles.all) {
                 article.style.display = "block";
                 return;
@@ -122,6 +123,7 @@ class Menu extends Component {
                 article.style.display = "none";
             }
         });
+
     }
 }
 
