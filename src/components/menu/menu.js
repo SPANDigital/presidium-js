@@ -3,7 +3,6 @@ import ReactDOM from 'react-dom';
 import MenuItem from './menu-item';
 import paths from '../../util/paths';
 import {groupByCategory} from './menu-structure';
-import { Router, Route, Link } from 'react-router';
 
 /**
  * Locale storage key
