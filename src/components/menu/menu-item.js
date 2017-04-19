@@ -64,7 +64,8 @@ export default class MenuItem extends Component {
             offset: 100,
             activeClass: 'on-article',
             callback: (active) => {
-                const activeArticle = active ? active.nav.getAttribute("data-id") : undefined;
+                //Update active article on scroll. Ignore hidden articles (with distance = 0)
+                const activeArticle = active && active.distance > 0 ? active.nav.getAttribute("data-id") : undefined;
                 if (this.state.activeArticle !== activeArticle) {
                     this.setState({activeArticle: activeArticle})
                 }
@@ -126,7 +127,7 @@ export default class MenuItem extends Component {
 
     parentStyle(item) {
         var style = "";
-        if (this.state.inSection) {
+        if (this.state.inSection || this.containsArticle()) {
             style += (this.state.isExpanded) ? " in-section expanded" : " in-section";
         }
         if (this.state.onPage) {
@@ -139,6 +140,23 @@ export default class MenuItem extends Component {
             style += " hidden";
         }
         return style;
+    }
+
+    containsArticle() {
+        if (!this.state.activeArticle || !this.state.hasChildren) {
+            return false;
+        }
+        return this.containsNested(this.state.activeArticle, this.props.item.children);
+    }
+
+    containsNested(activeArticle, children) {
+        return children.find(child => {
+            if (child.type == MENU_TYPE.ARTICLE && child.id == activeArticle) {
+                return true;
+            } else if (child.children) {
+                return this.containsNested(activeArticle, child.children);
+            }
+        })
     }
 
     childStyle(item) {
