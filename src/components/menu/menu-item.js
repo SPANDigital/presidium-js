@@ -18,7 +18,7 @@ export default class MenuItem extends Component {
         this.state = {
             onPage: onPage,
             inSection: onPage || inSection,
-            isExpandable: this.props.item.expandable,
+            isCollapsed: this.props.item.collapsed,
             hasChildren: hasChildren,
             activeArticle: this.props.activeArticle,
             isExpanded: inSection && hasChildren,
@@ -85,7 +85,7 @@ export default class MenuItem extends Component {
                         <a data-id={ item.id }  href={ item.url }>{ item.title }</a>
                     </div>
                 </div>
-                { this.state.isExpandable &&
+                { !this.state.isCollapsed &&
                 <ul {...this.spyOnMe()} className={ this.state.isExpanded ? "dropdown expanded" : "dropdown" }>
                     { this.children() }
                 </ul>
@@ -114,7 +114,7 @@ export default class MenuItem extends Component {
     }
 
     expander() {
-        if (this.state.isExpandable && this.state.hasChildren) {
+        if (!this.state.isCollapsed && this.state.hasChildren) {
             return <span onClick={ (e) => this.toggleExpand(e) } className={ this.state.isExpanded ? "glyphicon glyphicon-chevron-down" : "glyphicon glyphicon-chevron-right" }/>
         } else {
             return ""
