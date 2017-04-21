@@ -1,7 +1,7 @@
 import React from 'react';
 import { loadMenu } from './components/menu/menu';
 import { init as initModal} from './components/image/modal';
-import { init as initTerms } from './components/glossary/terms';
+import { init as initTooltips } from './components/tooltips/tooltips';
 
 var presidium = {
     menu : {
@@ -13,4 +13,4 @@ window.presidium = presidium;
 
 initModal();
 
-initTerms();
+initTooltips();
