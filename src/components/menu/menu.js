@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import MenuItem from './menu-item';
 import paths from '../../util/paths';
-import {groupByCategory} from './menu-structure';
 
 /**
  * Locale storage key
