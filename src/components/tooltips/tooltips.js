@@ -3,69 +3,43 @@ import localforage from 'localforage';
 
 /* TODO: Remove baseurl, and any project specific variables that could instead be pulled from the config. */
 
-/* Sourced from https://gist.github.com/andrei-m/982927 */
-function levenshtein(a, b) {
-    if(a.length == 0) return b.length;
-    if(b.length == 0) return a.length;
-
-    // swap to save some memory O(min(a,b)) instead of O(a)
-    if(a.length > b.length) {
-        const tmp = a;
-        a = b;
-        b = tmp;
-    }
-
-    const row = [];
-    // init the row
-    for(var i = 0; i <= a.length; i++){
-        row[i] = i;
-    }
-
-    // fill in the rest
-    for(var i = 1; i <= b.length; i++){
-        let prev = i;
-        for(let j = 1; j <= a.length; j++){
-            let val;
-            if(b.charAt(i-1) == a.charAt(j-1)){
-                val = row[j-1]; // match
-            } else {
-                val = Math.min(row[j-1] + 1, // substitution
-                    prev + 1,     // insertion
-                    row[j] + 1);  // deletion
-            }
-            row[j - 1] = prev;
-            prev = val;
-        }
-        row[a.length] = prev;
-    }
-
-    return row[a.length];
+function expired(data) {
+    debugger;
+    return new Date().getTime() > (data.timestamp + data.expire);
 }
 
 /**
- * @param key
+ * @param {string} key
+ * @param {int} expire - Expiry in milliseconds.
  * Helper that checks if the value is cached, otherwise performs a GET.
  * Returns: promise object.
  */
-function getAndOrSet(key) {
+function getAndOrSet(key, expire=10) {
     /* TODO: Abstract this out into its own function. */
     return localforage.getItem(key, function (err, responseData) {
-
-        if(err === null){ /* API only returns null on failure. */
+        /* If responseData is not null. */
+        if(!(responseData === null) && !expired(responseData)){
+            return responseData;
+        } else { /* API returns null on failure. */
             console.log("[presidium-js] The response is empty or expired.");
+            console.log(err);
             /* Make the asynchronous call - the key must always be a valid URL.*/
             axios.get(key).then(function(response) {
                 responseData = response.data;
                 /* Thereafter, save in local storage. */
-                localforage.setItem(key, responseData, function (err) {
+                let data = {
+                    "key": key,
+                    "value": responseData,
+                    "timestamp": new Date().getTime(),
+                    "expire": expire
+                };
+                localforage.setItem(key, data, function (err) {
                     if (err) {
                         console.log("[presidium-js] Problem setting value: "+ err );
                     }
                 });
             }).catch((error) => {
-                console.log("[presidium-js] GET request with url: " +
-                    + key +", failed with status" +
-                    " code: "+ error.status);
+                console.log("[presidium-js] GET request with url: " + key +", failed with status" + " code: "+ error.response.status);
             });
         }
         return responseData;
@@ -139,10 +113,7 @@ function createLinkTooltips(term, url) {
             const tooltip = document.createElement('span');
             tooltip.className = 'tooltips-text';
 
-            //debugger;
-            //let newC = document.createElement('p');
-            //newC.innerText
-
+            /* If the first <p> is an image do we add an extra <p>? */
             tooltip.appendChild(content.getElementsByTagName('p')[0]);
 
             term.href = url;
