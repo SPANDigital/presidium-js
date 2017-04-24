@@ -1,17 +1,20 @@
 import axios from 'axios';
 import localforage from 'localforage';
 
-/* TODO: Remove baseurl, and any project specific variables that could instead be pulled from the config. */
-
+/**
+ * A helper function, returns true if the entry has expired or if it is
+ * undefined, null, or empty.
+ * @param {object} data - the cached data.
+ */
 function emptyOrExpired(data) {
     return data ? new Date().getTime() > (data.timestamp + data.expire) : true;
 }
 
 /**
- * @param {string} key
- * @param {int} expire - Expiry in milliseconds.
  * Helper that checks if the value is cached, otherwise performs a GET and set.
  * Returns: promise. TODO raise an error to catch?
+ * @param {string} key
+ * @param {int} expire - Expiry in milliseconds.
  */
 function getAndOrSet(key, expire=100000) {
     return localforage.getItem(key).then((response) => {
@@ -41,13 +44,12 @@ function getAndOrSet(key, expire=100000) {
 }
 
 /**
- * @param {object} term - The HTML element (title) of the glossary entry.
  * Note that all terms must correspond exactly to their glossary entry title.
+ * @param {object} term - The HTML element (title) of the glossary entry.
  */
 function automaticTooltips(term) {
     /* Create a tooltip - if and only if - a glossary entry exists for the
      term. */
-    // TODO get the base url of the project.
     getAndOrSet(window.location.pathname + '/glossary.json').then((data) => {
         let key = term.innerText;
         if (data[key]) {
@@ -63,7 +65,6 @@ function automaticTooltips(term) {
             tooltip.appendChild(glossaryContent);
 
             term.href = url;
-            term.target = '_blank';
             term.className = 'tooltips-term';
             term.removeAttribute('title');
             term.appendChild(tooltip);
@@ -108,7 +109,6 @@ function createLinkTooltips(term, url) {
             tooltip.appendChild(content.getElementsByTagName('p')[0]);
 
             term.href = url;
-            term.target = '_blank';
             term.className = 'tooltips-term';
 
             term.removeAttribute('title');
@@ -121,8 +121,9 @@ function createLinkTooltips(term, url) {
 }
 
 /**
- * A helper that searches for glossary terms in the current page marked by:
- * <em>...</em>. Injects html to allow for hover and linking of content.
+ * The initializer that searches for glossary terms in the current page
+ * marked by: <a title='presidium-tooltip'>...</a>. Injects html to allow for
+ * hover and linking of content.
  */
 export function init() {
 
@@ -136,7 +137,7 @@ export function init() {
     for (let term of pageTerms) {
         const url = term.getAttribute('href');
 
-        /* If no URL is provided create automatic tooltips from /glossary. */
-        url ? createLinkTooltips(term, url) : automaticTooltips(term);
+        /* Convention url === #: create automatic tooltips from /glossary. */
+        url === "#" ? automaticTooltips(term): createLinkTooltips(term, url);
     }
 }
