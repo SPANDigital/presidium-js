@@ -1,47 +1,4 @@
 import axios from 'axios';
-import localforage from 'localforage';
-
-/**
- * A helper function, returns true if the entry has expired or if it is
- * undefined, null, or empty.
- * @param {object} data - the cached data.
- */
-export function emptyOrExpired(data) {
-    return data ? new Date().getTime() > (data.timestamp + data.expire) : true;
-}
-
-/**
- * Helper that checks if the value is cached, otherwise performs a GET and set.
- * Returns: promise. TODO raise an error to catch?
- * @param {string} key
- * @param {int} expire - Expiry in milliseconds.
- */
-export function getAndOrSet(key, expire=100000) {
-    return localforage.getItem(key).then((response) => {
-        /* If responseData is not null. */
-        if (emptyOrExpired(response)) {
-            /* HTTP GET and cache set. */
-             console.log("[presidium-js] The response is empty or expired.");
-             return axios.get(key).then((response) => {
-                 const data = {
-                     "key": key,
-                     "value": response.data,
-                     "timestamp": new Date().getTime(),
-                     "expire": expire
-                 };
-                 localforage.setItem(key, data, (error) => {
-                     if(error){
-                         console.log("[presidium-js] set failed: " + error);
-                     }
-                 });
-                 return data.value;
-             }).catch((error) => {
-                 console.log("[presidium-js] GET request with url: " + key +", failed with status" + " code: "+ error.response.status);
-             });
-         }
-         return response.value;
-    });
-}
 
 /**
  * Note that all terms must correspond exactly to their glossary entry title.
@@ -50,11 +7,11 @@ export function getAndOrSet(key, expire=100000) {
 export function automaticTooltips(term) {
     /* Create a tooltip - if and only if - a glossary entry exists for the
      term. */
-    getAndOrSet(window.location.pathname + '/glossary.json').then((data) => {
+    axios.get(window.location.pathname + '/glossary.json').then((response) => {
         let key = term.innerText;
-        if (data[key]) {
-            const content = data[key].content;
-            const url = data[key].url;
+        if (response.data[key]) {
+            const content = response.data[key].content;
+            const url = response.data[key].url;
 
             const parser = new DOMParser();
             const glossaryContent = parser.parseFromString(content, "text/html").body.firstChild;
@@ -81,10 +38,11 @@ export function automaticTooltips(term) {
  * @param {string} url - The URL supplied to article for the content.
  */
 export function linkTooltips(term, url) {
-    getAndOrSet(url).then((data) => {
+    axios.get(url).then((response) => {
+
         /* Create the HTML elements from the result. */
         let parser = new DOMParser();
-        const page = parser.parseFromString(data, "text/html");
+        const page = parser.parseFromString(response.data, "text/html");
 
         /* We need to use the url to get the term name, as the string used
          * by the writer (i.e. [...my string...]) might not contain any
