@@ -35,5 +35,5 @@ $ npm run watch:core
 ## Test
 
 ```bash
-$ mocha --compilers js:babel-core/register --debug-brk --recursive test/
+$ mocha --compilers js:babel-core/register --recursive test/
 ```
