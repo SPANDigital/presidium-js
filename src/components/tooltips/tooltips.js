@@ -6,7 +6,7 @@ import localforage from 'localforage';
  * undefined, null, or empty.
  * @param {object} data - the cached data.
  */
-function emptyOrExpired(data) {
+export function emptyOrExpired(data) {
     return data ? new Date().getTime() > (data.timestamp + data.expire) : true;
 }
 
@@ -16,7 +16,7 @@ function emptyOrExpired(data) {
  * @param {string} key
  * @param {int} expire - Expiry in milliseconds.
  */
-function getAndOrSet(key, expire=100000) {
+export function getAndOrSet(key, expire=100000) {
     return localforage.getItem(key).then((response) => {
         /* If responseData is not null. */
         if (emptyOrExpired(response)) {
@@ -47,7 +47,7 @@ function getAndOrSet(key, expire=100000) {
  * Note that all terms must correspond exactly to their glossary entry title.
  * @param {object} term - The HTML element (title) of the glossary entry.
  */
-function automaticTooltips(term) {
+export function automaticTooltips(term) {
     /* Create a tooltip - if and only if - a glossary entry exists for the
      term. */
     getAndOrSet(window.location.pathname + '/glossary.json').then((data) => {
@@ -80,7 +80,7 @@ function automaticTooltips(term) {
  * @param {object} term - The HTML element that has been flagged as a tooltip.
  * @param {string} url - The URL supplied to article for the content.
  */
-function createLinkTooltips(term, url) {
+export function linkTooltips(term, url) {
     getAndOrSet(url).then((data) => {
         /* Create the HTML elements from the result. */
         let parser = new DOMParser();
@@ -138,6 +138,6 @@ export function init() {
         const url = term.getAttribute('href');
 
         /* Convention url === #: create automatic tooltips from /glossary. */
-        url === "#" ? automaticTooltips(term): createLinkTooltips(term, url);
+        url === "#" ? automaticTooltips(term): linkTooltips(term, url);
     }
 }
