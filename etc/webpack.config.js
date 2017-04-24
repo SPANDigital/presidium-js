@@ -8,9 +8,6 @@ module.exports = {
         publicPath: '/'
     },
     module: {
-        noParse: [
-            new RegExp(path.resolve(__dirname, '/node_modules/localforage/dist/localforage.js'))
-        ],
         loaders: [
             {
                 loader: 'babel',
