@@ -31,3 +31,9 @@ $ npm run watch:local
 and
 $ npm run watch:core
 ```
+
+## Test
+
+```bash
+$ mocha --compilers js:babel-core/register --recursive test/
+```
