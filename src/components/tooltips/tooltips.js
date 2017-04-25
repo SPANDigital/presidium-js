@@ -1,35 +1,23 @@
 import axios from 'axios';
 
+const parser = new DOMParser();
+
 /**
- * Note that all terms must correspond exactly to their glossary entry title.
- * @param {object} term - The HTML element (title) of the glossary entry.
+ * Helper function that manipulates the DOM by adding the tooltip & attributes.
+ *
+ * @param term {object} - The HTML element that has been flagged as a tooltip.
+ * @param content {object} - The content as a HTML element.
+ * @param url {string}
  */
-export function automaticTooltips(term) {
-    /* Create a tooltip - if and only if - a glossary entry exists for the
-     term. */
-    axios.get(presidium.tooltips.config.baseurl + '/glossary.json').then((response) => {
-        let key = term.innerText;
-        if (response.data[key]) {
-            const content = response.data[key].content;
-            const url = response.data[key].url;
+export function createTooltip(term, content, url) {
+    const tooltip = document.createElement('span');
+    tooltip.setAttribute('class', 'tooltips-text');
+    tooltip.appendChild(content.querySelector('p'));
 
-            const parser = new DOMParser();
-            const glossaryContent = parser.parseFromString(content, "text/html");
-
-            /* Create the tooltip. */
-            const tooltip = document.createElement('span');
-            tooltip.className = 'tooltips-text';
-            /* Take the first <p> from the body. */
-            tooltip.appendChild(glossaryContent.getElementsByTagName('p')[0]);
-
-            term.href = url;
-            term.className = 'tooltips-term';
-            term.removeAttribute('title');
-            term.appendChild(tooltip);
-        }
-    }).catch((error) => {
-        console.log("[presidium-js] Could not create the tooltip: " + error);
-    });
+    term.setAttribute('href', url);
+    term.setAttribute('class', 'tooltips-term');
+    term.removeAttribute('title');
+    term.appendChild(tooltip);
 }
 
 /**
@@ -37,35 +25,21 @@ export function automaticTooltips(term) {
  * then create a 'link' tooltip. External URLs are not supported. Required
  * to use the url to find the term name as the string used by the content writer
  * (i.e. [...my string...]) might not contain any reference to the topic.
+ *
  * @param {object} term - The HTML element that has been flagged as a tooltip.
  * @param {string} url - The URL supplied to article for the content.
  */
-export function linkTooltips(term, url) {
-    axios.get(url).then((response) => {
+export function linkTooltips(term) {
+    const url = term.getAttribute('href');
 
-        /* Create the HTML element from the result. */
-        let parser = new DOMParser();
+    axios.get(url).then((response) => {
         const page = parser.parseFromString(response.data, "text/html");
 
-        /* Get the last string after '/'. */
-        let slugTitle = url.substr(url.lastIndexOf('/') + 1).replace('#', ''); // Removing the 1st occurrence of # might be too restrictive.
+        let slugTitle = url.substr(url.lastIndexOf('/') + 1).replace('#', '');
+        let match = page.querySelector(`span.anchor[id="${slugTitle}"]`);
 
-        /* Find the span anchor with an ID that matches the article slug. */
-        let match = page.querySelectorAll("span.anchor" + `[id="${slugTitle}"]`)[0];
         if (match) {
-            /* Its parent is the article div, which we want to search for the <article> tag. */
-            let content = match.parentElement.getElementsByTagName('article')[0];
-
-            /* Create the tooltip. */
-            const tooltip = document.createElement('span');
-            tooltip.className = 'tooltips-text';
-            /* Take the first <p> from the body. */
-            tooltip.appendChild(content.getElementsByTagName('p')[0]);
-
-            term.href = url;
-            term.className = 'tooltips-term';
-            term.removeAttribute('title');
-            term.appendChild(tooltip);
+            createTooltip(term, match.parentElement.querySelector('article'), url);
         }
     }).catch((error) => {
         console.log("[presidium-js] Could not create the tooltip: " + error);
@@ -79,23 +53,19 @@ export function linkTooltips(term, url) {
  */
 export function loadTooltips(config = {}) {
     presidium.tooltips.config = config;
+    const baseSelector = 'a[title=presidium-tooltip]';
 
-    /* Search for tooltip candidates. */
-    const links = document.getElementsByTagName('a');
-    const pageTerms = [...links].filter((link) => {
-        return link.title === "presidium-tooltip";
+    document.querySelectorAll(`${baseSelector}[href^="${config.baseurl}"]`).forEach((term) => {
+        linkTooltips(term);
     });
 
-    /* For each presidium tooltip term inject HTML into the DOM. */
-    for (let term of pageTerms) {
-        const url = term.getAttribute('href');
-
-        /* Convention url === #: create automatic tooltips from /glossary. */
-        if (url === "#"){
-            automaticTooltips(term);
-        } else if (url.includes(presidium.tooltips.config.baseurl)){
-            linkTooltips(term, url);
-        }
-    }
-};
+    axios.get(config.baseurl + '/glossary.json').then((response) => {
+        document.querySelectorAll(`${baseSelector}[href="${'#'}"]`).forEach((term) => {
+            let glossary = response.data[term.innerText];
+            createTooltip(term, parser.parseFromString(glossary.content, "text/html"), glossary.url);
+        });
+    }).catch((error) => {
+        console.log("[presidium-js] Could not create glossary tooltips: " + error);
+    });
+}
 
