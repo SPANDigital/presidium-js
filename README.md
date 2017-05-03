@@ -1,6 +1,6 @@
 # presidium-js
 
-Provides react js components for Presidium. 
+React js components for Presidium. 
 
 ## Build and Publish
 
