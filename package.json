@@ -2,7 +2,7 @@
   "name": "presidium-js",
   "version": "0.0.2",
   "description": "React components for Presidium",
-  "license": "apache-2.0",
+  "license": "Apache-2.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/SPANDigital/presidium-js"
@@ -53,6 +53,7 @@
     "moxios": "^0.4.0"
   },
   "dependencies": {
+    "slug": "^0.9.1",
     "axios": "^0.16.0"
   }
 }

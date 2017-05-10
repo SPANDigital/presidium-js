@@ -66,12 +66,18 @@ export function createTooltip(term, page, url) {
  */
 export function loadTooltips(config = {}) {
     presidium.tooltips.config = config;
-    const autoTerms = document.querySelectorAll(`a[title=presidium-tooltip][href="${'#'}"]`);
+    const glossaryTerms = document.querySelectorAll(`a[title=presidium-tooltip][href="${'#'}"]`);
     const linkTerms = document.querySelectorAll(`a[title=presidium-tooltip][href^="${config.baseurl}"]`);
 
-    axios.get(`${config.baseurl}/glossary/`).then((response) => {
-        autoTerms.forEach((term) => { createTooltip(term, response.data) });
-    }).catch((error) => { tooltipError(error, autoTerms) });
+    if (glossaryTerms.length > 0) {
+        axios.get(`${config.baseurl}/glossary/`).then((response) => {
+            glossaryTerms.forEach((term) => {
+                createTooltip(term, response.data)
+            });
+        }).catch((error) => {
+            tooltipError(error, glossaryTerms)
+        });
+    }
 
     linkTerms.forEach((term) => {
         const url = term.getAttribute('href');
