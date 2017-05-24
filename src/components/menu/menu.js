@@ -2,11 +2,23 @@ import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import MenuItem from './menu-item';
 import paths from '../../util/paths';
+import Versions from '../versions/versions';
 
 /**
  * Locale storage key
  */
 const SELECTED_ROLE = "role.selected";
+
+import { createStore, applyMiddleware } from 'redux';
+import ReduxPromise from 'redux-promise';
+import rootReducer from '../../reducers/index';
+//const createStoreWithMiddleware = applyMiddleware(ReduxPromise)(createStore);
+
+const store = createStore(
+    rootReducer,
+    {},
+    applyMiddleware(ReduxPromise)
+);
 
 /**
  * Root navigation menu.
@@ -65,6 +77,7 @@ class Menu extends Component {
                     </div>
 
                     <div className={"navbar-items" + (this.state.expanded == true ? " expanded" : "")}>
+                        <Versions store={store} />
                         {this.renderFilter()}
                         <ul>
                             {
