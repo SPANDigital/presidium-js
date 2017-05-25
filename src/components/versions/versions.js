@@ -5,21 +5,38 @@ import reducers from '../../reducers';
 import { connect } from 'react-redux';
 
 /**
+ * Locale storage key
+ */
+const SELECTED_VERSION = "version.selected";
+
+/**
  * Version Navigation Component.
  */
 class Versions extends Component {
 
     constructor(props) {
         super(props);
+
+        let current_version = window.location.pathname.replace(window.presidium.versions.gitbase, '').replace(/^\/([^\/]*).*$/, '$1');
+
+        if (!current_version) {
+            current_version = 'latest';
+        }
+
         this.state = {
             selected: false,
-            versions: {}
-            //label:  "Some label"
+            versions: {},
+            baseurl: window.presidium.versions.gitbase,
+            version: current_version
         };
     }
 
-    onChangeVersion(version) {
-        // Do Something -- redirect the entire page.
+    onChangeVersion(e) {
+        let version = e.target.value;
+        if (e.target.value === 'latest') {
+            version = '';
+        }
+        window.location.href = `${this.state.baseurl}${version}`;
     }
 
     componentWillReceiveProps(props) {
@@ -27,16 +44,14 @@ class Versions extends Component {
     }
 
     componentWillMount(){
-        this.props.getVersions('url');
+        this.props.getVersions(`${this.state.baseurl}/versions.json`);
     }
 
     render() {
-        // OK SO THE CURRENT VALUE NEEDS TO BE THE VERSION WE ARE CURRENTLY ON
-        // EASIEST WAY IS TO GET THAT FROM THE URL
         return this.state.selected && (
             <div className="filter form-group">
                 {this.state.label && <label className="control-label" htmlFor="versions-select">{this.state.label}:</label>}
-                <select id="versions-select" className="form-control" value={ this.state.selected } onChange={(e) => this.onChangeVersion(e)}>
+                <select id="versions-select" className="form-control" value={this.state.version} onChange={(e) => this.onChangeVersion(e)}>
                     {this.state.versions.map(version => {
                         return <option key={ version } value={ version }>{ version }</option>
                     })}
