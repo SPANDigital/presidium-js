@@ -23,8 +23,8 @@ class Versions extends Component {
     }
 
     onChangeVersion(e) {
-        const version =  e.target.value === 'latest' ? e.target.value : '';
-        window.location.href = `${this.state.gitbase}${version}`;
+        const version =  e.target.value === 'latest' ?  '' : e.target.value;
+        window.location.href = `${this.state.gitbase}/${version}`;
     }
 
     componentWillReceiveProps(props) {
