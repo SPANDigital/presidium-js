@@ -11,20 +11,20 @@ class Versions extends Component {
     constructor(props) {
         super(props);
 
-        const gitbase = window.presidium.versions.gitbase;
-        const v = window.location.pathname.replace(gitbase, '').replace(/^\/([^\/]*).*$/, '$1');
+        const siteroot = window.presidium.versions.siteroot;
+        const v = window.location.pathname.replace(siteroot, '').replace(/^\/([^\/]*).*$/, '$1');
 
         this.state = {
-            enabled: false,
+            versioned: false,
             versions: {},
-            gitbase: gitbase,
+            siteroot: siteroot,
             selected_version: v || 'latest'
         };
     }
 
     onChangeVersion(e) {
         const version =  e.target.value === 'latest' ?  '' : e.target.value;
-        window.location.href = `${this.state.gitbase}/${version}`;
+        window.location.href = `${this.state.siteroot}/${version}`;
     }
 
     componentWillReceiveProps(props) {
@@ -32,17 +32,17 @@ class Versions extends Component {
     }
 
     componentWillMount(){
-        this.props.getVersions(`${this.state.gitbase}/versions.json`);
+        this.props.getVersions(`${this.state.siteroot}/versions.json`);
     }
 
     render() {
-        return this.state.enabled && (
-            <div className="filter form-group">
+        return this.state.versioned && (
+            <div className="filter versions-filter form-group">
                 <select id="versions-select" className="form-control" value={this.state.selected_version}
                         onChange={(version) => this.onChangeVersion(version)}>
                     {
                         this.state.versions.map(version => {
-                            return <option key={ version } value={ version }>{ version }</option>
+                            return <option key={ version } value={ version }>v. { version }</option>
                         })
                     }
                 </select>

@@ -63,7 +63,10 @@ class Menu extends Component {
                             <img src={paths.concat(menu.baseUrl, menu.logo)} alt="" />
                         </a>
                         { this.props.menu.brandName &&
-                        <p className="brand-name">{ this.props.menu.brandName }</p>
+                        <div>
+                            <p className="brand-name">{ this.props.menu.brandName }</p>
+                            <Versions store={store} />
+                        </div>
                         }
                         <button className="toggle" onClick={() => this.toggleMenu()}>
                             <span className="sr-only">Toggle navigation</span>
@@ -75,7 +78,6 @@ class Menu extends Component {
                     </div>
 
                     <div className={"navbar-items" + (this.state.expanded == true ? " expanded" : "")}>
-                        <Versions store={store} />
                         {this.renderFilter()}
                         <ul>
                             {
