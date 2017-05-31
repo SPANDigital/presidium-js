@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { getVersions } from '../../actions/versions';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
+import paths from '../../util/paths';
 
 /**
  * Version Navigation Component.
@@ -24,7 +25,7 @@ class Versions extends Component {
 
     onChangeVersion(e) {
         const version =  e.target.value === 'latest' ?  '' : e.target.value;
-        window.location.href = `${this.state.siteroot}/${version}`;
+        window.location.href = paths.concat(this.state.siteroot, version);
     }
 
     componentWillReceiveProps(props) {
@@ -32,7 +33,7 @@ class Versions extends Component {
     }
 
     componentWillMount(){
-        this.props.getVersions(`${this.state.siteroot}/versions.json`);
+        this.props.getVersions(paths.concat(this.state.siteroot, 'versions.json'));
     }
 
     render() {
