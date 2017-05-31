@@ -122,18 +122,27 @@ class Menu extends Component {
 
     filterByRole(selected) {
         const articles = document.querySelectorAll('#presidium-content .article');
+        let articlesFound = false;
         articles.forEach(article => {
             if (selected == this.state.roles.all) {
                 article.style.display = "block";
+                articlesFound = true;
                 return;
             }
             const roles = article.getAttribute('data-roles').split(",");
             if (roles.includes(selected) || roles.includes(this.state.roles.all)) {
                 article.style.display = "block";
+                articlesFound = true;
             } else {
                 article.style.display = "none";
             }
         });
+
+        if (articlesFound) {
+            document.getElementById('no-content-warning').style.display = "none";
+        } else {
+            document.getElementById('no-content-warning').style.display = "block";
+        }
 
     }
 }
