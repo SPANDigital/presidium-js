@@ -1,12 +1,22 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
+import { createStore, applyMiddleware } from 'redux';
+import ReduxPromise from 'redux-promise';
+import rootReducer from '../../reducers/index';
 import MenuItem from './menu-item';
 import paths from '../../util/paths';
+import Versions from '../versions/versions';
 
 /**
  * Locale storage key
  */
 const SELECTED_ROLE = "role.selected";
+
+const store = createStore(
+    rootReducer,
+    {},
+    applyMiddleware(ReduxPromise)
+);
 
 /**
  * Root navigation menu.
@@ -53,7 +63,10 @@ class Menu extends Component {
                             <img src={paths.concat(menu.baseUrl, menu.logo)} alt="" />
                         </a>
                         { this.props.menu.brandName &&
-                        <p className="brand-name">{ this.props.menu.brandName }</p>
+                        <div>
+                            <p className="brand-name">{ this.props.menu.brandName }</p>
+                            <Versions store={store} />
+                        </div>
                         }
                         <button className="toggle" onClick={() => this.toggleMenu()}>
                             <span className="sr-only">Toggle navigation</span>
