@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { MENU_TYPE } from './menu-structure';
 import gumshoe from './scroll-spy';
-import Rx from 'rxjs/Rx';
+import {events, eventTypes} from '../../util/events';
 
 /**
  * Menu item that may have one or more articles or nested groups of articles.
@@ -23,7 +23,8 @@ export default class MenuItem extends Component {
             hasChildren: hasChildren,
             activeArticle: this.props.activeArticle,
             isExpanded: inSection && hasChildren,
-            selectedRole: this.props.roles.selected
+            selectedRole: this.props.roles.selected,
+            articleClicked: false
         };
     }
 
@@ -68,9 +69,10 @@ export default class MenuItem extends Component {
                 //Update active article on scroll. Ignore hidden articles (with distance = 0)
                 const activeArticle = active && active.distance > 0 ? active.nav.getAttribute("data-id") : undefined;
                 if (this.state.activeArticle !== activeArticle) {
-                    window.analytics.next({hello: 'hello'});
-                    this.setState({activeArticle: activeArticle})
+                    events.article(activeArticle, this.state.selectedRole, (this.state.articleClicked || this.state.activeArticle === undefined) ? eventTypes.articleReadClick : eventTypes.articleReadScroll, window.location.href);
+                    this.setState({activeArticle: activeArticle});
                 }
+                this.setState({articleClicked: false})
             }
         });
     }
@@ -210,6 +212,7 @@ export default class MenuItem extends Component {
     }
 
     clickChild(path) {
+        this.setState({articleClicked: true});
         this.props.onNavigate();
         window.location = path;
     }

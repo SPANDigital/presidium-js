@@ -14,6 +14,6 @@ var presidium = {
 };
 
 window.presidium = presidium;
-window.analytics = new Rx.Subject();
+window.events = new Rx.Subject();
 
 initModal();
