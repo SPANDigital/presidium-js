@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { MENU_TYPE } from './menu-structure';
 import gumshoe from './scroll-spy';
-import {events, eventTypes} from '../../util/events';
+import {events, actions} from '../../util/events';
 
 /**
  * Menu item that may have one or more articles or nested groups of articles.
@@ -69,7 +69,7 @@ export default class MenuItem extends Component {
                 //Update active article on scroll. Ignore hidden articles (with distance = 0)
                 const activeArticle = active && active.distance > 0 ? active.nav.getAttribute("data-id") : undefined;
                 if (this.state.activeArticle !== activeArticle) {
-                    events.article(activeArticle, this.state.selectedRole, (this.state.articleClicked || this.state.activeArticle === undefined) ? eventTypes.articleReadClick : eventTypes.articleReadScroll, window.location.href);
+                    events.article(activeArticle, (this.state.articleClicked || this.state.activeArticle === undefined) ? actions.articleClick : actions.articleScroll, window.location.href);
                     this.setState({activeArticle: activeArticle});
                 }
                 this.setState({articleClicked: false})

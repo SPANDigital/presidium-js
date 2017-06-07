@@ -1,16 +1,15 @@
 import { next } from 'rxjs/Subject';
 
-let eventTypes = {
-    articleReadScroll: 'article_read_scroll',
-    articleReadClick: 'article_read_click'
+let actions = {
+    articleScroll: 'article_scroll',
+    articleClick: 'article_click'
 };
 
 let events = {
-    article: function (id, role, type, url) {
+    article: function (id, action, url) {
         window.events.next({
             article_id: id,
-            selected_role_filter: role,
-            event_type: type,
+            action: action,
             url: url
         });
     },
