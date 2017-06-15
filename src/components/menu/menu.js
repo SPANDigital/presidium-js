@@ -60,7 +60,7 @@ class Menu extends Component {
                 <nav>
                     <div className="navbar-header">
                         <a href={ this.props.menu.baseUrl != null ? this.props.menu.baseUrl : "#"} className="brand">
-                            <img src={paths.concat(menu.baseUrl, menu.logo)} alt="" />
+                            <img src={ menu.logo } alt="" />
                         </a>
                         { this.props.menu.brandName &&
                         <div>
