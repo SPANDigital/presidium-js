@@ -44,7 +44,7 @@ export function addToDom(term, content, url) {
  */
 export function createTooltip(term, page, url) {
 
-    let title = url ? url.substr(url.lastIndexOf('/') + 1).replace('#', '') : slugify(term.innerText);
+    let title = url.substr(url.lastIndexOf('/') + 1).replace('#', '')
     let match = parser.parseFromString(page, "text/html").querySelector(`span.anchor[id="${title}"]`);
 
     if (match) {
@@ -72,7 +72,8 @@ export function loadTooltips(config = {}) {
     if (glossaryTerms.length > 0) {
         axios.get(`${config.baseurl}/glossary/`).then((response) => {
             glossaryTerms.forEach((term) => {
-                createTooltip(term, response.data)
+                let url = `${config.baseurl}/glossary/#${slugify(term.innerText)}`;
+                createTooltip(term, response.data, url);
             });
         }).catch((error) => {
             tooltipError(error, glossaryTerms)
