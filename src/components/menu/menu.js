@@ -1,12 +1,22 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
+import { createStore, applyMiddleware } from 'redux';
+import ReduxPromise from 'redux-promise';
+import rootReducer from '../../reducers/index';
 import MenuItem from './menu-item';
 import paths from '../../util/paths';
+import Versions from '../versions/versions';
 
 /**
  * Locale storage key
  */
 const SELECTED_ROLE = "role.selected";
+
+const store = createStore(
+    rootReducer,
+    {},
+    applyMiddleware(ReduxPromise)
+);
 
 /**
  * Root navigation menu.
@@ -50,10 +60,13 @@ class Menu extends Component {
                 <nav>
                     <div className="navbar-header">
                         <a href={ this.props.menu.baseUrl != null ? this.props.menu.baseUrl : "#"} className="brand">
-                            <img src={paths.concat(menu.baseUrl, menu.logo)} alt="" />
+                            <img src={ menu.logo } alt="" />
                         </a>
                         { this.props.menu.brandName &&
-                        <p className="brand-name">{ this.props.menu.brandName }</p>
+                        <div>
+                            <p className="brand-name">{ this.props.menu.brandName }</p>
+                            <Versions store={store} />
+                        </div>
                         }
                         <button className="toggle" onClick={() => this.toggleMenu()}>
                             <span className="sr-only">Toggle navigation</span>
@@ -125,7 +138,7 @@ class Menu extends Component {
             }
         });
 
-        if (articlesFound) {
+        if (articlesFound || articles.length === 0) {
             document.getElementById('no-content-warning').style.display = "none";
         } else {
             document.getElementById('no-content-warning').style.display = "block";
