@@ -25,4 +25,4 @@ let events = {
     }
 };
 
-export {events, eventTypes};
+export {events, actions};
