@@ -69,7 +69,7 @@ export default class MenuItem extends Component {
                 //Update active article on scroll. Ignore hidden articles (with distance = 0)
                 const activeArticle = active && active.distance > 0 ? active.nav.getAttribute("data-id") : undefined;
                 if (this.state.activeArticle !== activeArticle) {
-                    events.article(activeArticle, (this.state.articleClicked || this.state.activeArticle === undefined) ? actions.articleClick : actions.articleScroll, window.location.href);
+                    events.article(activeArticle, (this.state.articleClicked || this.state.activeArticle === undefined) ? actions.articleClick : actions.articleScroll);
                     this.setState({activeArticle: activeArticle});
                 }
                 this.setState({articleClicked: false})

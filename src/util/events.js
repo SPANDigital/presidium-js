@@ -6,11 +6,10 @@ let actions = {
 };
 
 let events = {
-    article: function (id, action, url) {
+    article: function (path, action) {
         window.events.next({
-            article_id: id,
-            action: action,
-            url: url
+            path: path,
+            action: action
         });
     },
     roleFilter: function (a) {
