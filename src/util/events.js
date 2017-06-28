@@ -11,16 +11,6 @@ let events = {
             path: path,
             action: action
         });
-    },
-    roleFilter: function (a) {
-        window.events.next({
-            event: a
-        });
-    },
-    menu: function(a) {
-        window.events.next({
-            event: a
-        });
     }
 };
 

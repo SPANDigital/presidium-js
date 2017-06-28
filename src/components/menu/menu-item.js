@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { MENU_TYPE } from './menu-structure';
 import gumshoe from './scroll-spy';
 import {events, actions} from '../../util/events';
+let timeout;
 
 /**
  * Menu item that may have one or more articles or nested groups of articles.
@@ -63,13 +64,18 @@ export default class MenuItem extends Component {
             selector: '[data-spy] a',
             selectorTarget: "#presidium-content .article > .anchor",
             container: window,
-            offset: 100,
+            offset: 130,
             activeClass: 'on-article',
             callback: (active) => {
                 //Update active article on scroll. Ignore hidden articles (with distance = 0)
                 const activeArticle = active && active.distance > 0 ? active.nav.getAttribute("data-id") : undefined;
                 if (this.state.activeArticle !== activeArticle) {
-                    events.article(activeArticle, (this.state.articleClicked || this.state.activeArticle === undefined) ? actions.articleClick : actions.articleScroll);
+                    clearTimeout(timeout);
+                    timeout = setTimeout(function () {
+                        if (this.state.activeArticle === activeArticle) {
+                            events.article(activeArticle, (this.state.articleClicked || this.state.activeArticle === undefined) ? actions.articleClick : actions.articleScroll);
+                        }
+                    }.bind(this), 2000);
                     this.setState({activeArticle: activeArticle});
                 }
                 this.setState({articleClicked: false})
