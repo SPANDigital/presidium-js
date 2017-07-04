@@ -67,7 +67,7 @@ export function createTooltip(term, page, url) {
 export function loadTooltips(config = {}) {
     presidium.tooltips.config = config;
     const glossaryTerms = document.querySelectorAll(`a[title=presidium-tooltip][href="${'#'}"]`);
-    const linkTerms = document.querySelectorAll(`a[title=presidium-tooltip][href^="${config.baseurl}"]`);
+    const linkTerms = document.querySelectorAll(`a[title=presidium-tooltip][href^="${'/'}"]`);
 
     if (glossaryTerms.length > 0) {
         axios.get(`${config.baseurl}/glossary/`).then((response) => {
