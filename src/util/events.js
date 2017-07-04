@@ -2,15 +2,18 @@ import { next } from 'rxjs/Subject';
 
 let actions = {
     articleScroll: 'article_scroll',
-    articleClick: 'article_click'
+    articleClick: 'article_click',
+    articleLoad: 'article_load'
 };
 
 let events = {
     article: function (path, action) {
-        window.events.next({
-            path: path,
-            action: action
-        });
+        if(path) {
+            window.events.next({
+                path: path,
+                action: action
+            });
+        }
     }
 };
 
