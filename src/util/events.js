@@ -1,14 +1,18 @@
-import { next } from 'rxjs/Subject';
+import {next} from 'rxjs/Subject';
 
-let actions = {
+const TOPICS = {
+    RANKING_LOADED: 'RANKING_LOADED'
+};
+
+let ACTIONS = {
     articleScroll: 'article_scroll',
     articleClick: 'article_click',
     articleLoad: 'article_load'
 };
 
-let events = {
-    article: function (path, action) {
-        if(path) {
+let EVENTS_DISPATCH = {
+    ARTICLE: (path, action) => {
+        if (path) {
             window.events.next({
                 path: path,
                 action: action
@@ -17,4 +21,4 @@ let events = {
     }
 };
 
-export {events, actions};
+export {EVENTS_DISPATCH, ACTIONS, TOPICS};

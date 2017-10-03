@@ -1,10 +1,9 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import ReactDOM from 'react-dom';
-import { createStore, applyMiddleware } from 'redux';
+import {createStore, applyMiddleware} from 'redux';
 import ReduxPromise from 'redux-promise';
 import rootReducer from '../../reducers/index';
 import MenuItem from './menu-item';
-import paths from '../../util/paths';
 import Versions from '../versions/versions';
 
 /**
@@ -34,8 +33,8 @@ class Menu extends Component {
     }
 
     roleFilter() {
-        var selected;
-        var roles = this.props.menu.roles;
+        let selected;
+        let roles = this.props.menu.roles;
         if (roles.options.length > 0) {
             selected = sessionStorage.getItem(SELECTED_ROLE);
             if (!selected) {
@@ -59,20 +58,20 @@ class Menu extends Component {
             <div className="scrollable-container">
                 <nav>
                     <div className="navbar-header">
-                        <a href={ this.props.menu.baseUrl != null ? this.props.menu.baseUrl : "#"} className="brand">
-                            <img src={ menu.logo } alt="" />
+                        <a href={this.props.menu.baseUrl != null ? this.props.menu.baseUrl : "#"} className="brand">
+                            <img src={menu.logo} alt=""/>
                         </a>
-                        { this.props.menu.brandName &&
+                        {this.props.menu.brandName &&
                         <div>
-                            <p className="brand-name">{ this.props.menu.brandName }</p>
-                            <Versions store={store} />
+                            <p className="brand-name">{this.props.menu.brandName}</p>
+                            <Versions store={store}/>
                         </div>
                         }
                         <button className="toggle" onClick={() => this.toggleMenu()}>
                             <span className="sr-only">Toggle navigation</span>
-                            <span className="icon-bar" />
-                            <span className="icon-bar" />
-                            <span className="icon-bar" />
+                            <span className="icon-bar"/>
+                            <span className="icon-bar"/>
+                            <span className="icon-bar"/>
                         </button>
 
                     </div>
@@ -82,7 +81,11 @@ class Menu extends Component {
                         <ul>
                             {
                                 this.state.children.map(item => {
-                                    return <MenuItem key={ item.id } baseUrl={ this.props.menu.baseUrl } item={ item } roles = { this.state.roles } onNavigate={ () => this.collapseMenu() } />
+                                    return <MenuItem
+                                        key={item.id}
+                                        baseUrl={this.props.menu.baseUrl}
+                                        item={item}
+                                        roles={this.state.roles} onNavigate={() => this.collapseMenu()}/>
                                 })
                             }
                         </ul>
@@ -103,10 +106,12 @@ class Menu extends Component {
     renderFilter() {
         return this.state.roles.selected && (
             <div className="filter form-group">
-                {this.state.roles.label && <label className="control-label" htmlFor="roles-select">{this.state.roles.label}:</label>}
-                <select id="roles-select" className="form-control" value={ this.state.roles.selected } onChange={(e) => this.onFilterRole(e)}>
+                {this.state.roles.label &&
+                <label className="control-label" htmlFor="roles-select">{this.state.roles.label}:</label>}
+                <select id="roles-select" className="form-control" value={this.state.roles.selected}
+                        onChange={(e) => this.onFilterRole(e)}>
                     {this.state.roles.options.map(role => {
-                        return <option key={ role } value={ role }>{ role }</option>
+                        return <option key={role} value={role}>{role}</option>
                     })}
                 </select>
             </div>)
@@ -115,8 +120,8 @@ class Menu extends Component {
     onFilterRole(e) {
         var selected = e.target.value;
         this.filterByRole(selected);
-        const roles = Object.assign({}, this.state.roles, { selected : selected });
-        this.setState({ roles : roles});
+        const roles = Object.assign({}, this.state.roles, {selected: selected});
+        this.setState({roles: roles});
         sessionStorage.setItem(SELECTED_ROLE, selected);
     }
 
@@ -155,7 +160,7 @@ Menu.propTypes = {
 };
 
 function loadMenu(menu = {}, element = 'presidium-navigation') {
-    ReactDOM.render(<Menu menu = { menu } />, document.getElementById(element));
+    ReactDOM.render(<Menu menu={menu}/>, document.getElementById(element));
 }
 
 export {Menu, loadMenu};

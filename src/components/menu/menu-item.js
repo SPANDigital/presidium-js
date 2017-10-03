@@ -1,7 +1,9 @@
-import React, { Component } from 'react';
-import { MENU_TYPE } from './menu-structure';
+import React, {Component} from 'react';
 import gumshoe from './scroll-spy';
-import {events, actions} from '../../util/events';
+
+import {MENU_TYPE} from './menu-structure';
+import {EVENTS_DISPATCH, ACTIONS, TOPICS} from '../../util/events';
+
 let timeout;
 
 /**
@@ -37,17 +39,30 @@ export default class MenuItem extends Component {
         return reference.startsWith(base);
     }
 
+    resetScrollSpyHeights() {
+        if (this.state.isExpanded) gumshoe.setDistances();
+    }
+
     componentDidMount() {
+        window.events.subscribe({
+            next: (event) => {
+                if (event.path === TOPICS.RANKING_LOADED) this.resetScrollSpyHeights();
+                if (event.path === this.props.id) {
+                    //this.props.dispatch(loadViews(this.props.id));
+                }
+            }
+        });
+
         if (this.state.onPage) {
             clearTimeout(timeout);
             if (this.props.item.children.length === 1) {
-                let action = actions.articleLoad;
+                let action = ACTIONS.articleLoad;
                 if (sessionStorage.getItem('article.clicked') === this.props.item.children[0].id) {
-                    action = actions.articleClick;
+                    action = ACTIONS.articleClick;
                     sessionStorage.removeItem('article.clicked');
                 }
                 timeout = setTimeout(function () {
-                    events.article(this.props.item.children[0].id, action);
+                    EVENTS_DISPATCH.ARTICLE(this.props.item.children[0].id, action);
                 }.bind(this), 2000);
             }
             this.initializeScrollSpy()
@@ -56,14 +71,14 @@ export default class MenuItem extends Component {
 
     componentWillReceiveProps(props) {
         //Propagate active article and roles down the menu chain
-        const activeArticle = this.state.onPage? this.state.activeArticle : props.activeArticle;
+        const activeArticle = this.state.onPage ? this.state.activeArticle : props.activeArticle;
         this.setState({
-            activeArticle : activeArticle,
+            activeArticle: activeArticle,
             selectedRole: props.roles.selected
         });
     }
 
-    componentDidUpdate(prevProps, prevState){
+    componentDidUpdate(prevProps, prevState) {
         if (this.state.onPage && prevState.selectedRole != this.state.selectedRole) {
             this.initializeScrollSpy()
         }
@@ -86,7 +101,7 @@ export default class MenuItem extends Component {
                     const articleLoad = load;
                     timeout = setTimeout(function () {
                         if (this.state.activeArticle === activeArticle) {
-                            events.article(activeArticle, clickedArticle ? actions.articleClick : articleLoad ? actions.articleLoad : actions.articleScroll);
+                            EVENTS_DISPATCH.ARTICLE(activeArticle, clickedArticle ? ACTIONS.articleClick : articleLoad ? ACTIONS.articleLoad : ACTIONS.articleScroll);
                         }
                     }.bind(this), 2000);
 
@@ -102,18 +117,18 @@ export default class MenuItem extends Component {
     render() {
         const item = this.props.item;
         return (
-            <li key={ item.id } className={ this.parentStyle(item) }>
-                <div onClick={ (e) => this.clickParent(e) } className={ "menu-row " + this.levelClass(item.level) }>
+            <li key={item.id} className={this.parentStyle(item)}>
+                <div onClick={(e) => this.clickParent(e)} className={"menu-row " + this.levelClass(item.level)}>
                     <div className="menu-expander">
-                        { this.expander() }
+                        {this.expander()}
                     </div>
                     <div className="menu-title">
-                        <a data-id={ item.id }  href={ item.url }>{ item.title }</a>
+                        <a data-id={item.id} href={item.url}>{item.title}</a>
                     </div>
                 </div>
-                { !this.state.isCollapsed &&
-                <ul {...this.spyOnMe()} className={ this.state.isExpanded ? "dropdown expanded" : "dropdown" }>
-                    { this.children() }
+                {!this.state.isCollapsed &&
+                <ul {...this.spyOnMe()} className={this.state.isExpanded ? "dropdown expanded" : "dropdown"}>
+                    {this.children()}
                 </ul>
                 }
             </li>
@@ -122,33 +137,36 @@ export default class MenuItem extends Component {
 
     children() {
         return this.props.item.children.map(item => {
-            switch(item.type) {
+            switch (item.type) {
                 case MENU_TYPE.CATEGORY:
-                    return  <MenuItem key={ item.title } item={ item } activeArticle={ this.state.activeArticle } roles = { this.props.roles } baseUrl={ this.props.baseUrl }
-                                      onNavigate={ this.props.onNavigate } />;
+                    return <MenuItem key={item.title} item={item} activeArticle={this.state.activeArticle}
+                                     roles={this.props.roles} baseUrl={this.props.baseUrl}
+                                     onNavigate={this.props.onNavigate}/>;
                 case MENU_TYPE.ARTICLE:
-                    return <li key={ item.id } className={ this.childStyle(item) }>
-                                <div onClick={ () => this.clickChild(item.url, item.id) } className={ "menu-row " + this.articleStyle(item) }>
-                                    <div className="menu-expander"></div>
-                                    <div className="menu-title">
-                                        <a data-id={ item.id } href={ `#${item.slug}` }>{item.title }</a>
-                                    </div>
-                                </div>
-                            </li>;
+                    return <li key={item.id} className={this.childStyle(item)}>
+                        <div onClick={() => this.clickChild(item.url, item.id)}
+                             className={"menu-row " + this.articleStyle(item)}>
+                            <div className="menu-expander"></div>
+                            <div className="menu-title">
+                                <a data-id={item.id} href={`#${item.slug}`}>{item.title}</a>
+                            </div>
+                        </div>
+                    </li>;
             }
         });
     }
 
     expander() {
         if (!this.state.isCollapsed && this.state.hasChildren) {
-            return <span onClick={ (e) => this.toggleExpand(e) } className={ this.state.isExpanded ? "glyphicon glyphicon-chevron-down" : "glyphicon glyphicon-chevron-right" }/>
+            return <span onClick={(e) => this.toggleExpand(e)}
+                         className={this.state.isExpanded ? "glyphicon glyphicon-chevron-down" : "glyphicon glyphicon-chevron-right"}/>
         } else {
             return ""
         }
     }
 
     spyOnMe() {
-        return this.state.onPage ? {"data-spy" : ""} : {};
+        return this.state.onPage ? {"data-spy": ""} : {};
     }
 
     parentStyle(item) {
@@ -201,25 +219,29 @@ export default class MenuItem extends Component {
     }
 
     levelClass(level) {
-        switch(level) {
-            case 1: return ' level-one';
-            case 2: return ' level-two';
-            case 3: return ' level-three';
-            case 4: return ' level-four';
+        switch (level) {
+            case 1:
+                return ' level-one';
+            case 2:
+                return ' level-two';
+            case 3:
+                return ' level-three';
+            case 4:
+                return ' level-four';
         }
         return "";
     }
 
     hasRole(item) {
         return this.props.roles.selected == this.props.roles.all ||
-            item.roles.indexOf(this.props.roles.all) >= 0||
+            item.roles.indexOf(this.props.roles.all) >= 0 ||
             item.roles.indexOf(this.props.roles.selected) >= 0;
     }
 
     toggleExpand(e) {
         e.stopPropagation();
         if (this.state.hasChildren) {
-            this.setState({isExpanded : !this.state.isExpanded})
+            this.setState({isExpanded: !this.state.isExpanded})
         }
     }
 
