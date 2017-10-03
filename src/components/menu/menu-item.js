@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { MENU_TYPE } from './menu-structure';
 import gumshoe from './scroll-spy';
+import {events, actions} from '../../util/events';
+let timeout;
 
 /**
  * Menu item that may have one or more articles or nested groups of articles.
@@ -37,6 +39,17 @@ export default class MenuItem extends Component {
 
     componentDidMount() {
         if (this.state.onPage) {
+            clearTimeout(timeout);
+            if (this.props.item.children.length === 1) {
+                let action = actions.articleLoad;
+                if (sessionStorage.getItem('article.clicked') === this.props.item.children[0].id) {
+                    action = actions.articleClick;
+                    sessionStorage.removeItem('article.clicked');
+                }
+                timeout = setTimeout(function () {
+                    events.article(this.props.item.children[0].id, action);
+                }.bind(this), 2000);
+            }
             this.initializeScrollSpy()
         }
     }
@@ -57,6 +70,7 @@ export default class MenuItem extends Component {
     }
 
     initializeScrollSpy() {
+        let load = true;
         gumshoe.init({
             selector: '[data-spy] a',
             selectorTarget: "#presidium-content .article > .anchor",
@@ -67,10 +81,22 @@ export default class MenuItem extends Component {
                 //Update active article on scroll. Ignore hidden articles (with distance = 0)
                 const activeArticle = active && active.distance > 0 ? active.nav.getAttribute("data-id") : undefined;
                 if (this.state.activeArticle !== activeArticle) {
-                    this.setState({activeArticle: activeArticle})
+                    clearTimeout(timeout);
+                    const clickedArticle = sessionStorage.getItem('article.clicked') === activeArticle;
+                    const articleLoad = load;
+                    timeout = setTimeout(function () {
+                        if (this.state.activeArticle === activeArticle) {
+                            events.article(activeArticle, clickedArticle ? actions.articleClick : articleLoad ? actions.articleLoad : actions.articleScroll);
+                        }
+                    }.bind(this), 2000);
+
+                    sessionStorage.removeItem('article.clicked');
+                    this.setState({activeArticle: activeArticle});
                 }
+
             }
         });
+        load = false;
     }
 
     render() {
@@ -102,7 +128,7 @@ export default class MenuItem extends Component {
                                       onNavigate={ this.props.onNavigate } />;
                 case MENU_TYPE.ARTICLE:
                     return <li key={ item.id } className={ this.childStyle(item) }>
-                                <div onClick={ () => this.clickChild(item.url) } className={ "menu-row " + this.articleStyle(item) }>
+                                <div onClick={ () => this.clickChild(item.url, item.id) } className={ "menu-row " + this.articleStyle(item) }>
                                     <div className="menu-expander"></div>
                                     <div className="menu-title">
                                         <a data-id={ item.id } href={ `#${item.slug}` }>{item.title }</a>
@@ -202,12 +228,14 @@ export default class MenuItem extends Component {
             e.preventDefault();
             e.stopPropagation();
         } else {
+            sessionStorage.setItem('article.clicked', this.props.item.children.length === 1 ? this.props.item.children[0].id : this.props.item.id);
             this.props.onNavigate();
             window.location = this.props.item.url;
         }
     }
 
-    clickChild(path) {
+    clickChild(path, id) {
+        sessionStorage.setItem('article.clicked', id);
         this.props.onNavigate();
         window.location = path;
     }
