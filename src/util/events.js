@@ -1,7 +1,8 @@
 import {next} from 'rxjs/Subject';
 
 const TOPICS = {
-    RANKING_LOADED: 'RANKING_LOADED'
+    RANKING_LOADED: 'RANKING_LOADED',
+    ROLE_UPDATED: 'ROLE_UPDATED'
 };
 
 let ACTIONS = {
@@ -11,6 +12,14 @@ let ACTIONS = {
 };
 
 let EVENTS_DISPATCH = {
+    MENU: (topic, value) => {
+        if (topic) {
+            window.events.next({
+                topic: topic,
+                value: value
+            });
+        }
+    },
     ARTICLE: (path, action) => {
         if (path) {
             window.events.next({

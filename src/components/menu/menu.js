@@ -5,6 +5,7 @@ import ReduxPromise from 'redux-promise';
 import rootReducer from '../../reducers/index';
 import MenuItem from './menu-item';
 import Versions from '../versions/versions';
+import {EVENTS_DISPATCH, TOPICS} from "../../util/events";
 
 /**
  * Locale storage key
@@ -30,6 +31,16 @@ class Menu extends Component {
             expanded: false,
         };
         this.filterByRole(this.state.roles.selected);
+    }
+
+    componentDidMount() {
+        window.events.subscribe({
+            next: (event) => {
+                if (event.topic === TOPICS.ROLE_UPDATED) {
+                    document.getElementById("roles-select").value = event.value;
+                }
+            }
+        });
     }
 
     roleFilter() {
@@ -73,7 +84,6 @@ class Menu extends Component {
                             <span className="icon-bar"/>
                             <span className="icon-bar"/>
                         </button>
-
                     </div>
 
                     <div className={"navbar-items" + (this.state.expanded == true ? " expanded" : "")}>
@@ -108,7 +118,7 @@ class Menu extends Component {
             <div className="filter form-group">
                 {this.state.roles.label &&
                 <label className="control-label" htmlFor="roles-select">{this.state.roles.label}:</label>}
-                <select id="roles-select" className="form-control" value={this.state.roles.selected}
+                <select ref="roleselector" id="roles-select" className="form-control" value={this.state.roles.selected}
                         onChange={(e) => this.onFilterRole(e)}>
                     {this.state.roles.options.map(role => {
                         return <option key={role} value={role}>{role}</option>
@@ -118,11 +128,14 @@ class Menu extends Component {
     }
 
     onFilterRole(e) {
-        var selected = e.target.value;
-        this.filterByRole(selected);
+        let selected = e.target.value;
         const roles = Object.assign({}, this.state.roles, {selected: selected});
+
+        this.filterByRole(selected);
         this.setState({roles: roles});
+
         sessionStorage.setItem(SELECTED_ROLE, selected);
+        EVENTS_DISPATCH.MENU(TOPICS.ROLE_UPDATED, selected)
     }
 
     filterByRole(selected) {
