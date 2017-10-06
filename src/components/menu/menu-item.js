@@ -14,9 +14,8 @@ export default class MenuItem extends Component {
     constructor(props) {
         super(props);
 
-        const onPage = this.props.item.url == window.location.pathname;
+        const onPage = this.props.item.url === window.location.pathname;
         const inSection = this.inSection();
-
         const hasChildren = props.item.children.length > 0;
 
         this.state = {
