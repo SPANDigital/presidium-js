@@ -29,11 +29,40 @@ class Menu extends Component {
             children: this.props.menu.children,
             roles: this.roleFilter(),
             expanded: false,
+            containerHeight: 0
         };
+
+
         this.filterByRole(this.state.roles.selected);
+        this.mountContainerListener = this.mountContainerListener.bind(this)
+        this.unMountContainerListener = this.unMountContainerListener.bind(this)
+    }
+
+    /**
+     * Manually handle click events in Presidium Container
+     * that might desync the offset of scroll spy element
+     * (see https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details)
+     */
+    mountContainerListener() {
+        const _container = document.getElementById('presidium-content');
+
+        _container
+            .addEventListener("click", (e) => {
+                //If container did resize
+                if (this.state.containerHeight !== _container.clientHeight) {
+                    this.setState({containerHeight: _container.clientHeight})
+                }
+            })
+    }
+
+    unMountContainerListener() {
+        document.getElementById("presidium-content")
+            .removeEventListener("click");
     }
 
     componentDidMount() {
+        this.mountContainerListener();
+
         window.events.subscribe({
             next: (event) => {
                 if (event.topic === TOPICS.ROLE_UPDATED) {
@@ -42,6 +71,11 @@ class Menu extends Component {
             }
         });
     }
+
+    componentWillUnmount() {
+        this.unMountContainerListener();
+    }
+
 
     roleFilter() {
         let selected;
@@ -92,6 +126,7 @@ class Menu extends Component {
                             {
                                 this.state.children.map(item => {
                                     return <MenuItem
+                                        containerHeight={this.state.containerHeight}
                                         key={item.id}
                                         baseUrl={this.props.menu.baseUrl}
                                         item={item}
@@ -118,7 +153,10 @@ class Menu extends Component {
             <div className="filter form-group">
                 {this.state.roles.label &&
                 <label className="control-label" htmlFor="roles-select">{this.state.roles.label}:</label>}
-                <select ref="roleselector" id="roles-select" className="form-control" value={this.state.roles.selected}
+                <select ref="roleselector"
+                        id="roles-select"
+                        className="form-control"
+                        value={this.state.roles.selected}
                         onChange={(e) => this.onFilterRole(e)}>
                     {this.state.roles.options.map(role => {
                         return <option key={role} value={role}>{role}</option>

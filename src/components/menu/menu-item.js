@@ -69,6 +69,11 @@ export default class MenuItem extends Component {
     }
 
     componentWillReceiveProps(props) {
+        //If there's a new click event, trigger the recalc of scroll spy offset
+        if (this.props.containerHeight !== props.containerHeight) {
+            this.resetScrollSpyHeights();
+        }
+
         //Propagate active article and roles down the menu chain
         const activeArticle = this.state.onPage ? this.state.activeArticle : props.activeArticle;
         this.setState({
@@ -100,6 +105,7 @@ export default class MenuItem extends Component {
                     const articleLoad = load;
                     timeout = setTimeout(function () {
                         if (this.state.activeArticle === activeArticle) {
+                            this.resetScrollSpyHeights();
                             EVENTS_DISPATCH.ARTICLE(activeArticle, clickedArticle ? ACTIONS.articleClick : articleLoad ? ACTIONS.articleLoad : ACTIONS.articleScroll);
                         }
                     }.bind(this), 2000);
@@ -107,11 +113,11 @@ export default class MenuItem extends Component {
                     sessionStorage.removeItem('article.clicked');
                     this.setState({activeArticle: activeArticle});
                 }
-
             }
         });
         load = false;
     }
+
 
     render() {
         const item = this.props.item;
