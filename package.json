@@ -23,17 +23,15 @@
   "scripts": {
     "test": "mocha --compilers js:babel-core/register --recursive test/",
     "clean": "rimraf dist",
+    "start": "babel-node bin/server.js",
     "lint": "eslint src",
-    "build:webpack": "webpack --config etc/webpack.config.prod.js",
-    "build": "npm run clean && npm run build:webpack",
-    "build:local": "npm run clean && npm run build:webpack",
-    "copy:core": "cpx ./dist/presidium.js ../presidium-core/media/js",
-    "publish:core": "npm run build && npm run copy:core",
-    "watch:local-copy": "webpack --watch --config etc/webpack.config.js",
-    "watch:local": "webpack --watch --config etc/webpack.config.prod.js",
-    "watch:core": "cpx --watch ./dist/presidium.js ../presidium-core/media/js",
-    "watch": "npm run watch:local & npm run watch:core & wait",
-    "start": "babel-node bin/server.js"
+    "build": "webpack --config etc/webpack.config.prod.babel.js",
+    "build:prod": "npm run build",
+    "build:dev": "webpack --config etc/webpack.config.babel.js",
+    "watch:prod": "npm run build:prod -- --watch",
+    "watch:dev": "npm run build:dev -- --watch",
+    "watch-local-copy:prod": "copy=true npm run watch:prod",
+    "watch-local-copy:dev": "copy=true npm run watch:dev"
   },
   "devDependencies": {
     "babel-cli": "^6.9.0",
