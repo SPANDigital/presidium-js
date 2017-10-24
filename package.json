@@ -27,7 +27,7 @@
     "lint": "eslint src",
     "build": "webpack --config etc/webpack.config.prod.babel.js",
     "build:prod": "npm run build",
-    "build:dev": "webpack --config etc/webpack.config.babel.js",
+    "build:dev": "webpack --config etc/webpack.config.js",
     "watch:prod": "npm run build:prod -- --watch",
     "watch:dev": "npm run build:dev -- --watch",
     "watch-local-copy:prod": "copy=true npm run watch:prod",
