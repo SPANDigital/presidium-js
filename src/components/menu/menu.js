@@ -18,11 +18,21 @@ const store = createStore(
     applyMiddleware(ReduxPromise)
 );
 
+const ELEMENTS = {
+    BODY: 'body',
+    SCROLLABLE_CONTAINER: 'presidium-scrollable-container',
+    CONTENT_CONTAINER: 'presidium-content'
+};
+
+const getDomElement = (elem) => {
+    if (elem === ELEMENTS.BODY) return document.getElementsByTagName("BODY")[0];
+    return document.getElementById(elem)
+}
+
 /**
  * Root navigation menu.
  */
 class Menu extends Component {
-
     constructor(props) {
         super(props);
         this.state = {
@@ -31,51 +41,39 @@ class Menu extends Component {
             expanded: false,
             containerHeight: 0
         };
-
-
         this.filterByRole(this.state.roles.selected);
-        this.mountContainerListener = this.mountContainerListener.bind(this)
-        this.unMountContainerListener = this.unMountContainerListener.bind(this)
+        this.mountContainerListeners = this.mountContainerListeners.bind(this)
+        this.unMountContainerListeners = this.unMountContainerListeners.bind(this)
     }
 
-    /**
-     * Manually handle click events in Presidium Container
-     * that might desync the offset of scroll spy element
-     * (see https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details)
-     */
-    mountContainerListener() {
-        const _container = document.getElementById('presidium-content');
-
-        _container
+    mountContainerListeners() {
+        /**
+         * Manually handle click events in Presidium Container
+         * that might desync the offset of scroll spy element
+         * (see https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details)
+         */
+        const _contentContainer = getDomElement(ELEMENTS.CONTENT_CONTAINER);
+        _contentContainer
             .addEventListener("click", (e) => {
                 //If container did resize
-                if (this.state.containerHeight !== _container.clientHeight) {
-                    this.setState({containerHeight: _container.clientHeight})
+                if (this.state.containerHeight !== _contentContainer.clientHeight) {
+                    this.setState({containerHeight: _contentContainer.clientHeight})
                 }
             })
     }
 
-    unMountContainerListener() {
-        document.getElementById("presidium-content")
+    unMountContainerListeners() {
+        getDomElement(ELEMENTS.CONTENT_CONTAINER)
             .removeEventListener("click");
     }
 
     componentDidMount() {
-        this.mountContainerListener();
-
-        window.events.subscribe({
-            next: (event) => {
-                if (event.topic === TOPICS.ROLE_UPDATED) {
-                    document.getElementById("roles-select").value = event.value;
-                }
-            }
-        });
+        this.mountContainerListeners();
     }
 
     componentWillUnmount() {
-        this.unMountContainerListener();
+        this.unMountContainerListeners();
     }
-
 
     roleFilter() {
         let selected;
@@ -100,7 +98,9 @@ class Menu extends Component {
     render() {
         const menu = this.props.menu;
         return (
-            <div className="scrollable-container">
+            <div
+                id="presidium-scrollable-container"
+                className="scrollable-container">
                 <nav>
                     <div className="navbar-header">
                         <a href={this.props.menu.baseUrl != null ? this.props.menu.baseUrl : "#"} className="brand">
@@ -123,16 +123,14 @@ class Menu extends Component {
                     <div className={"navbar-items" + (this.state.expanded == true ? " expanded" : "")}>
                         {this.renderFilter()}
                         <ul>
-                            {
-                                this.state.children.map(item => {
-                                    return <MenuItem
-                                        containerHeight={this.state.containerHeight}
-                                        key={item.id}
-                                        baseUrl={this.props.menu.baseUrl}
-                                        item={item}
-                                        roles={this.state.roles} onNavigate={() => this.collapseMenu()}/>
-                                })
-                            }
+                            {this.state.children.map(item => {
+                                return <MenuItem
+                                    containerHeight={this.state.containerHeight}
+                                    key={item.id}
+                                    baseUrl={this.props.menu.baseUrl}
+                                    item={item}
+                                    roles={this.state.roles} onNavigate={() => this.collapseMenu()}/>
+                            })}
                         </ul>
                     </div>
                 </nav>

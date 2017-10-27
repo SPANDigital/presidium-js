@@ -61,7 +61,7 @@ export default class MenuItem extends Component {
                     sessionStorage.removeItem('article.clicked');
                 }
                 timeout = setTimeout(function () {
-                    EVENTS_DISPATCH.ARTICLE(this.props.item.children[0].id, action);
+                    this.markArticleAsViewed(this.props.item.children[0].id, action);
                 }.bind(this), 2000);
             }
             this.initializeScrollSpy()
@@ -88,28 +88,42 @@ export default class MenuItem extends Component {
         }
     }
 
+    determineScrollSpyOffset() {
+        let defaultOffset = 100; //TODO: Pass 'loaded' event from Presidium JS Enterprise and remove this
+
+        let topBar = document.getElementById('presidium-enterprise-toolbar');
+        let solutionBar = document.getElementById('presidium-solution-search');
+        let blueBar = document.getElementById('presidium-currently-viewing-marquee');
+
+        if (topBar) defaultOffset += topBar.clientHeight;
+        if (solutionBar) defaultOffset += solutionBar.clientHeight;
+        if (blueBar) defaultOffset += blueBar.clientHeight;
+
+        return defaultOffset;
+    }
+
     initializeScrollSpy() {
         let load = true;
-        gumshoe.init({
+        gumShoe = gumshoe;
+        gumShoe.init({
             selector: '[data-spy] a',
             selectorTarget: "#presidium-content .article > .anchor",
             container: window,
-            offset: 100,
+            offset: this.determineScrollSpyOffset(),
             activeClass: 'on-article',
             callback: (active) => {
                 //Update active article on scroll. Ignore hidden articles (with distance = 0)
                 const activeArticle = active && active.distance > 0 ? active.nav.getAttribute("data-id") : undefined;
-                if (this.state.activeArticle !== activeArticle) {
+                if (activeArticle && this.state.activeArticle !== activeArticle) {
                     clearTimeout(timeout);
                     const clickedArticle = sessionStorage.getItem('article.clicked') === activeArticle;
                     const articleLoad = load;
                     timeout = setTimeout(function () {
                         if (this.state.activeArticle === activeArticle) {
                             this.resetScrollSpyHeights();
-                            EVENTS_DISPATCH.ARTICLE(activeArticle, clickedArticle ? ACTIONS.articleClick : articleLoad ? ACTIONS.articleLoad : ACTIONS.articleScroll);
+                            this.markArticleAsViewed(activeArticle), clickedArticle ? ACTIONS.articleClick : articleLoad ? ACTIONS.articleLoad : ACTIONS.articleScroll
                         }
                     }.bind(this), 2000);
-
                     sessionStorage.removeItem('article.clicked');
                     this.setState({activeArticle: activeArticle});
                 }
@@ -118,6 +132,18 @@ export default class MenuItem extends Component {
         load = false;
     }
 
+    markArticleAsViewed(articleId, action = ACTIONS.articleScroll) {
+        const cachedSolution = sessionStorage.getItem('presidium.solution');
+        if (!cachedSolution) return;
+
+        const hash = `PRESIDIUM-ACTION:${articleId}:${cachedSolution || ''}`;
+        const cachedAction = sessionStorage.getItem(hash)
+
+        if (!cachedAction) {
+            EVENTS_DISPATCH.ARTICLE(articleId, action);
+            sessionStorage.setItem(hash, action)
+        }
+    }
 
     render() {
         const item = this.props.item;
@@ -131,8 +157,19 @@ export default class MenuItem extends Component {
                         <a data-id={item.id} href={item.url}>{item.title}</a>
                     </div>
                 </div>
+
+                {/* Normal sub-menu items */}
                 {!this.state.isCollapsed &&
-                <ul {...this.spyOnMe()} className={this.state.isExpanded ? "dropdown expanded" : "dropdown"}>
+                <ul
+                    {...this.spyOnMe()}
+                    className={this.state.isExpanded ? "dropdown expanded" : "dropdown"}>
+                    {this.children()}
+                </ul>
+                }
+
+                {/* Hidden (for scroll-spy) sub-menu items */}
+                {this.state.isCollapsed &&
+                <ul {...this.spyOnMe()} className="hidden">
                     {this.children()}
                 </ul>
                 }
@@ -233,6 +270,8 @@ export default class MenuItem extends Component {
                 return ' level-three';
             case 4:
                 return ' level-four';
+            case 5:
+                return ' level-five';
         }
         return "";
     }
