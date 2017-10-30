@@ -104,8 +104,7 @@ export default class MenuItem extends Component {
 
     initializeScrollSpy() {
         let load = true;
-        gumShoe = gumshoe;
-        gumShoe.init({
+        gumshoe.init({
             selector: '[data-spy] a',
             selectorTarget: "#presidium-content .article > .anchor",
             container: window,

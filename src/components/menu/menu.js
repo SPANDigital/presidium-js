@@ -95,6 +95,12 @@ class Menu extends Component {
         }
     }
 
+    brandUrl() {
+        if (this.props.menu.brandUrl) return this.props.menu.brandUrl;
+        else if (this.props.menu.baseUrl) return this.props.menu.baseUrl;
+        else return "#";
+    }
+
     render() {
         const menu = this.props.menu;
         return (
@@ -103,7 +109,7 @@ class Menu extends Component {
                 className="scrollable-container">
                 <nav>
                     <div className="navbar-header">
-                        <a href={this.props.menu.baseUrl != null ? this.props.menu.baseUrl : "#"} className="brand">
+                        <a href={this.brandUrl()} className="brand">
                             <img src={menu.logo} alt=""/>
                         </a>
                         {this.props.menu.brandName &&
