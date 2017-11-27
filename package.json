@@ -25,7 +25,7 @@
     "clean": "rimraf dist",
     "start": "babel-node bin/server.js",
     "lint": "eslint src",
-    "build": "webpack --config etc/webpack.config.prod.babel.js",
+    "build": "webpack --config etc/webpack.config.prod.js",
     "build:prod": "npm run build",
     "build:dev": "webpack --config etc/webpack.config.js",
     "watch:prod": "npm run build:prod -- --watch",
@@ -51,14 +51,14 @@
     "react-dom": "^15.4.1",
     "rimraf": "^2.5.4",
     "rxjs": "^5.4.0",
-    "webpack": "^1.14.0",
+    "uglifyjs-webpack-plugin": "^1.1.1",
+    "webpack": "^3.8.1",
     "webpack-dev-server": "^1.14.0"
   },
   "dependencies": {
     "axios": "^0.16.0",
     "react-redux": "^5.0.5",
     "redux": "^3.6.0",
-    "redux-promise": "^0.5.3",
-    "slug": "^0.9.1"
+    "redux-promise": "^0.5.3"
   }
 }
