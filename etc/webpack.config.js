@@ -28,9 +28,9 @@ module.exports = {
     ],
 
     module: {
-        loaders: [
+        rules: [
             {
-                loader: 'babel',
+                loader: 'babel-loader',
                 exclude: /node_modules/,
                 query: {
                     presets: ['react', 'es2015']
@@ -39,7 +39,7 @@ module.exports = {
         ]
     },
     resolve: {
-        extensions: ['', '.js', '.jsx']
+        extensions: ['.js', '.jsx']
     },
     devServer: {
         historyApiFallback: true,
