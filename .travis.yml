@@ -5,14 +5,16 @@ cache:
   directories:
     - node_modules
 install: npm install
-script: npm run build
+script:
+- npm run build
+- mv dist/presidium.js dist/presidium-$TRAVIS_BRANCH.js
 deploy:
   - provider: s3
     access_key_id: $S3_ACCESS_KEY
     secret_access_key: $S3_SECRET_ACCESS_KEY
     bucket: span-presidium
     local-dir: dist
-    upload-dir: presidium-js/develop
+    upload-dir: presidium-js
     region: us-east-2
     skip_cleanup: true
     on:
