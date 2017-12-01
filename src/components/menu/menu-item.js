@@ -13,8 +13,10 @@ export default class MenuItem extends Component {
 
     constructor(props) {
         super(props);
+        let itemURL = this.props.item.url;
+        if (!itemURL.endsWith("/")) itemURL = `${itemURL}/`;
 
-        const onPage = this.props.item.url === window.location.pathname;
+        const onPage = itemURL === window.location.pathname;
         const inSection = this.inSection();
         const hasChildren = props.item.children.length > 0;
 
@@ -46,12 +48,8 @@ export default class MenuItem extends Component {
         window.events.subscribe({
             next: (event) => {
                 if (event.path === TOPICS.RANKING_LOADED) this.resetScrollSpyHeights();
-                if (event.path === this.props.id) {
-                    //this.props.dispatch(loadViews(this.props.id));
-                }
             }
         });
-
         if (this.state.onPage) {
             clearTimeout(timeout);
             if (this.props.item.children.length === 1) {
@@ -116,6 +114,8 @@ export default class MenuItem extends Component {
             offset: this.determineScrollSpyOffset(),
             activeClass: 'on-article',
             callback: (active) => {
+
+                debugger
                 //Update active article on scroll. Ignore hidden articles (with distance = 0)
                 const activeArticle = active && active.distance > 0 ? active.nav.getAttribute("data-id") : undefined;
                 if (activeArticle && this.state.activeArticle !== activeArticle) {
