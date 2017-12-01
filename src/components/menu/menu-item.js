@@ -61,7 +61,12 @@ export default class MenuItem extends Component {
                     sessionStorage.removeItem('article.clicked');
                 }
                 timeout = setTimeout(function () {
-                    this.markArticleAsViewed(this.props.item.children[0].id, action);
+                    const id = this.props.item.children[0].id;
+                    const permalink = document
+                        .querySelector(`span[data-id='${id}']`)
+                        .parentElement.querySelector(".permalink a")
+                        .href;
+                    this.markArticleAsViewed(id, permalink, action);
                 }.bind(this), 2000);
             }
             this.initializeScrollSpy()
@@ -116,11 +121,13 @@ export default class MenuItem extends Component {
                 if (activeArticle && this.state.activeArticle !== activeArticle) {
                     clearTimeout(timeout);
                     const clickedArticle = sessionStorage.getItem('article.clicked') === activeArticle;
+                    const permalink = active.target.parentElement.querySelector("a").href;
+
                     const articleLoad = load;
                     timeout = setTimeout(function () {
                         if (this.state.activeArticle === activeArticle) {
                             this.resetScrollSpyHeights();
-                            this.markArticleAsViewed(activeArticle), clickedArticle ? ACTIONS.articleClick : articleLoad ? ACTIONS.articleLoad : ACTIONS.articleScroll
+                            this.markArticleAsViewed(activeArticle, permalink, clickedArticle ? ACTIONS.articleClick : articleLoad ? ACTIONS.articleLoad : ACTIONS.articleScroll)
                         }
                     }.bind(this), 2000);
                     sessionStorage.removeItem('article.clicked');
@@ -131,7 +138,7 @@ export default class MenuItem extends Component {
         load = false;
     }
 
-    markArticleAsViewed(articleId, action = ACTIONS.articleScroll) {
+    markArticleAsViewed(articleId, permalink = null, action = ACTIONS.articleScroll) {
         const cachedSolution = sessionStorage.getItem('presidium.solution');
         if (!cachedSolution) return;
 
@@ -139,7 +146,7 @@ export default class MenuItem extends Component {
         const cachedAction = sessionStorage.getItem(hash)
 
         if (!cachedAction) {
-            EVENTS_DISPATCH.ARTICLE(articleId, action);
+            EVENTS_DISPATCH.ARTICLE(articleId, permalink, action);
             sessionStorage.setItem(hash, action)
         }
     }
