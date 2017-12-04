@@ -20,10 +20,11 @@ let EVENTS_DISPATCH = {
             });
         }
     },
-    ARTICLE: (path, action) => {
+    ARTICLE: (path, permalink, action) => {
         if (path) {
             window.events.next({
                 path: path,
+                permalink: permalink,
                 action: action
             });
         }
