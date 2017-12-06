@@ -1,6 +1,10 @@
-import React, { Component } from 'react';
-import { MENU_TYPE } from './menu-structure';
+import React, {Component} from 'react';
 import gumshoe from './scroll-spy';
+
+import {MENU_TYPE} from './menu-structure';
+import {EVENTS_DISPATCH, ACTIONS, TOPICS} from '../../util/events';
+
+let timeout;
 
 /**
  * Menu item that may have one or more articles or nested groups of articles.
@@ -9,10 +13,11 @@ export default class MenuItem extends Component {
 
     constructor(props) {
         super(props);
+        let itemURL = this.props.item.url;
+        if (!itemURL.endsWith("/")) itemURL = `${itemURL}/`;
 
-        const onPage = this.props.item.url == window.location.pathname;
+        const onPage = itemURL === window.location.pathname;
         const inSection = this.inSection();
-
         const hasChildren = props.item.children.length > 0;
 
         this.state = {
@@ -35,59 +40,143 @@ export default class MenuItem extends Component {
         return reference.startsWith(base);
     }
 
+    resetScrollSpyHeights() {
+        if (this.state.isExpanded) gumshoe.setDistances();
+    }
+
     componentDidMount() {
+        window.events.subscribe({
+            next: (event) => {
+                if (event.path === TOPICS.RANKING_LOADED) this.resetScrollSpyHeights();
+            }
+        });
         if (this.state.onPage) {
+            clearTimeout(timeout);
+            if (this.props.item.children.length === 1) {
+                let action = ACTIONS.articleLoad;
+                if (sessionStorage.getItem('article.clicked') === this.props.item.children[0].id) {
+                    action = ACTIONS.articleClick;
+                    sessionStorage.removeItem('article.clicked');
+                }
+                timeout = setTimeout(function () {
+                    const id = this.props.item.children[0].id;
+                    const permalink = document
+                        .querySelector(`span[data-id='${id}']`)
+                        .parentElement.querySelector(".permalink a")
+                        .href;
+                    this.markArticleAsViewed(id, permalink, action);
+                }.bind(this), 2000);
+            }
             this.initializeScrollSpy()
         }
     }
 
     componentWillReceiveProps(props) {
+        //If there's a new click event, trigger the recalc of scroll spy offset
+        if (this.props.containerHeight !== props.containerHeight) {
+            this.resetScrollSpyHeights();
+        }
+
         //Propagate active article and roles down the menu chain
-        const activeArticle = this.state.onPage? this.state.activeArticle : props.activeArticle;
+        const activeArticle = this.state.onPage ? this.state.activeArticle : props.activeArticle;
         this.setState({
-            activeArticle : activeArticle,
+            activeArticle: activeArticle,
             selectedRole: props.roles.selected
         });
     }
 
-    componentDidUpdate(prevProps, prevState){
+    componentDidUpdate(prevProps, prevState) {
         if (this.state.onPage && prevState.selectedRole != this.state.selectedRole) {
             this.initializeScrollSpy()
         }
     }
 
+    determineScrollSpyOffset() {
+        let defaultOffset = 100; //TODO: Pass 'loaded' event from Presidium JS Enterprise and remove this
+
+        let topBar = document.getElementById('presidium-enterprise-toolbar');
+        let solutionBar = document.getElementById('presidium-solution-search');
+        let blueBar = document.getElementById('presidium-currently-viewing-marquee');
+
+        if (topBar) defaultOffset += topBar.clientHeight;
+        if (solutionBar) defaultOffset += solutionBar.clientHeight;
+        if (blueBar) defaultOffset += blueBar.clientHeight;
+
+        return defaultOffset;
+    }
+
     initializeScrollSpy() {
+        let load = true;
         gumshoe.init({
             selector: '[data-spy] a',
             selectorTarget: "#presidium-content .article > .anchor",
             container: window,
-            offset: 100,
+            offset: this.determineScrollSpyOffset(),
             activeClass: 'on-article',
             callback: (active) => {
+
+                debugger
                 //Update active article on scroll. Ignore hidden articles (with distance = 0)
                 const activeArticle = active && active.distance > 0 ? active.nav.getAttribute("data-id") : undefined;
-                if (this.state.activeArticle !== activeArticle) {
-                    this.setState({activeArticle: activeArticle})
+                if (activeArticle && this.state.activeArticle !== activeArticle) {
+                    clearTimeout(timeout);
+                    const clickedArticle = sessionStorage.getItem('article.clicked') === activeArticle;
+                    const permalink = active.target.parentElement.querySelector("a").href;
+
+                    const articleLoad = load;
+                    timeout = setTimeout(function () {
+                        if (this.state.activeArticle === activeArticle) {
+                            this.resetScrollSpyHeights();
+                            this.markArticleAsViewed(activeArticle, permalink, clickedArticle ? ACTIONS.articleClick : articleLoad ? ACTIONS.articleLoad : ACTIONS.articleScroll)
+                        }
+                    }.bind(this), 2000);
+                    sessionStorage.removeItem('article.clicked');
+                    this.setState({activeArticle: activeArticle});
                 }
             }
         });
+        load = false;
+    }
+
+    markArticleAsViewed(articleId, permalink = null, action = ACTIONS.articleScroll) {
+        const cachedSolution = sessionStorage.getItem('presidium.solution');
+        if (!cachedSolution) return;
+
+        const hash = `PRESIDIUM-ACTION:${articleId}:${cachedSolution || ''}`;
+        const cachedAction = sessionStorage.getItem(hash)
+
+        if (!cachedAction) {
+            EVENTS_DISPATCH.ARTICLE(articleId, permalink, action);
+            sessionStorage.setItem(hash, action)
+        }
     }
 
     render() {
         const item = this.props.item;
         return (
-            <li key={ item.id } className={ this.parentStyle(item) }>
-                <div onClick={ (e) => this.clickParent(e) } className={ "menu-row " + this.levelClass(item.level) }>
+            <li key={item.id} className={this.parentStyle(item)}>
+                <div onClick={(e) => this.clickParent(e)} className={"menu-row " + this.levelClass(item.level)}>
                     <div className="menu-expander">
-                        { this.expander() }
+                        {this.expander()}
                     </div>
                     <div className="menu-title">
-                        <a data-id={ item.id }  href={ item.url }>{ item.title }</a>
+                        <a data-id={item.id} href={item.url}>{item.title}</a>
                     </div>
                 </div>
-                { !this.state.isCollapsed &&
-                <ul {...this.spyOnMe()} className={ this.state.isExpanded ? "dropdown expanded" : "dropdown" }>
-                    { this.children() }
+
+                {/* Normal sub-menu items */}
+                {!this.state.isCollapsed &&
+                <ul
+                    {...this.spyOnMe()}
+                    className={this.state.isExpanded ? "dropdown expanded" : "dropdown"}>
+                    {this.children()}
+                </ul>
+                }
+
+                {/* Hidden (for scroll-spy) sub-menu items */}
+                {this.state.isCollapsed &&
+                <ul {...this.spyOnMe()} className="hidden">
+                    {this.children()}
                 </ul>
                 }
             </li>
@@ -96,33 +185,36 @@ export default class MenuItem extends Component {
 
     children() {
         return this.props.item.children.map(item => {
-            switch(item.type) {
+            switch (item.type) {
                 case MENU_TYPE.CATEGORY:
-                    return  <MenuItem key={ item.title } item={ item } activeArticle={ this.state.activeArticle } roles = { this.props.roles } baseUrl={ this.props.baseUrl }
-                                      onNavigate={ this.props.onNavigate } />;
+                    return <MenuItem key={item.title} item={item} activeArticle={this.state.activeArticle}
+                                     roles={this.props.roles} baseUrl={this.props.baseUrl}
+                                     onNavigate={this.props.onNavigate}/>;
                 case MENU_TYPE.ARTICLE:
-                    return <li key={ item.id } className={ this.childStyle(item) }>
-                                <div onClick={ () => this.clickChild(item.url) } className={ "menu-row " + this.articleStyle(item) }>
-                                    <div className="menu-expander"></div>
-                                    <div className="menu-title">
-                                        <a data-id={ item.id } href={ `#${item.slug}` }>{item.title }</a>
-                                    </div>
-                                </div>
-                            </li>;
+                    return <li key={item.id} className={this.childStyle(item)}>
+                        <div onClick={() => this.clickChild(item.url, item.id)}
+                             className={"menu-row " + this.articleStyle(item)}>
+                            <div className="menu-expander"></div>
+                            <div className="menu-title">
+                                <a data-id={item.id} href={`#${item.slug}`}>{item.title}</a>
+                            </div>
+                        </div>
+                    </li>;
             }
         });
     }
 
     expander() {
         if (!this.state.isCollapsed && this.state.hasChildren) {
-            return <span onClick={ (e) => this.toggleExpand(e) } className={ this.state.isExpanded ? "glyphicon glyphicon-chevron-down" : "glyphicon glyphicon-chevron-right" }/>
+            return <span onClick={(e) => this.toggleExpand(e)}
+                         className={this.state.isExpanded ? "glyphicon glyphicon-chevron-down" : "glyphicon glyphicon-chevron-right"}/>
         } else {
             return ""
         }
     }
 
     spyOnMe() {
-        return this.state.onPage ? {"data-spy" : ""} : {};
+        return this.state.onPage ? {"data-spy": ""} : {};
     }
 
     parentStyle(item) {
@@ -175,25 +267,31 @@ export default class MenuItem extends Component {
     }
 
     levelClass(level) {
-        switch(level) {
-            case 1: return ' level-one';
-            case 2: return ' level-two';
-            case 3: return ' level-three';
-            case 4: return ' level-four';
+        switch (level) {
+            case 1:
+                return ' level-one';
+            case 2:
+                return ' level-two';
+            case 3:
+                return ' level-three';
+            case 4:
+                return ' level-four';
+            case 5:
+                return ' level-five';
         }
         return "";
     }
 
     hasRole(item) {
         return this.props.roles.selected == this.props.roles.all ||
-            item.roles.indexOf(this.props.roles.all) >= 0||
+            item.roles.indexOf(this.props.roles.all) >= 0 ||
             item.roles.indexOf(this.props.roles.selected) >= 0;
     }
 
     toggleExpand(e) {
         e.stopPropagation();
         if (this.state.hasChildren) {
-            this.setState({isExpanded : !this.state.isExpanded})
+            this.setState({isExpanded: !this.state.isExpanded})
         }
     }
 
@@ -202,12 +300,14 @@ export default class MenuItem extends Component {
             e.preventDefault();
             e.stopPropagation();
         } else {
+            sessionStorage.setItem('article.clicked', this.props.item.children.length === 1 ? this.props.item.children[0].id : this.props.item.id);
             this.props.onNavigate();
             window.location = this.props.item.url;
         }
     }
 
-    clickChild(path) {
+    clickChild(path, id) {
+        sessionStorage.setItem('article.clicked', id);
         this.props.onNavigate();
         window.location = path;
     }

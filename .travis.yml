@@ -1,0 +1,35 @@
+language: node_js
+node_js:
+- '8'
+cache:
+  directories:
+    - node_modules
+install: npm install
+script:
+- npm run build
+- mv dist/presidium.js dist/presidium-$TRAVIS_BRANCH.js
+deploy:
+  - provider: s3
+    access_key_id: $S3_ACCESS_KEY
+    secret_access_key: $S3_SECRET_ACCESS_KEY
+    bucket: span-presidium
+    local-dir: dist
+    upload-dir: presidium-js
+    region: us-east-2
+    skip_cleanup: true
+    on:
+      repo: SPANDigital/presidium-js
+      all_branches: true
+      condition: "($TRAVIS_BRANCH = develop || $TRAVIS_BRANCH = master) && $TRAVIS_PULL_REQUEST = \"false\""
+  - provider: npm
+    email: presidium@spandigital.com
+    api_key:
+      secure: qVRDHdtXr/QEJ0VMuf9B1TaXjlCrtR89/h4Ks5TIdyv+Zl9VUlQduK3ybvaMfSVAr1RJ7521eE2x3cAo4VHgnbH9bW7Y29GAbdSZeNhfiPB7LnMBGF7QtHsRYZ2MPfPKt6sgURgpK+G0ZNBCLi056gpGYXcYUP0Q1sEc9UAfJXe4rIErL69guGFoMtY3mBcMSpPqTg7QkoiiqRDvxGthBAHGyTepJugmscgAjyBOXxh9JSnyKt+mj40WFu/j0iJGUsz7DXpjYkc2AV9+lPYG88WFwukLtMupKO7FsXuG+5bwEdz8ywprl9jTKCT2Fp6WARCiKtDWiskPjkOcAU42WrTw0qFlnhVTBU5FGVxt6ruQKdJBV6J6wfjxk7mzNeAR+1BYka1cPtZXBEasoXfxduBwcrpmHwHlgKNG7agESLmLXybz7TiBfFzFtdKAr4xpx0kzSn1qZif4d1q20DDB0I1fI/RdE0bmxVzrSd6+OS6zv+jqemv2ZuIFzfinD+msrdv2hAsTgIUfToOnwbZep8Sa6ys7gmA6awvYvnzbLFHHhAjaOr6ynERf3kyuTuAZ/KHeFhm/C6sfOzZ3nEHhU/4mp0JATyNlAuHfBSRQM3bI+hX3hnx4R8otmTtapkonq0eaugEqnKuWmbyR2QdQbVYqxkkIizzGAaJ8AdWt67s=
+    on:
+      tags: true
+      repo: SPANDigital/presidium-js
+      branch: master
+env:
+  global:
+  - secure: bLiKksxOLFRv7URXjI7QCipl/7XT2VeC6RYWJITZzF8590P2IG5OHn8maYhLtMSaQcJnx2O4Zhk17cclymcUegvVA/+tJbhRx0kBel4vjMv/drt4v693RdBtcaRcd9QO8P/zo4H6jqPcVBbAoV3t9QgbJO9aLZDt/viglYB3x4hOJf72XICO/Z72EAYl7S4UTecihwV67AnE7bn1c1CbqC3KKpmkQFGWjW6eeO5ksWSk6HN9XXQ4KdssX4HFJQYIp5y4SkA+1ayk5xlBaM2s49ZDVselDMcm3A+7k1jxuwBgViT4c4vGhNnQkp5qxMnRPCFeL9Dhv4zFs3m7nUUVsFuhq7hiawaviQj6jgDu+5v5Sz8QxGoeZkp4Ip1/Y4VzVSvEX3bnC3iI5a6w9GrBcoLaMwOfLctpYGIaMzGT3MPiOHHz46uRckwIqfQ/Wb+w6FmZ+g0acz60jVWY3O3rInDRfj/4JuuBbq19cda+qENKqee3UAoex8Jn368QTeIIPWgvkyEstVtDBxng6r2o9wxGqBOXidmX58SaPYScacc9uMKvEi4dUULpjJw/jkpz1martzyjPzZHPAOgPiJ4z0R/6KpZ3rgbIJS1fyLeoqgu8VkwVbGECnZiGdAr6uBSIokv/XNZ465yX9Z3VYldMUPnFPklsTm08eq2ewe2HKg=
+  - secure: QHdVZeaFrDtXFQeoB6QzyHY5h7UltZF2MaZaATiGeHJcSfdJdsHdsi8ueoSCT/ZefLUurcnYTnThJ9g6E377bwD1VphZLiOzzSqfVnvdRU7m6hW6Fd9nmwh9ZNDlhnTIq6mBlYNUQWvW5eQHATzdnNp+ZpOpFxvblCGE3SCXgsWd4l+NLjXmDrqrI+14qiU0UPN1KxICaiLrb+cCoaRqx/zWx42F+Ya0qPBPmiBYjhZ9qDPhgOkjYqJQWCg5Zfq/9FOLyObiaeR7IGcPXuMZtmw/xJsapFlE/ZQIdRYdDxthGSq7k7yvkdch+UE1/e/JMf/yxF2DW+dzRndl6ZnWWO/xwXQE9U+OCjnn39FfRra1epa74YqaqNJNXf6yHcstbClKxSVSxj4oxsTAwOd87l0PgG3EMS4St4sC4I9YrJt07E+Or3u+UYK/Dvtt3d/pNibNZ5d5lZrAAPd0ZdupuzHWQENPzTfkK0XZmfXFlOUHseVTHFz5k1luR58JLCpS+cBC9ob7NSPEMAiLgMwg/+1lhGwU0LxCdwhaq1/1V5lEJ8V7z6VpjXFu4tyq5oKywaqVVw2PJ9/1OakrtyYJlZpMR6FEtIZ0Us9I1WQudeMewKr+M39SDijTBOeaMm337RZR04vUDvLd6gbstkVA0C3ngDpb4QU5U9leF5TayNk=

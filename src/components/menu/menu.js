@@ -1,11 +1,11 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import ReactDOM from 'react-dom';
-import { createStore, applyMiddleware } from 'redux';
+import {createStore, applyMiddleware} from 'redux';
 import ReduxPromise from 'redux-promise';
 import rootReducer from '../../reducers/index';
 import MenuItem from './menu-item';
-import paths from '../../util/paths';
 import Versions from '../versions/versions';
+import {EVENTS_DISPATCH, TOPICS} from "../../util/events";
 
 /**
  * Locale storage key
@@ -18,24 +18,66 @@ const store = createStore(
     applyMiddleware(ReduxPromise)
 );
 
+const ELEMENTS = {
+    BODY: 'body',
+    SCROLLABLE_CONTAINER: 'presidium-scrollable-container',
+    CONTENT_CONTAINER: 'presidium-content'
+};
+
+const getDomElement = (elem) => {
+    if (elem === ELEMENTS.BODY) return document.getElementsByTagName("BODY")[0];
+    return document.getElementById(elem)
+}
+
 /**
  * Root navigation menu.
  */
 class Menu extends Component {
-
     constructor(props) {
         super(props);
         this.state = {
             children: this.props.menu.children,
             roles: this.roleFilter(),
             expanded: false,
+            containerHeight: 0
         };
         this.filterByRole(this.state.roles.selected);
+        this.mountContainerListeners = this.mountContainerListeners.bind(this)
+        this.unMountContainerListeners = this.unMountContainerListeners.bind(this)
+    }
+
+    mountContainerListeners() {
+        /**
+         * Manually handle click events in Presidium Container
+         * that might desync the offset of scroll spy element
+         * (see https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details)
+         */
+        const _contentContainer = getDomElement(ELEMENTS.CONTENT_CONTAINER);
+        _contentContainer
+            .addEventListener("click", (e) => {
+                //If container did resize
+                if (this.state.containerHeight !== _contentContainer.clientHeight) {
+                    this.setState({containerHeight: _contentContainer.clientHeight})
+                }
+            })
+    }
+
+    unMountContainerListeners() {
+        getDomElement(ELEMENTS.CONTENT_CONTAINER)
+            .removeEventListener("click");
+    }
+
+    componentDidMount() {
+        this.mountContainerListeners();
+    }
+
+    componentWillUnmount() {
+        this.unMountContainerListeners();
     }
 
     roleFilter() {
-        var selected;
-        var roles = this.props.menu.roles;
+        let selected;
+        let roles = this.props.menu.roles;
         if (roles.options.length > 0) {
             selected = sessionStorage.getItem(SELECTED_ROLE);
             if (!selected) {
@@ -53,38 +95,48 @@ class Menu extends Component {
         }
     }
 
+    brandUrl() {
+        if (this.props.menu.brandUrl) return this.props.menu.brandUrl;
+        else if (this.props.menu.baseUrl) return this.props.menu.baseUrl;
+        else return "#";
+    }
+
     render() {
         const menu = this.props.menu;
         return (
-            <div className="scrollable-container">
+            <div
+                id="presidium-scrollable-container"
+                className="scrollable-container">
                 <nav>
                     <div className="navbar-header">
-                        <a href={ this.props.menu.baseUrl != null ? this.props.menu.baseUrl : "#"} className="brand">
-                            <img src={ menu.logo } alt="" />
+                        <a href={this.brandUrl()} className="brand">
+                            <img src={menu.logo} alt=""/>
                         </a>
-                        { this.props.menu.brandName &&
+                        {this.props.menu.brandName &&
                         <div>
-                            <p className="brand-name">{ this.props.menu.brandName }</p>
-                            <Versions store={store} />
+                            <p className="brand-name">{this.props.menu.brandName}</p>
+                            <Versions store={store}/>
                         </div>
                         }
                         <button className="toggle" onClick={() => this.toggleMenu()}>
                             <span className="sr-only">Toggle navigation</span>
-                            <span className="icon-bar" />
-                            <span className="icon-bar" />
-                            <span className="icon-bar" />
+                            <span className="icon-bar"/>
+                            <span className="icon-bar"/>
+                            <span className="icon-bar"/>
                         </button>
-
                     </div>
 
                     <div className={"navbar-items" + (this.state.expanded == true ? " expanded" : "")}>
                         {this.renderFilter()}
                         <ul>
-                            {
-                                this.state.children.map(item => {
-                                    return <MenuItem key={ item.id } baseUrl={ this.props.menu.baseUrl } item={ item } roles = { this.state.roles } onNavigate={ () => this.collapseMenu() } />
-                                })
-                            }
+                            {this.state.children.map(item => {
+                                return <MenuItem
+                                    containerHeight={this.state.containerHeight}
+                                    key={item.id}
+                                    baseUrl={this.props.menu.baseUrl}
+                                    item={item}
+                                    roles={this.state.roles} onNavigate={() => this.collapseMenu()}/>
+                            })}
                         </ul>
                     </div>
                 </nav>
@@ -103,21 +155,29 @@ class Menu extends Component {
     renderFilter() {
         return this.state.roles.selected && (
             <div className="filter form-group">
-                {this.state.roles.label && <label className="control-label" htmlFor="roles-select">{this.state.roles.label}:</label>}
-                <select id="roles-select" className="form-control" value={ this.state.roles.selected } onChange={(e) => this.onFilterRole(e)}>
+                {this.state.roles.label &&
+                <label className="control-label" htmlFor="roles-select">{this.state.roles.label}:</label>}
+                <select ref="roleselector"
+                        id="roles-select"
+                        className="form-control"
+                        value={this.state.roles.selected}
+                        onChange={(e) => this.onFilterRole(e)}>
                     {this.state.roles.options.map(role => {
-                        return <option key={ role } value={ role }>{ role }</option>
+                        return <option key={role} value={role}>{role}</option>
                     })}
                 </select>
             </div>)
     }
 
     onFilterRole(e) {
-        var selected = e.target.value;
+        let selected = e.target.value;
+        const roles = Object.assign({}, this.state.roles, {selected: selected});
+
         this.filterByRole(selected);
-        const roles = Object.assign({}, this.state.roles, { selected : selected });
-        this.setState({ roles : roles});
+        this.setState({roles: roles});
+
         sessionStorage.setItem(SELECTED_ROLE, selected);
+        EVENTS_DISPATCH.MENU(TOPICS.ROLE_UPDATED, selected)
     }
 
     filterByRole(selected) {
@@ -155,7 +215,7 @@ Menu.propTypes = {
 };
 
 function loadMenu(menu = {}, element = 'presidium-navigation') {
-    ReactDOM.render(<Menu menu = { menu } />, document.getElementById(element));
+    ReactDOM.render(<Menu menu={menu}/>, document.getElementById(element));
 }
 
 export {Menu, loadMenu};
