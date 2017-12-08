@@ -114,8 +114,6 @@ export default class MenuItem extends Component {
             offset: this.determineScrollSpyOffset(),
             activeClass: 'on-article',
             callback: (active) => {
-
-                debugger
                 //Update active article on scroll. Ignore hidden articles (with distance = 0)
                 const activeArticle = active && active.distance > 0 ? active.nav.getAttribute("data-id") : undefined;
                 if (activeArticle && this.state.activeArticle !== activeArticle) {
@@ -127,7 +125,8 @@ export default class MenuItem extends Component {
                     timeout = setTimeout(function () {
                         if (this.state.activeArticle === activeArticle) {
                             this.resetScrollSpyHeights();
-                            this.markArticleAsViewed(activeArticle, permalink, clickedArticle ? ACTIONS.articleClick : articleLoad ? ACTIONS.articleLoad : ACTIONS.articleScroll)
+                            let article = clickedArticle ? ACTIONS.articleClick : articleLoad ? ACTIONS.articleLoad : ACTIONS.articleScroll
+                            this.markArticleAsViewed(activeArticle, permalink, article)
                         }
                     }.bind(this), 2000);
                     sessionStorage.removeItem('article.clicked');
@@ -146,7 +145,7 @@ export default class MenuItem extends Component {
         const cachedAction = sessionStorage.getItem(hash)
 
         if (!cachedAction) {
-            EVENTS_DISPATCH.ARTICLE(articleId, permalink, action);
+            EVENTS_DISPATCH.ARTICLE(articleId, permalink, action, cachedSolution);
             sessionStorage.setItem(hash, action)
         }
     }

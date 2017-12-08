@@ -20,12 +20,13 @@ let EVENTS_DISPATCH = {
             });
         }
     },
-    ARTICLE: (path, permalink, action) => {
+    ARTICLE: (path, permalink, action, solution) => {
         if (path) {
             window.events.next({
                 path: path,
                 permalink: permalink,
-                action: action
+                action: action,
+                solution: solution
             });
         }
     }
