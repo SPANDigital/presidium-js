@@ -5,7 +5,8 @@ import ReduxPromise from 'redux-promise';
 import rootReducer from '../../reducers/index';
 import MenuItem from './menu-item';
 import Versions from '../versions/versions';
-import {EVENTS_DISPATCH, TOPICS} from "../../util/events";
+import {ACTIONS, EVENTS_DISPATCH, TOPICS} from "../../util/events";
+import {isInViewport, markArticleAsViewed} from '../../util/articles';
 
 /**
  * Locale storage key
@@ -59,7 +60,18 @@ class Menu extends Component {
                 if (this.state.containerHeight !== _contentContainer.clientHeight) {
                     this.setState({containerHeight: _contentContainer.clientHeight})
                 }
+            });
+
+        window.addEventListener('scroll', (e) => {
+            let articles = [...document.querySelectorAll('.article')];
+            articles.map((article) => {
+                if (isInViewport(article)) {
+                    const articleId = article.querySelector('span[data-id]').getAttribute('data-id');
+                    const permalink = article.querySelector('.permalink a').getAttribute('href');
+                    markArticleAsViewed(articleId, permalink, ACTIONS.articleScroll);
+                }
             })
+        })
     }
 
     unMountContainerListeners() {

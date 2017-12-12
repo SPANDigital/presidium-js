@@ -3,6 +3,7 @@ import gumshoe from './scroll-spy';
 
 import {MENU_TYPE} from './menu-structure';
 import {EVENTS_DISPATCH, ACTIONS, TOPICS} from '../../util/events';
+import {markArticleAsViewed} from '../../util/articles'
 
 let timeout;
 
@@ -64,7 +65,7 @@ export default class MenuItem extends Component {
                         .querySelector(`span[data-id='${id}']`)
                         .parentElement.querySelector(".permalink a")
                         .href;
-                    this.markArticleAsViewed(id, permalink, action);
+                    markArticleAsViewed(id, permalink, action);
                 }.bind(this), 2000);
             }
             this.initializeScrollSpy()
@@ -73,9 +74,7 @@ export default class MenuItem extends Component {
 
     componentWillReceiveProps(props) {
         //If there's a new click event, trigger the recalc of scroll spy offset
-        if (this.props.containerHeight !== props.containerHeight) {
-            this.resetScrollSpyHeights();
-        }
+        if (this.props.containerHeight !== props.containerHeight) this.resetScrollSpyHeights();
 
         //Propagate active article and roles down the menu chain
         const activeArticle = this.state.onPage ? this.state.activeArticle : props.activeArticle;
@@ -106,7 +105,6 @@ export default class MenuItem extends Component {
     }
 
     initializeScrollSpy() {
-        let load = true;
         gumshoe.init({
             selector: '[data-spy] a',
             selectorTarget: "#presidium-content .article > .anchor",
@@ -118,36 +116,14 @@ export default class MenuItem extends Component {
                 const activeArticle = active && active.distance > 0 ? active.nav.getAttribute("data-id") : undefined;
                 if (activeArticle && this.state.activeArticle !== activeArticle) {
                     clearTimeout(timeout);
-                    const clickedArticle = sessionStorage.getItem('article.clicked') === activeArticle;
-                    const permalink = active.target.parentElement.querySelector("a").href;
-
-                    const articleLoad = load;
                     timeout = setTimeout(function () {
-                        if (this.state.activeArticle === activeArticle) {
-                            this.resetScrollSpyHeights();
-                            let article = clickedArticle ? ACTIONS.articleClick : articleLoad ? ACTIONS.articleLoad : ACTIONS.articleScroll
-                            this.markArticleAsViewed(activeArticle, permalink, article)
-                        }
+                        if (this.state.activeArticle === activeArticle) this.resetScrollSpyHeights();
                     }.bind(this), 2000);
                     sessionStorage.removeItem('article.clicked');
                     this.setState({activeArticle: activeArticle});
                 }
             }
         });
-        load = false;
-    }
-
-    markArticleAsViewed(articleId, permalink = null, action = ACTIONS.articleScroll) {
-        const cachedSolution = sessionStorage.getItem('presidium.solution');
-        if (!cachedSolution) return;
-
-        const hash = `PRESIDIUM-ACTION:${articleId}:${cachedSolution || ''}`;
-        const cachedAction = sessionStorage.getItem(hash)
-
-        if (!cachedAction) {
-            EVENTS_DISPATCH.ARTICLE(articleId, permalink, action, cachedSolution);
-            sessionStorage.setItem(hash, action)
-        }
     }
 
     render() {
