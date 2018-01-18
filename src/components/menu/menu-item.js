@@ -1,9 +1,10 @@
 import React, {Component} from 'react';
 import gumshoe from './scroll-spy';
+import classnames from 'classnames';
 
 import {MENU_TYPE} from './menu-structure';
-import {EVENTS_DISPATCH, ACTIONS, TOPICS} from '../../util/events';
-import {markArticleAsViewed} from '../../util/articles'
+import {ACTIONS, TOPICS} from '../../util/events';
+import {markArticleAsViewed, slugify} from '../../util/articles'
 
 let timeout;
 
@@ -193,20 +194,13 @@ export default class MenuItem extends Component {
     }
 
     parentStyle(item) {
-        var style = "";
-        if (this.state.inSection || this.containsArticle()) {
-            style += (this.state.isExpanded) ? " in-section expanded" : " in-section";
-        }
-        if (this.state.onPage) {
-            style += " on-page";
-        }
-        if (this.state.activeArticle == item.id) {
-            style += " on-article";
-        }
-        if (!this.hasRole(item)) {
-            style += " hidden";
-        }
-        return style;
+        return classnames(`menu-parent::${slugify(item.title)}`, {
+            'in-section': this.state.inSection || this.containsArticle(),
+            'expanded': this.state.isExpanded,
+            'on-page': this.state.onPage,
+            'on-article': this.state.activeArticle === item.id,
+            'hidden': !this.hasRole(item)
+        })
     }
 
     containsArticle() {
@@ -227,14 +221,10 @@ export default class MenuItem extends Component {
     }
 
     childStyle(item) {
-        var style = "";
-        if (this.state.activeArticle == item.id) {
-            style += " on-article";
-        }
-        if (!this.hasRole(item)) {
-            style += " hidden";
-        }
-        return style;
+        return classnames({
+            'on-article': this.state.activeArticle === item.id,
+            'hidden': !this.hasRole(item)
+        })
     }
 
     articleStyle(item) {
