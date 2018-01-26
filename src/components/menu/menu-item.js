@@ -194,7 +194,7 @@ export default class MenuItem extends Component {
     }
 
     parentStyle(item) {
-        return classnames(`menu-parent::${slugify(item.title)}`, {
+        return classnames(`menu-parent_${slugify(item.title)}`, {
             'in-section': this.state.inSection || this.containsArticle(),
             'expanded': this.state.isExpanded,
             'on-page': this.state.onPage,
