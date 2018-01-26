@@ -15,43 +15,30 @@ const handleQueryString = () => {
     const hashes = getUrlVars();
     hashes.map((hash) => {
         const vals = hash.split("=");
-        cache.set(`presidium.${vals[0]}`, vals[1]);
+        cache.set(`presidium.urlArgs.${vals[0]}`, vals[1]);
     })
 };
 
 const checkSessionStorageConfig = () => {
-    const articleTitles = [...document.querySelectorAll('.article-title')];
-    if (cache.get(CACHE_KEYS.EDIT_BUTTON) === true) return showEditHover(articleTitles);
-    removeEditHover(articleTitles);
-};
+    const articleTitles = [...document.querySelectorAll('[data-url-variable]')];
 
-const showEditHover = (articleTitles) => {
-    articleTitles.map((elem) => {
-        if (!elem.classList.contains('edit')) elem.classList.add('edit');
+    //Check localStorage cache for presidium entries
+    const localStorageKeys = Object.keys(localStorage).filter((item) => {
+        return item.startsWith('presidium.urlArgs.')
+    });
+
+    //Check DOM elements that have the corresponding key as a data-attribute
+    localStorageKeys.map((item) => {
+        if (cache.get(item) === true) {
+            articleTitles.filter((article) => {
+                const urlProp = item.split('presidium.urlArgs.')[1];
+                if (article.dataset.urlVariable === urlProp) article.style.display = 'flex';
+            })
+        }
     });
 };
-
-const removeEditHover = (articleTitles) => {
-    articleTitles.map((elem) => {
-        if (elem.classList.contains('edit')) elem.classList.remove('edit');
-    });
-};
-
 
 export {
     handleQueryString,
     checkSessionStorageConfig
 };
-
-
-
-
-
-
-
-
-
-
-
-
-

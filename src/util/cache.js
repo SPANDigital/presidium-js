@@ -10,15 +10,15 @@ const CACHE_KEYS = {
 const cache = {
     set: (key, val) => {
         if (typeof val === 'object') val = JSON.stringify(val)
-        sessionStorage.setItem(key, val);
+        localStorage.setItem(key, val);
     },
     get: (key) => {
-        let val = sessionStorage.getItem(key);
+        let val = localStorage.getItem(key);
         if (_isJSONString(val)) val = JSON.parse(val);
         return val;
     },
     delete: (key) => {
-        sessionStorage.removeItem(key);
+        localStorage.removeItem(key);
     }
 };
 
