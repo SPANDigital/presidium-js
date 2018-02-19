@@ -1,4 +1,4 @@
-import {cache, CACHE_KEYS} from "./cache";
+import {cache, CACHE_KEYS} from './cache';
 
 /**
  * Get key/value pairs from the query string
@@ -14,7 +14,7 @@ const getUrlVars = () => {
 const handleQueryString = () => {
     const hashes = getUrlVars();
     hashes.map((hash) => {
-        const vals = hash.split("=");
+        const vals = hash.split('=');
         cache.set(`presidium.urlArgs.${vals[0]}`, vals[1]);
     })
 };

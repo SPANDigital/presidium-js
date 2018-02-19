@@ -45,7 +45,7 @@ export function addToDom(term, content, url) {
 export function createTooltip(term, page, url) {
 
     let title = url.substr(url.lastIndexOf('/') + 1).replace('#', '')
-    let match = parser.parseFromString(page, "text/html").querySelector(`span.anchor[id="${title}"]`);
+    let match = parser.parseFromString(page, 'text/html').querySelector(`span.anchor[id='${title}']`);
 
     if (match) {
         try {
@@ -66,8 +66,8 @@ export function createTooltip(term, page, url) {
  */
 export function loadTooltips(config = {}) {
     presidium.tooltips.config = config;
-    const glossaryTerms = document.querySelectorAll(`a[title=presidium-tooltip][href="${'#'}"]`);
-    const linkTerms = document.querySelectorAll(`a[title=presidium-tooltip][href^="${'/'}"]`);
+    const glossaryTerms = document.querySelectorAll(`a[title=presidium-tooltip][href='${'#'}']`);
+    const linkTerms = document.querySelectorAll(`a[title=presidium-tooltip][href^='${'/'}']`);
 
     if (glossaryTerms.length > 0) {
         axios.get(`${config.baseurl}/glossary/`).then((response) => {

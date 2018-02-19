@@ -1,10 +1,7 @@
 var webpack = require('webpack');
-var CopyWebpackPlugin = require('copy-webpack-plugin');
-
 var path = require('path');
 var buildPath = path.join(__dirname, '../dist');
 var buildFileName = 'presidium.js';
-var fullFilePath = buildPath + '/' + buildFileName;
 
 module.exports = {
     entry: './src/index.js',
@@ -14,39 +11,73 @@ module.exports = {
         publicPath: '/'
     },
     plugins: [
+        new webpack.HotModuleReplacementPlugin(),
         new webpack.DefinePlugin({
             PRESIDIUM_VERSION: JSON.stringify(process.env.npm_package_version),
-        }),
-        new CopyWebpackPlugin([
-            {
-                from: fullFilePath,
-                to: '../../presidium-template/dist/site/media/js'
-            }
-        ]),
-        new CopyWebpackPlugin([
-            {
-                from: fullFilePath,
-                to: '../../presidium-template/node_modules/presidium-core/media/js/'
-            },
-        ])
+        })
     ],
 
     module: {
         rules: [
             {
-                loader: 'babel-loader',
+                test: /\.js$/,
+                include: path.join(__dirname, '../src'),
+                use: ['react-hot-loader', 'babel-loader'],
+            },
+            {
+                test: /\.js$/,
                 exclude: /node_modules/,
-                query: {
-                    presets: ['react', 'es2015']
+                use: ['babel-loader', 'eslint-loader']
+            },
+            {
+                test: /\.css/,
+                exclude: /node_modules/,
+                use: ['style-loader', 'css-loader', 'resolve-url'],
+            },
+            {
+                test: /\.scss$/,
+                exclude: /node_modules/,
+                use: ['style-loader', 'css-loader', 'sass-loader'],
+            },
+            {
+                test: /\.(jpe?g|png|gif)$/i,
+                use: [
+                    'file-loader?hash=sha512&digest=hex&name=img/[name].[ext]',
+                    'image-webpack?bypassOnDebug&optimizationLevel=7&interlaced=false'
+                ]
+            },
+            {
+                test: /\.(ttf|eot)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
+                use: {
+                    loader: 'file-loader'
                 }
+            },
+            {
+                test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/,
+                use: {
+                    loader: 'url-loader?limit=10000&mimetype=application/font-woff'
+                }
+            },
+            {
+                test: /\.svg$/,
+                use: [
+                    {
+                        loader: 'babel-loader'
+                    },
+                    {
+                        loader: 'react-svg-loader',
+                        options: {
+                            jsx: true // true outputs JSX tags
+                        }
+                    }
+                ]
             }
         ]
     },
-    resolve: {
-        extensions: ['.js', '.jsx']
-    },
     devServer: {
-        historyApiFallback: true,
+        port: 8009,
+        overlay: {warnings: true, errors: true},
+        hot: true,
         contentBase: '/'
     }
 };

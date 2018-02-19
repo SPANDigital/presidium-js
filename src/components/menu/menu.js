@@ -6,13 +6,13 @@ import rootReducer from '../../reducers/index';
 import MenuItem from './menu-item';
 import VersionLabel from './version-label';
 import Versions from '../versions/versions';
-import {ACTIONS, EVENTS_DISPATCH, TOPICS} from "../../util/events";
+import {ACTIONS, EVENTS_DISPATCH, TOPICS} from '../../util/events';
 import {isInViewport, markArticleAsViewed} from '../../util/articles';
 
 /**
  * Locale storage key
  */
-const SELECTED_ROLE = "role.selected";
+const SELECTED_ROLE = 'role.selected';
 
 const store = createStore(
     rootReducer,
@@ -27,7 +27,7 @@ const ELEMENTS = {
 };
 
 const getDomElement = (elem) => {
-    if (elem === ELEMENTS.BODY) return document.getElementsByTagName("BODY")[0];
+    if (elem === ELEMENTS.BODY) return document.getElementsByTagName('BODY')[0];
     return document.getElementById(elem)
 }
 
@@ -56,7 +56,7 @@ class Menu extends Component {
          */
         const _contentContainer = getDomElement(ELEMENTS.CONTENT_CONTAINER);
         _contentContainer
-            .addEventListener("click", (e) => {
+            .addEventListener('click', (e) => {
                 //If container did resize
                 if (this.state.containerHeight !== _contentContainer.clientHeight) {
                     this.setState({containerHeight: _contentContainer.clientHeight})
@@ -77,7 +77,7 @@ class Menu extends Component {
 
     unMountContainerListeners() {
         getDomElement(ELEMENTS.CONTENT_CONTAINER)
-            .removeEventListener("click");
+            .removeEventListener('click');
     }
 
     componentDidMount() {
@@ -111,35 +111,35 @@ class Menu extends Component {
     brandUrl() {
         if (this.props.menu.brandUrl) return this.props.menu.brandUrl;
         else if (this.props.menu.baseUrl) return this.props.menu.baseUrl;
-        else return "#";
+        else return '#';
     }
 
     render() {
         const menu = this.props.menu;
         return (
             <div
-                id="presidium-scrollable-container"
-                className="scrollable-container">
+                id='presidium-scrollable-container'
+                className='scrollable-container'>
                 <nav>
-                    <div className="navbar-header">
-                        <a href={this.brandUrl()} className="brand">
-                            <img src={menu.logo} alt=""/>
+                    <div className='navbar-header'>
+                        <a href={this.brandUrl()} className='brand'>
+                            <img src={menu.logo} alt=''/>
                         </a>
                         {this.props.menu.brandName &&
                         <div>
-                            <p className="brand-name">{this.props.menu.brandName}</p>
+                            <p className='brand-name'>{this.props.menu.brandName}</p>
                             <Versions store={store}/>
                         </div>
                         }
-                        <button className="toggle" onClick={() => this.toggleMenu()}>
-                            <span className="sr-only">Toggle navigation</span>
-                            <span className="icon-bar"/>
-                            <span className="icon-bar"/>
-                            <span className="icon-bar"/>
+                        <button className='toggle' onClick={() => this.toggleMenu()}>
+                            <span className='sr-only'>Toggle navigation</span>
+                            <span className='icon-bar'/>
+                            <span className='icon-bar'/>
+                            <span className='icon-bar'/>
                         </button>
                     </div>
 
-                    <div className={"navbar-items" + (this.state.expanded == true ? " expanded" : "")}>
+                    <div className={'navbar-items' + (this.state.expanded == true ? ' expanded' : '')}>
                         {this.renderFilter()}
                         <ul>
                             {this.state.children.map(item => {
@@ -168,12 +168,12 @@ class Menu extends Component {
 
     renderFilter() {
         return this.state.roles.selected && (
-            <div className="filter form-group">
+            <div className='filter form-group'>
                 {this.state.roles.label &&
-                <label className="control-label" htmlFor="roles-select">{this.state.roles.label}:</label>}
-                <select ref="roleselector"
-                        id="roles-select"
-                        className="form-control"
+                <label className='control-label' htmlFor='roles-select'>{this.state.roles.label}:</label>}
+                <select ref='roleselector'
+                        id='roles-select'
+                        className='form-control'
                         value={this.state.roles.selected}
                         onChange={(e) => this.onFilterRole(e)}>
                     {this.state.roles.options.map(role => {
@@ -199,23 +199,23 @@ class Menu extends Component {
         let articlesFound = false;
         articles.forEach(article => {
             if (selected == this.state.roles.all) {
-                article.style.display = "block";
+                article.style.display = 'block';
                 articlesFound = true;
                 return;
             }
-            const roles = article.getAttribute('data-roles').split(",");
+            const roles = article.getAttribute('data-roles').split(',');
             if (roles.includes(selected) || roles.includes(this.state.roles.all)) {
-                article.style.display = "block";
+                article.style.display = 'block';
                 articlesFound = true;
             } else {
-                article.style.display = "none";
+                article.style.display = 'none';
             }
         });
 
         if (articlesFound || articles.length === 0) {
-            document.getElementById('no-content-warning').style.display = "none";
+            document.getElementById('no-content-warning').style.display = 'none';
         } else {
-            document.getElementById('no-content-warning').style.display = "block";
+            document.getElementById('no-content-warning').style.display = 'block';
         }
 
     }

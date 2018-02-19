@@ -16,9 +16,6 @@
 		root.gumshoe = factory(root);
 	}
 })(typeof global !== 'undefined' ? global : this.window || this.global, (function (root) {
-
-	'use strict';
-
 	//
 	// Variables
 	//
@@ -216,8 +213,8 @@
 		// For each link, create an object of attributes and push to an array
 		forEach( navLinks, (function (nav) {
 			//Restrict nav targets
-			var id = nav.getAttribute("data-id");
-			var target = document.querySelector(settings.selectorTarget + `[data-id="${id}"]` );
+			var id = nav.getAttribute('data-id');
+			var target = document.querySelector(settings.selectorTarget + `[data-id='${id}']` );
 			if ( !target ) return;
 			navs.push({
 				nav: nav,
