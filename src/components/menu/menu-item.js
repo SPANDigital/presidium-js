@@ -36,8 +36,8 @@ export default class MenuItem extends Component {
     inSection() {
         const base = this.props.item.url;
         const reference = window.location.pathname;
-        if (base == this.props.baseUrl) {
-            return base == reference;
+        if (base === this.props.baseUrl) {
+            return base === reference;
         }
         return reference.startsWith(base);
     }
@@ -86,7 +86,7 @@ export default class MenuItem extends Component {
     }
 
     componentDidUpdate(prevProps, prevState) {
-        if (this.state.onPage && prevState.selectedRole != this.state.selectedRole) {
+        if (this.state.onPage && prevState.selectedRole !== this.state.selectedRole) {
             this.initializeScrollSpy()
         }
     }
