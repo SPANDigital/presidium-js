@@ -163,8 +163,11 @@ export default class MenuItem extends Component {
         return this.props.item.children.map(item => {
             switch (item.type) {
                 case MENU_TYPE.CATEGORY:
-                    return <MenuItem key={item.title} item={item} activeArticle={this.state.activeArticle}
-                                     roles={this.props.roles} baseUrl={this.props.baseUrl}
+                    return <MenuItem key={item.title}
+                                     item={item}
+                                     activeArticle={this.state.activeArticle}
+                                     roles={this.props.roles}
+                                     baseUrl={this.props.baseUrl}
                                      onNavigate={this.props.onNavigate}/>;
                 case MENU_TYPE.ARTICLE:
                     return <li key={item.id} className={this.childStyle(item)}>
