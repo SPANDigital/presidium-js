@@ -1,5 +1,3 @@
-import {next} from 'rxjs/Subject';
-
 const TOPICS = {
     RANKING_LOADED: 'RANKING_LOADED',
     ROLE_UPDATED: 'ROLE_UPDATED'

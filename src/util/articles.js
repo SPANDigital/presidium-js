@@ -1,4 +1,4 @@
-import {ACTIONS, EVENTS_DISPATCH} from "./events";
+import {ACTIONS, EVENTS_DISPATCH} from './events';
 
 const markArticleAsViewed = (articleId, permalink = null, action = ACTIONS.articleScroll) => {
     const cachedSolution = sessionStorage.getItem('presidium.solution');
@@ -23,10 +23,10 @@ const path = {
             path.removeLeading(target);
     },
     forceTrailing: function (path) {
-        return path == null ? "/" : (path.substr(-1) != "/" ? "/" : "");
+        return path == null ? '/' : (path.substr(-1) != '/' ? '/' : '');
     },
     removeLeading: function (path) {
-        return path == null ? "" : (path.substr(0, 1) == "/" ? path.substr(1) : path)
+        return path == null ? '' : (path.substr(0, 1) == '/' ? path.substr(1) : path)
     }
 };
 

@@ -97,7 +97,7 @@ export function groupByCategory(root, defaultRole) {
 
     root.articles.forEach(article => {
 
-        if (article.id.endsWith("index")) {
+        if (article.id.endsWith('index')) {
             return;
         }
 

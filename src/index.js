@@ -3,7 +3,7 @@ import {loadMenu} from './components/menu/menu';
 import {init as initModal} from './components/image/modal';
 import {loadTooltips} from './components/tooltips/tooltips';
 import {handleQueryString, checkSessionStorageConfig} from './util/config';
-import Rx from 'rxjs/Rx';
+import {Subject} from 'rxjs/Subject'
 
 initModal();
 handleQueryString(); //Check query string arguments and persist to sessionStorage
@@ -19,4 +19,4 @@ var presidium = {
 };
 
 window.presidium = presidium;
-window.events = new Rx.Subject();
+window.events = new Subject();
