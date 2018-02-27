@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { slugify } from '../../util/slug';
+import {slugify} from '../../util/articles';
 
 const parser = new DOMParser();
 
@@ -50,7 +50,7 @@ export function createTooltip(term, page, url) {
     if (match) {
         try {
             addToDom(term, match.parentElement.querySelector('article'), url);
-        } catch(error) {
+        } catch (error) {
             tooltipError(error, [term])
         }
     } else {
@@ -84,7 +84,9 @@ export function loadTooltips(config = {}) {
         const url = term.getAttribute('href');
         axios.get(url).then((response) => {
             createTooltip(term, response.data, url);
-        }).catch((error) => { tooltipError(error, [term]) });
+        }).catch((error) => {
+            tooltipError(error, [term])
+        });
     });
 }
 

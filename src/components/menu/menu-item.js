@@ -1,8 +1,10 @@
 import React, {Component} from 'react';
 import gumshoe from './scroll-spy';
+import classnames from 'classnames';
 
 import {MENU_TYPE} from './menu-structure';
-import {EVENTS_DISPATCH, ACTIONS, TOPICS} from '../../util/events';
+import {ACTIONS, TOPICS} from '../../util/events';
+import {markArticleAsViewed, slugify} from '../../util/articles'
 
 let timeout;
 
@@ -64,7 +66,7 @@ export default class MenuItem extends Component {
                         .querySelector(`span[data-id='${id}']`)
                         .parentElement.querySelector(".permalink a")
                         .href;
-                    this.markArticleAsViewed(id, permalink, action);
+                    markArticleAsViewed(id, permalink, action);
                 }.bind(this), 2000);
             }
             this.initializeScrollSpy()
@@ -73,9 +75,7 @@ export default class MenuItem extends Component {
 
     componentWillReceiveProps(props) {
         //If there's a new click event, trigger the recalc of scroll spy offset
-        if (this.props.containerHeight !== props.containerHeight) {
-            this.resetScrollSpyHeights();
-        }
+        if (this.props.containerHeight !== props.containerHeight) this.resetScrollSpyHeights();
 
         //Propagate active article and roles down the menu chain
         const activeArticle = this.state.onPage ? this.state.activeArticle : props.activeArticle;
@@ -106,7 +106,6 @@ export default class MenuItem extends Component {
     }
 
     initializeScrollSpy() {
-        let load = true;
         gumshoe.init({
             selector: '[data-spy] a',
             selectorTarget: "#presidium-content .article > .anchor",
@@ -114,41 +113,18 @@ export default class MenuItem extends Component {
             offset: this.determineScrollSpyOffset(),
             activeClass: 'on-article',
             callback: (active) => {
-
-                debugger
                 //Update active article on scroll. Ignore hidden articles (with distance = 0)
                 const activeArticle = active && active.distance > 0 ? active.nav.getAttribute("data-id") : undefined;
                 if (activeArticle && this.state.activeArticle !== activeArticle) {
                     clearTimeout(timeout);
-                    const clickedArticle = sessionStorage.getItem('article.clicked') === activeArticle;
-                    const permalink = active.target.parentElement.querySelector("a").href;
-
-                    const articleLoad = load;
                     timeout = setTimeout(function () {
-                        if (this.state.activeArticle === activeArticle) {
-                            this.resetScrollSpyHeights();
-                            this.markArticleAsViewed(activeArticle, permalink, clickedArticle ? ACTIONS.articleClick : articleLoad ? ACTIONS.articleLoad : ACTIONS.articleScroll)
-                        }
+                        if (this.state.activeArticle === activeArticle) this.resetScrollSpyHeights();
                     }.bind(this), 2000);
                     sessionStorage.removeItem('article.clicked');
                     this.setState({activeArticle: activeArticle});
                 }
             }
         });
-        load = false;
-    }
-
-    markArticleAsViewed(articleId, permalink = null, action = ACTIONS.articleScroll) {
-        const cachedSolution = sessionStorage.getItem('presidium.solution');
-        if (!cachedSolution) return;
-
-        const hash = `PRESIDIUM-ACTION:${articleId}:${cachedSolution || ''}`;
-        const cachedAction = sessionStorage.getItem(hash)
-
-        if (!cachedAction) {
-            EVENTS_DISPATCH.ARTICLE(articleId, permalink, action);
-            sessionStorage.setItem(hash, action)
-        }
     }
 
     render() {
@@ -218,20 +194,13 @@ export default class MenuItem extends Component {
     }
 
     parentStyle(item) {
-        var style = "";
-        if (this.state.inSection || this.containsArticle()) {
-            style += (this.state.isExpanded) ? " in-section expanded" : " in-section";
-        }
-        if (this.state.onPage) {
-            style += " on-page";
-        }
-        if (this.state.activeArticle == item.id) {
-            style += " on-article";
-        }
-        if (!this.hasRole(item)) {
-            style += " hidden";
-        }
-        return style;
+        return classnames(`menu-parent_${slugify(item.title)}`, {
+            'in-section': this.state.inSection || this.containsArticle(),
+            'expanded': this.state.isExpanded,
+            'on-page': this.state.onPage,
+            'on-article': this.state.activeArticle === item.id,
+            'hidden': !this.hasRole(item)
+        })
     }
 
     containsArticle() {
@@ -252,14 +221,10 @@ export default class MenuItem extends Component {
     }
 
     childStyle(item) {
-        var style = "";
-        if (this.state.activeArticle == item.id) {
-            style += " on-article";
-        }
-        if (!this.hasRole(item)) {
-            style += " hidden";
-        }
-        return style;
+        return classnames({
+            'on-article': this.state.activeArticle === item.id,
+            'hidden': !this.hasRole(item)
+        })
     }
 
     articleStyle(item) {

@@ -29,6 +29,9 @@ module.exports = {
     },
     plugins: [
         new webpack.DefinePlugin({
+            PRESIDIUM_VERSION: JSON.stringify(process.env.npm_package_version),
+        }),
+        new webpack.DefinePlugin({
             'process.env': {
                 'NODE_ENV': '"production"'
             }

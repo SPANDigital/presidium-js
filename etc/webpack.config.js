@@ -1,6 +1,7 @@
+var webpack = require('webpack');
 var CopyWebpackPlugin = require('copy-webpack-plugin');
-var path = require('path');
 
+var path = require('path');
 var buildPath = path.join(__dirname, '../dist');
 var buildFileName = 'presidium.js';
 var fullFilePath = buildPath + '/' + buildFileName;
@@ -13,6 +14,9 @@ module.exports = {
         publicPath: '/'
     },
     plugins: [
+        new webpack.DefinePlugin({
+            PRESIDIUM_VERSION: JSON.stringify(process.env.npm_package_version),
+        }),
         new CopyWebpackPlugin([
             {
                 from: fullFilePath,
@@ -24,7 +28,7 @@ module.exports = {
                 from: fullFilePath,
                 to: '../../presidium-template/node_modules/presidium-core/media/js/'
             },
-        ]),
+        ])
     ],
 
     module: {

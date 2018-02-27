@@ -1,4 +1,4 @@
-import paths from '../../util/paths';
+import {path} from '../../util/articles';
 
 const LEVEL_1 = 1;
 const LEVEL_2 = 2;
@@ -6,9 +6,9 @@ const LEVEL_3 = 3;
 const LEVEL_4 = 4;
 
 export const MENU_TYPE = {
-    SECTION:  'section',
+    SECTION: 'section',
     CATEGORY: 'category',
-    ARTICLE:  'article'
+    ARTICLE: 'article'
 };
 
 function menuSection(section, defaultRole) {
@@ -21,8 +21,8 @@ function menuSection(section, defaultRole) {
         slug: section.slug,
         path: section.path,
         categories: {},
-        children : [],
-        roles : new Set([defaultRole])
+        children: [],
+        roles: new Set([defaultRole])
     }
 }
 
@@ -37,7 +37,7 @@ function menuCategory(key, id, path, level) {
         path: path,
         categories: {},
         children: [],
-        roles : new Set()
+        roles: new Set()
     };
 }
 
@@ -65,6 +65,7 @@ function mergeSets(current, additional, defaultFilter) {
         return defaultFilter ? new Set([...current, defaultFilter]) : current;
     }
 }
+
 /**
  * Creates or gets a category.
  */
@@ -73,7 +74,7 @@ function getOrCreateCategory(section, key, path, level) {
     if (section.categories[key]) {
         category = section.categories[key];
     } else {
-        const id = paths.concat(section.id, key);
+        const id = path.concat(section.id, key);
         category = menuCategory(key, id, path, level);
         section.categories[key] = category;
         section.children.push(category);
@@ -84,6 +85,7 @@ function getOrCreateCategory(section, key, path, level) {
 function hasSub(categories) {
     return categories.length > 1;
 }
+
 /**
  *  Build the menu structure maintaining the provided order.
  *  Group articles in a section by a distinct category and optional sub category
