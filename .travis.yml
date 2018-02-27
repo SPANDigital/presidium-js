@@ -4,10 +4,12 @@ node_js:
 cache:
   directories:
     - node_modules
-install: npm install
-script:
+install:
+- npm install
 - npm run build
+script:
 - mv dist/presidium.js dist/presidium-$TRAVIS_BRANCH.js
+if: branch IN (master, develop) AND NOT type = pull_request
 deploy:
   - provider: s3
     access_key_id: $S3_ACCESS_KEY
