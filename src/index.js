@@ -15,6 +15,9 @@ var presidium = {
     },
     tooltips: {
         load: loadTooltips,
+    },
+    modal: {
+        init: initModal,
     }
 };
 
