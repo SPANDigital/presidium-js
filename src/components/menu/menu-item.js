@@ -29,7 +29,8 @@ export default class MenuItem extends Component {
             hasChildren: hasChildren,
             activeArticle: this.props.activeArticle,
             isExpanded: inSection && hasChildren,
-            selectedRole: this.props.roles.selected
+            selectedRole: this.props.roles.selected,
+            newTab: this.props.item.newTab,
         };
     }
 
@@ -136,7 +137,7 @@ export default class MenuItem extends Component {
                         {this.expander()}
                     </div>
                     <div className="menu-title">
-                        <a data-id={item.id} href={item.url}>{item.title}</a>
+                        <a target={item.newTab ? '_blank' : '_self'} data-id={item.id} href={item.url}>{item.title}</a>
                     </div>
                 </div>
 
@@ -264,13 +265,15 @@ export default class MenuItem extends Component {
     }
 
     clickParent(e) {
-        if (this.state.onPage) {
-            e.preventDefault();
-            e.stopPropagation();
-        } else {
-            sessionStorage.setItem('article.clicked', this.props.item.children.length === 1 ? this.props.item.children[0].id : this.props.item.id);
-            this.props.onNavigate();
-            window.location = this.props.item.url;
+        if (!this.props.item.newTab) {
+            if (this.state.onPage) {
+                e.preventDefault();
+                e.stopPropagation();
+            } else {
+                sessionStorage.setItem('article.clicked', this.props.item.children.length === 1 ? this.props.item.children[0].id : this.props.item.id);
+                this.props.onNavigate();
+                window.location = this.props.item.url;
+            }
         }
     }
 
