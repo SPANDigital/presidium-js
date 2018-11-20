@@ -1,6 +1,6 @@
 {
   "name": "presidium-js",
-  "version": "0.2.0",
+  "version": "0.2.2",
   "description": "React components for Presidium",
   "license": "Apache-2.0",
   "repository": {
@@ -31,32 +31,39 @@
     "watch:prod": "npm run build:prod -- --watch",
     "watch:dev": "npm run build:dev -- --watch",
     "watch-local-copy:prod": "copy=true npm run watch:prod",
-    "watch-local-copy:dev": "copy=true npm run watch:dev"
+    "watch-local-copy:dev": "copy=true npm run watch:dev",
+    "hot": "webpack-dev-server --config etc/webpack.config.js"
   },
   "devDependencies": {
     "babel-cli": "^6.9.0",
-    "babel-core": "^6.20.0",
-    "babel-eslint": "^6.0.4",
-    "babel-loader": "^6.2.9",
-    "babel-preset-es2015": "^6.9.0",
-    "babel-preset-react": "^6.16.0",
+    "babel-core": "^6.0.20",
+    "babel-eslint": "^4.1.3",
+    "babel-loader": "^7.1.2",
+    "babel-preset-es2015": "^6.0.15",
+    "babel-preset-react": "^6.0.15",
+    "babel-preset-stage-0": "^6.0.15",
+    "babel-register": "^6.9.0",
     "copy-webpack-plugin": "^4.1.0",
+    "css-loader": "^0.23.1",
     "cpx": "^1.5.0",
     "eslint": "^1.10.3",
+    "eslint-loader": "^1.9.0",
     "eslint-plugin-react": "^3.6.2",
     "mocha": "^3.2.0",
     "moxios": "^0.4.0",
-    "react": "^15.4.1",
     "react-addons-update": "^15.4.1",
-    "react-dom": "^15.4.1",
+    "react-hot-loader": "^1.3.0",
     "rimraf": "^2.5.4",
     "rxjs": "^5.4.0",
     "uglifyjs-webpack-plugin": "^1.1.1",
-    "webpack": "^3.8.1",
-    "webpack-dev-server": "^1.14.0"
+    "webpack": "^3.10.0",
+    "webpack-dev-server": "^2.11.1"
   },
   "dependencies": {
     "axios": "^0.16.0",
+    "classnames": "^2.2.5",
+    "react": "^15.6.0",
+    "react-dom": "^15.6.0",
     "react-redux": "^5.0.5",
     "redux": "^3.6.0",
     "redux-promise": "^0.5.3"

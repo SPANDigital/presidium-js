@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { slugify } from '../../util/slug';
+import {slugify} from '../../util/articles';
 
 const parser = new DOMParser();
 
@@ -45,12 +45,12 @@ export function addToDom(term, content, url) {
 export function createTooltip(term, page, url) {
 
     let title = url.substr(url.lastIndexOf('/') + 1).replace('#', '')
-    let match = parser.parseFromString(page, "text/html").querySelector(`span.anchor[id="${title}"]`);
+    let match = parser.parseFromString(page, 'text/html').querySelector(`span.anchor[id='${title}']`);
 
     if (match) {
         try {
             addToDom(term, match.parentElement.querySelector('article'), url);
-        } catch(error) {
+        } catch (error) {
             tooltipError(error, [term])
         }
     } else {
@@ -66,8 +66,8 @@ export function createTooltip(term, page, url) {
  */
 export function loadTooltips(config = {}) {
     presidium.tooltips.config = config;
-    const glossaryTerms = document.querySelectorAll(`a[title=presidium-tooltip][href="${'#'}"]`);
-    const linkTerms = document.querySelectorAll(`a[title=presidium-tooltip][href^="${'/'}"]`);
+    const glossaryTerms = document.querySelectorAll(`a[title=presidium-tooltip][href='${'#'}']`);
+    const linkTerms = document.querySelectorAll(`a[title=presidium-tooltip][href^='${'/'}']`);
 
     if (glossaryTerms.length > 0) {
         axios.get(`${config.baseurl}/glossary/`).then((response) => {
@@ -84,7 +84,9 @@ export function loadTooltips(config = {}) {
         const url = term.getAttribute('href');
         axios.get(url).then((response) => {
             createTooltip(term, response.data, url);
-        }).catch((error) => { tooltipError(error, [term]) });
+        }).catch((error) => {
+            tooltipError(error, [term])
+        });
     });
 }
 
