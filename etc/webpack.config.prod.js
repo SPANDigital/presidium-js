@@ -1,7 +1,8 @@
 var webpack = require('webpack')
 var UglifyJsPlugin = require('uglifyjs-webpack-plugin');
-
+var BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 var path = require('path');
+
 module.exports = {
     entry: './src/index.js',
     output: {
@@ -28,11 +29,22 @@ module.exports = {
         contentBase: '/'
     },
     plugins: [
+        new BundleAnalyzerPlugin({
+            analyzerMode: 'static',
+            generateStatsFile: true,
+            statsOptions: { source: false }
+        }),
         new webpack.DefinePlugin({
             PRESIDIUM_VERSION: JSON.stringify(process.env.npm_package_version),
             'process.env.NODE_ENV': JSON.stringify('production')
 
         }),
-        new UglifyJsPlugin()
+        new UglifyJsPlugin({
+            uglifyOptions: {
+                output: {
+                    comments: false
+                }
+            }
+        })
     ]
 };
