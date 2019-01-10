@@ -39,12 +39,13 @@ module.exports = {
             'process.env.NODE_ENV': JSON.stringify('production')
 
         }),
-        new UglifyJsPlugin({
-            uglifyOptions: {
-                output: {
-                    comments: false
-                }
-            }
-        })
+        new webpack.optimize.UglifyJsPlugin({
+            compress: {
+                warnings: false,
+                screw_ie8: true
+            },
+            comments: false,
+            sourceMap: false
+        }),
     ]
 };
