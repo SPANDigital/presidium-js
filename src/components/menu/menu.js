@@ -4,7 +4,6 @@ import {createStore, applyMiddleware} from 'redux';
 import ReduxPromise from 'redux-promise';
 import rootReducer from '../../reducers/index';
 import MenuItem from './menu-item';
-import VersionLabel from './version-label';
 import Versions from '../versions/versions';
 import {ACTIONS, EVENTS_DISPATCH, TOPICS} from '../../util/events';
 import {isInViewport, markArticleAsViewed} from '../../util/articles';
@@ -150,7 +149,6 @@ class Menu extends Component {
                                     item={item}
                                     roles={this.state.roles} onNavigate={() => this.collapseMenu()}/>
                             })}
-                            <VersionLabel/>
                         </ul>
                     </div>
                 </nav>
