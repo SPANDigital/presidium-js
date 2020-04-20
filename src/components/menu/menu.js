@@ -1,12 +1,12 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-import {createStore, applyMiddleware} from 'redux';
+import { createStore, applyMiddleware } from 'redux';
 import ReduxPromise from 'redux-promise';
 import rootReducer from '../../reducers/index';
 import MenuItem from './menu-item';
 import Versions from '../versions/versions';
-import {ACTIONS, EVENTS_DISPATCH, TOPICS} from '../../util/events';
-import {isInViewport, markArticleAsViewed} from '../../util/articles';
+import { ACTIONS, EVENTS_DISPATCH, TOPICS } from '../../util/events';
+import { isInViewport, markArticleAsViewed } from '../../util/articles';
 
 /**
  * Locale storage key
@@ -58,7 +58,7 @@ class Menu extends Component {
             .addEventListener('click', (e) => {
                 //If container did resize
                 if (this.state.containerHeight !== _contentContainer.clientHeight) {
-                    this.setState({containerHeight: _contentContainer.clientHeight})
+                    this.setState({ containerHeight: _contentContainer.clientHeight })
                 }
             });
 
@@ -67,8 +67,11 @@ class Menu extends Component {
             articles.map((article) => {
                 if (isInViewport(article)) {
                     const articleId = article.querySelector('span[data-id]').getAttribute('data-id');
-                    const permalink = article.querySelector('.permalink a').getAttribute('href');
-                    markArticleAsViewed(articleId, permalink, ACTIONS.articleScroll);
+                    let permalink = article.querySelector('.permalink a')
+                    // Section titles do not have a permalink
+                    if (permalink) {
+                        markArticleAsViewed(articleId, permalink.getAttribute('href'), ACTIONS.articleScroll);
+                    }
                 }
             })
         })
@@ -122,19 +125,19 @@ class Menu extends Component {
                 <nav>
                     <div className='navbar-header'>
                         <a href={this.brandUrl()} className='brand'>
-                            <img src={menu.logo} alt=''/>
+                            <img src={menu.logo} alt='' />
                         </a>
                         {this.props.menu.brandName &&
-                        <div>
-                            <p className='brand-name'>{this.props.menu.brandName}</p>
-                            <Versions store={store}/>
-                        </div>
+                            <div>
+                                <p className='brand-name'>{this.props.menu.brandName}</p>
+                                <Versions store={store} />
+                            </div>
                         }
                         <button className='toggle' onClick={() => this.toggleMenu()}>
                             <span className='sr-only'>Toggle navigation</span>
-                            <span className='icon-bar'/>
-                            <span className='icon-bar'/>
-                            <span className='icon-bar'/>
+                            <span className='icon-bar' />
+                            <span className='icon-bar' />
+                            <span className='icon-bar' />
                         </button>
                     </div>
 
@@ -147,7 +150,7 @@ class Menu extends Component {
                                     key={item.id}
                                     baseUrl={this.props.menu.baseUrl}
                                     item={item}
-                                    roles={this.state.roles} onNavigate={() => this.collapseMenu()}/>
+                                    roles={this.state.roles} onNavigate={() => this.collapseMenu()} />
                             })}
                         </ul>
                     </div>
@@ -157,23 +160,23 @@ class Menu extends Component {
     }
 
     toggleMenu() {
-        this.setState({expanded: !this.state.expanded})
+        this.setState({ expanded: !this.state.expanded })
     }
 
     collapseMenu() {
-        this.setState({expanded: false})
+        this.setState({ expanded: false })
     }
 
     renderFilter() {
         return this.state.roles.selected && (
             <div className='filter form-group'>
                 {this.state.roles.label &&
-                <label className='control-label' htmlFor='roles-select'>{this.state.roles.label}:</label>}
+                    <label className='control-label' htmlFor='roles-select'>{this.state.roles.label}:</label>}
                 <select ref='roleselector'
-                        id='roles-select'
-                        className='form-control'
-                        value={this.state.roles.selected}
-                        onChange={(e) => this.onFilterRole(e)}>
+                    id='roles-select'
+                    className='form-control'
+                    value={this.state.roles.selected}
+                    onChange={(e) => this.onFilterRole(e)}>
                     {this.state.roles.options.map(role => {
                         return <option key={role} value={role}>{role}</option>
                     })}
@@ -183,10 +186,10 @@ class Menu extends Component {
 
     onFilterRole(e) {
         let selected = e.target.value;
-        const roles = Object.assign({}, this.state.roles, {selected: selected});
+        const roles = Object.assign({}, this.state.roles, { selected: selected });
 
         this.filterByRole(selected);
-        this.setState({roles: roles});
+        this.setState({ roles: roles });
 
         sessionStorage.setItem(SELECTED_ROLE, selected);
         EVENTS_DISPATCH.MENU(TOPICS.ROLE_UPDATED, selected)
@@ -227,7 +230,7 @@ Menu.propTypes = {
 };
 
 function loadMenu(menu = {}, element = 'presidium-navigation') {
-    ReactDOM.render(<Menu menu={menu}/>, document.getElementById(element));
+    ReactDOM.render(<Menu menu={menu} />, document.getElementById(element));
 }
 
-export {Menu, loadMenu};
+export { Menu, loadMenu };
