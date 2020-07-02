@@ -21,14 +21,14 @@ export default class MenuItem extends Component {
         const onPage = itemURL === window.location.pathname;
         const inSection = this.inSection();
         const hasChildren = props.item.children.length > 0;
-
         this.state = {
             onPage: onPage,
             inSection: onPage || inSection,
+            alwaysExpanded: this.props.item.alwaysExpanded,
             isCollapsed: this.props.item.collapsed,
             hasChildren: hasChildren,
             activeArticle: this.props.activeArticle,
-            isExpanded: inSection && hasChildren,
+            isExpanded: (inSection || this.props.item.alwaysExpanded) && hasChildren,
             selectedRole: this.props.roles.selected,
             newTab: this.props.item.newTab,
         };
@@ -259,7 +259,7 @@ export default class MenuItem extends Component {
 
     toggleExpand(e) {
         e.stopPropagation();
-        if (this.state.hasChildren) {
+        if (this.state.hasChildren && !this.state.alwaysExpanded) {
             this.setState({isExpanded: !this.state.isExpanded})
         }
     }
