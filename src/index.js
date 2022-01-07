@@ -22,7 +22,8 @@ var presidium = {
     },
     modal: {
         init: initModal,
-    }
+    },
+    versions: {}
 };
 
 window.presidium = presidium;
