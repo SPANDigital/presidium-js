@@ -2,6 +2,7 @@ import React from 'react';
 import {loadMenu} from './components/menu/menu';
 import {init as initModal} from './components/image/modal';
 import {loadTooltips} from './components/tooltips/tooltips';
+import { mountContainerListeners } from './util/articles';
 // import {handleQueryString, checkSessionStorageConfig} from './util/config';
 import {Subject} from 'rxjs/Subject'
 
@@ -19,6 +20,9 @@ var presidium = {
     },
     tooltips: {
         load: loadTooltips,
+    },
+    articles: {
+        mount: mountContainerListeners,
     },
     modal: {
         init: initModal,
