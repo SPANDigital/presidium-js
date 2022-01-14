@@ -1,18 +1,25 @@
 import {ACTIONS, EVENTS_DISPATCH} from './events';
 
 const mountContainerListeners = () => {
-    window.addEventListener('scroll', (e) => {
-        let articles = [...document.querySelectorAll('.article')];
-        articles.map((article) => {
-            if (isInViewport(article)) {
-                const articleId = article.querySelector('span[data-id]').getAttribute('data-id');
-                let permalink = article.querySelector('.permalink a')
-                // Section titles do not have a permalink
-                if (permalink) {
-                    markArticleAsViewed(articleId, permalink.getAttribute('href'), ACTIONS.articleScroll);
-                }
+    const scrollPause = 2000;
+    let timeout;
+    window.addEventListener('scroll', () => {
+        clearTimeout(timeout);
+        timeout = setTimeout(findArticlesInView, scrollPause);
+    })
+}
+
+const findArticlesInView = () => {
+    let articles = [...document.querySelectorAll('.article')];
+    articles.map((article) => {
+        if (isInViewport(article)) {
+            const articleId = article.querySelector('span[data-id]').getAttribute('data-id');
+            let permalink = article.querySelector('.permalink a')
+            // Section titles do not have a permalink
+            if (permalink) {
+                markArticleAsViewed(articleId, permalink.getAttribute('href'), ACTIONS.articleScroll);
             }
-        })
+        }
     })
 }
 
