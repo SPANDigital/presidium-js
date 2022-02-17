@@ -1,6 +1,6 @@
 var webpack = require('webpack');
 var path = require('path');
-var buildPath = path.join(__dirname, '../dist');
+var buildPath = path.join(__dirname, '../../span-handbook-hugo/static/scripts/');
 var buildFileName = 'presidium.js';
 
 module.exports = {

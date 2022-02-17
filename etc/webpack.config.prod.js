@@ -5,7 +5,7 @@ var path = require('path');
 module.exports = {
     entry: './src/index.js',
     output: {
-        path: path.join(__dirname, '../dist'),
+        path: path.join(__dirname, '../../presidium-services/web/static/'),
         filename: 'presidium.js',
         publicPath: '/'
     },
