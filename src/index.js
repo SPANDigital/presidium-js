@@ -15,17 +15,14 @@ initModal();
 // checkSessionStorageConfig(); //Check sessionStorage for known configurations and apply them
 
 var presidium = {
-    menu: {
-        load: loadMenu,
-    },
     tooltips: {
-        load: loadTooltips,
+        mount: loadTooltips,
     },
     articles: {
         mount: mountContainerListeners,
     },
     modal: {
-        init: initModal,
+        mount: initModal,
     },
     versions: {}
 };
