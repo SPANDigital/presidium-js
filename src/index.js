@@ -16,13 +16,13 @@ initModal();
 
 var presidium = {
     tooltips: {
-        mount: loadTooltips,
+        load: loadTooltips,
     },
     articles: {
         mount: mountContainerListeners,
     },
     modal: {
-        mount: initModal,
+        init: initModal,
     },
     versions: {}
 };
