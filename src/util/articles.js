@@ -70,22 +70,16 @@ const slugify = (value) => {
  * @param element
  * @returns {boolean}
  */
-const isInViewport = (element) => {
+
+ const isInViewport = (element) => {
     const rect = element.getBoundingClientRect();
-    let inViewPort = false;
-
-    const divSize = rect.height;
-    const fromTop = rect.top;
-
-    if (fromTop < 0) {
-        if (divSize > fromTop * -1) return true;
+    const height = window.innerHeight
+    if(rect.top < 0) {
+        return rect.height + rect.top > height;
     }
+    return rect.top + rect.height < height;
+}
 
-    if (fromTop >= 0) {
-        if (fromTop < window.innerHeight) return true;
-    }
-    return inViewPort;
-};
 window.isInViewport = isInViewport;
 
 export {
