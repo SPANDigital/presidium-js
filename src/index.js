@@ -5,6 +5,7 @@ import { mountContainerListeners } from './util/articles';
 // import {handleQueryString, checkSessionStorageConfig} from './util/config';
 import {Subject} from 'rxjs/Subject'
 import $ from 'jquery';
+import Gumshoe from "gumshoejs";
 
 initModal();
 // TODO: Find a solution that is easier on the local storage if needed for edit mode.
@@ -69,3 +70,17 @@ $(document).ready(function () {
         filterArticles(selectedRole);
     });
 })
+
+let offset = 0;
+const content = $('.article-title').get(0);
+if (content) {
+    offset = window.pageYOffset + content.getBoundingClientRect().top;
+}
+
+var spy = new Gumshoe('.navbar-items ul a',{
+    offset: offset,
+    navClass: 'active',
+    nested: true,
+	nestedClass: 'active', // applied to the parent items
+    reflow: true
+});
