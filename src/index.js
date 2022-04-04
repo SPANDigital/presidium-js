@@ -5,7 +5,7 @@ import { mountContainerListeners } from './util/articles';
 // import {handleQueryString, checkSessionStorageConfig} from './util/config';
 import {Subject} from 'rxjs/Subject'
 import $ from 'jquery';
-import Gumshoe from "gumshoejs";
+import scrollSpy from './util/scroll-spy'; 
 
 initModal();
 // TODO: Find a solution that is easier on the local storage if needed for edit mode.
@@ -77,7 +77,8 @@ if (content) {
     offset = window.pageYOffset + content.getBoundingClientRect().top;
 }
 
-var spy = new Gumshoe('.navbar-items ul a',{
+var spy = new scrollSpy('.navbar-items ul a',{
+    attribute: 'data-target',
     offset: offset,
     navClass: 'active',
     nested: true,
