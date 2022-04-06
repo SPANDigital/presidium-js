@@ -60,7 +60,7 @@
     "webpack-dev-server": "^2.11.1"
   },
   "dependencies": {
-    "axios": "^0.16.0",
+    "axios": "^0.21.2",
     "classnames": "^2.2.5",
     "gumshoejs": "^5.1.2",
     "jquery": "^3.6.0",
