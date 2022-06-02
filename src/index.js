@@ -37,11 +37,15 @@ $(document).ready(function () {
     if (selectedRole != 'All Roles') {
       const $articles = $(`.article:not([data-roles="All Roles"],[data-roles="${selectedRole}"])`);
       $articles.each((i, article) => {
-        $(article).hide();
-        $(`#presidium-navigation .menu-row>a[data-target="#${article.id}"]`)
+        // Edge case: When an article has multiple roles assigned to it check if the current filter
+        // is not contained therein before hiding the article.
+        if (!( $(article).data('roles').includes(selectedRole) )){
+          $(article).hide();
+          $(`#presidium-navigation .menu-row>a[data-target="#${article.id}"]`)
           .parent()
           .addClass('hidden')
           .hide();
+        }
       });
 
       $('#presidium-navigation .menu-row').each((_, e) => {
