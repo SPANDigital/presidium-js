@@ -30,6 +30,7 @@ window.events = new Subject();
 
 // Role filtering
 $(document).ready(function () {
+  const cachedRole = sessionStorage.getItem('role');
   const filterArticles = (selectedRole) => {
     sessionStorage.setItem('role', selectedRole);
     $('.article').show();
@@ -64,6 +65,13 @@ $(document).ready(function () {
     const selectedRole = this.value;
     filterArticles(selectedRole);
   });
+  if ($('#roles-select option:selected').text() !== cachedRole ){
+    // When a page reloads occurs from navigating to a new section
+    // reload the selected role and trigger the filter
+    $('#roles-select').val(cachedRole);
+    $('#roles-select').trigger('change');
+
+  }
 });
 
 let offset = 0;
