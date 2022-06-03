@@ -7,7 +7,7 @@ module.exports = {
     devtool: 'source-map',
     plugins: [
         new CompressionPlugin({
-            filename: "[path][base].jgz",
+            filename: "[path][name].jgz",
         }),
         new BundleAnalyzerPlugin(),
     ],
