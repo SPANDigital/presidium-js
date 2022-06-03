@@ -8,6 +8,7 @@ module.exports = {
     plugins: [
         new CompressionPlugin({
             filename: "[path][name].jgz",
+            test: /\.(ts|js)x?$/,
         }),
         new BundleAnalyzerPlugin(),
     ],
