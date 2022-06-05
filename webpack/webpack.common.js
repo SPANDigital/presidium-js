@@ -2,7 +2,7 @@ const path = require('path');
 const webpack = require('webpack');
 const TerserPlugin = require('terser-webpack-plugin');
 
-const buildPath = path.join(__dirname, '../dist');
+const buildPath = path.join(__dirname, '../../presidium-services/web/static');
 const buildFileName = 'presidium.js';
 
 module.exports = {
