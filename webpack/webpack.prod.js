@@ -10,6 +10,9 @@ module.exports = {
             filename: "[path][name].jgz",
             test: /\.(ts|js)x?$/,
         }),
-        new BundleAnalyzerPlugin(),
+        new BundleAnalyzerPlugin({
+            analyzerMode: 'static',
+            openAnalyzer: false
+        }),
     ],
 }
