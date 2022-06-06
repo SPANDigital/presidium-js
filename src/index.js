@@ -29,32 +29,25 @@ window.presidium = presidium;
 window.events = new Subject();
 
 // Role filtering
-$(document).ready(function () {
+$(function () {
   const cachedRole = sessionStorage.getItem('role');
   const filterArticles = (selectedRole) => {
     sessionStorage.setItem('role', selectedRole);
     $('.article').show();
     $('#presidium-navigation .menu-row').removeClass('hidden').show();
     if (selectedRole != 'All Roles') {
-      const $articles = $(`.article:not([data-roles="All Roles"],[data-roles="${selectedRole}"])`);
+      const $articles = $('.article:not([data-roles="All Roles"])');
+      const $navSectionLinks = $('#presidium-navigation .menu-row:not([data-roles="All Roles"])');
+
       $articles.each((i, article) => {
-        // Edge case: When an article has multiple roles assigned to it check if the current filter
-        // is not contained therein before hiding the article.
         if (!( $(article).data('roles').includes(selectedRole) )){
           $(article).hide();
-          $(`#presidium-navigation .menu-row>a[data-target="#${article.id}"]`)
-          .parent()
-          .addClass('hidden')
-          .hide();
         }
       });
 
-      $('#presidium-navigation .menu-row').each((_, e) => {
-        const $row = $(e);
-        const $children = $row.find('ul>li.menu-row');
-        const $active = $children.filter(':not(.hidden)');
-        if ($active.length == 0 && $children.length > 0) {
-          $row.hide();
+      $navSectionLinks.each((i, link) => {
+        if (! ($(link).data('roles').includes(selectedRole))){
+          $(link).hide()
         }
       });
     }
@@ -65,7 +58,7 @@ $(document).ready(function () {
     const selectedRole = this.value;
     filterArticles(selectedRole);
   });
-  if ($('#roles-select option:selected').text() !== cachedRole ){
+  if ( cachedRole && $('#roles-select option:selected').text() !== cachedRole ){
     // When a page reloads occurs from navigating to a new section
     // reload the selected role and trigger the filter
     $('#roles-select').val(cachedRole);
