@@ -74,10 +74,10 @@
 		"webpack-merge": "^5.7.3"
   },
   "dependencies": {
-    "axios": "^0.16.0",
-    "classnames": "^2.2.5",
     "gumshoejs": "^5.1.2",
     "jquery": "^3.6.0",
+    "axios": "^0.26.0",
+    "classnames": "^2.3.1",
     "querystringify": "^2.1.1",
     "react": "^15.6.0",
     "react-dom": "^15.6.0",
