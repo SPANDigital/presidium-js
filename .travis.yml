@@ -3,35 +3,39 @@ node_js:
 - '16'
 cache:
   directories:
-    - node_modules
-install:
-- npm install
-- npm run build
-script:
-- mv dist/presidium.js dist/presidium-$TRAVIS_BRANCH.js
-if: branch IN (master, develop) AND NOT type = pull_request
-deploy:
-  - provider: s3
-    access_key_id: $S3_ACCESS_KEY
-    secret_access_key: $S3_SECRET_ACCESS_KEY
-    bucket: span-presidium
-    local-dir: dist
-    upload-dir: presidium-js
-    region: us-east-2
-    skip_cleanup: true
-    on:
-      repo: SPANDigital/presidium-js
-      all_branches: true
-      condition: "($TRAVIS_BRANCH = develop || $TRAVIS_BRANCH = master) && $TRAVIS_PULL_REQUEST = \"false\""
-  - provider: npm
-    email: presidium@spandigital.com
-    api_key:
-      secure: qVRDHdtXr/QEJ0VMuf9B1TaXjlCrtR89/h4Ks5TIdyv+Zl9VUlQduK3ybvaMfSVAr1RJ7521eE2x3cAo4VHgnbH9bW7Y29GAbdSZeNhfiPB7LnMBGF7QtHsRYZ2MPfPKt6sgURgpK+G0ZNBCLi056gpGYXcYUP0Q1sEc9UAfJXe4rIErL69guGFoMtY3mBcMSpPqTg7QkoiiqRDvxGthBAHGyTepJugmscgAjyBOXxh9JSnyKt+mj40WFu/j0iJGUsz7DXpjYkc2AV9+lPYG88WFwukLtMupKO7FsXuG+5bwEdz8ywprl9jTKCT2Fp6WARCiKtDWiskPjkOcAU42WrTw0qFlnhVTBU5FGVxt6ruQKdJBV6J6wfjxk7mzNeAR+1BYka1cPtZXBEasoXfxduBwcrpmHwHlgKNG7agESLmLXybz7TiBfFzFtdKAr4xpx0kzSn1qZif4d1q20DDB0I1fI/RdE0bmxVzrSd6+OS6zv+jqemv2ZuIFzfinD+msrdv2hAsTgIUfToOnwbZep8Sa6ys7gmA6awvYvnzbLFHHhAjaOr6ynERf3kyuTuAZ/KHeFhm/C6sfOzZ3nEHhU/4mp0JATyNlAuHfBSRQM3bI+hX3hnx4R8otmTtapkonq0eaugEqnKuWmbyR2QdQbVYqxkkIizzGAaJ8AdWt67s=
-    on:
-      tags: true
-      repo: SPANDigital/presidium-js
-      branch: master
+  - node_modules
+jobs:
+  include:
+  - stage: Tag Develop
+    if: branch IN (develop, master) AND type = push
+    git:
+      depth: false
+    services:
+    - docker
+    script:
+    - "./build/tag_code.sh"
+  - stage: Bundle JS
+    if: tag IS present
+    language: node_js
+    install:
+    - npm install
+    script:
+    - npm run build
+    - "./build/github_release.sh"
+    deploy:
+    - provider: s3
+      access_key_id: AKIA2WMSJGXU3J5T27XB
+      secret_access_key:
+        secure: MWxsVyCwNb9/A+mMI3/5Fcgs/HnCisQ1tPXqoXYNiJnlOgQUzd3vbcOFTLm2zu4jKCgspctIv9/zuGPfU/Cgnj3x8mYk3CyKfsaWZ6Dq4DGXHLmxPjpyhheZoN609utnW56otv8pMNpFMsljlZ2nWjET4wNnD0TpxILY0cqvixVCv0Hv0MmjwWx+DMz4NHlKBApp3z7AE7fo052sdN+Z0PNOfJCQfpNlhg1M6b+9g+bDN0jYuLjBNSUw0p3UmBtitYJ8c/RiOrAgsKL6PG6A+8WF+XV/enapDaWL+wcFIrSfIlHMlZ+a5u5Em+DN8FbJfXDqiLBjhBh6yySO7WxzY1oQpyDVkwLFheQ5QjDjMmkwxFTK6cq12sAnwrp7vngadWKgt62Tstm1w2vczEDl7TZUqhrLw8AzVqEw5j5l+ZM+liOeXomYrzYVz/2oh3BunKTfA9mJ8meP1Zvb42PDxQAABHVOI5qArlIAdYLxhdBDONHTtXTU9FMGkn1qplQuEJavJdxrQf1tmiFhCZJiRDlLxMNAuOiuqbGBpm2XqG77L7LRxxIBns5dAcOLSprUVTVE/0r5v6nNSwTPx4TJ9GMOR4EaBVpLX0zR7iPg9BDSLZN7ho7cpRTeCix+NXBugm8UPZAP+N4sS7h6tFq6zZY/q4fkCtoJJGfahWPKNP8=
+      bucket: span-presidium
+      local-dir: dist
+      upload-dir: presidium-js/$TRAVIS_TAG
+      skip_cleanup: 'true'
+      on:
+        tags: true
 env:
   global:
-  - secure: jrqx1+fPqyx2vCZTE7H3qWmsSFDTOFaVwgej2TXQTceBv+Ms1JodnjptUHllUQqZy5tgxYB53lC1di8t3Z23J8mtFZneQSaeBLslo6thFTqhWeqSpa4vyfuBAY7st4IarXUMNkyP1GQlBMKZu+4YhyPcpGOchBuDcuvGwYPJEHvDR1EiO/jpRTzdImVreceU17l6d3Tq63Q40dwdEcMh/mALzYR2NrwvTFrrM7QI3FoD9t3lxj1mQdF9WrZcADyoxlpn39BfPF2OdfCySXwQdpYtsQegI0M1GqbnrxkJ0ZKrKFjOSDiGr2Oi8MFoJM9Wd52k7aovxhCCV9momsL/x/1bYXdDEQSgN3GHXcabQkgctR2m9Tokhe2luBAuE0ZFxOGL3kJplBfgWUhEcQPa7LGYK+k90DEzm+fQGByX3GjVAu1JgqEsZH/L04zVa7Kwb+t3fg1UjD+nE8Un4dRrFv9NBLub+ZHXWLN/SZXe+XW0iL9AOasSVV07VbCMW9tr0AEid+ZF2oJvUNJF05sYhFlUJA5taYCKTJih8orlE8ci+QvfOdmj3ANOMcW3eao+CDg9AB9Wc1zHKvnZsABR/0dLbPWj+TbPUxz8CjhoI8kzTKq3RTUbZjDU8o58Iqp+Iv3BATqRVySxlJAx5mYU59PrNgdd0R8POjXZWVWmKmg=
-  - secure: ITyTmsTBQMRF98YbqQvDL7HtarJofD1B+CdBZBbTom7yU/0YIiIs1cw10S8KcVMxgkLdrUKtjeFBuSwQCht8zxCSI+tT5oiCS0joALFoLJW0mTtxjRZXpllHDX6e7HtuDiSHM9baFXRuFIyrXrnsbfwdRPz0NiIdD1MSoqtqwxBlAtaQWxRowL1NNKnYRV+ZPdiqORDx8kCoYQBsEdT0+hQK2wYFYACqXYGfVY9w1RM3diiXCCIVMKrpNK34CnwsKRTq/h+/IxQE/A+31M721HocfcXbShK9T1j/qa+z7JHcT3rNicTCl40+LhSdowAlAfw+pjSGYAZCE1VzB1zoBI3KV640kZY0Ocla8ZsjuEnEJME+jXxUG2JSO0FAr1uPuksYF1jXzdOSvOdNconvCyRicGDJaju49rh6Uk3VGmWqqklBpwgWxeKFFbdfRGmvM7HijvdGeWrrZVWxpiznzsX8UOBp3FKiiLdWcu43yqUbjZm2aQShX+drnyqZw/VVs3AHNYC0f/qRB4sRDdWUffPboR8I5WQcsClHs8B35FGZnT3jCuB8DF1KRqUE2VL9uJMyIFgs7E7iqFg/AHJAUGNkAilXairC9oaRjVB7PL5UwVtSQ+zIavhC/iCXi+tIfH2gc4Igq5z6cgg5ZGTke4ALZSLZaGG3th5r8BcHl7s=
+  - REPO=spandigital/presidium-js
+  - secure: rh39r+8WH3PvJCF5Ps+0a+GieIE5nPsfiylxXOhqMT3qrjpT1MGMMivcEJj+p+mW+UBH/SuCWzqZy51g+gF06G8SP+82T3yljGzbXjhilkPB2fXMZUNP6QlDzgGWH+vHbRp9Zqx780PQ1sld3tJKpMnWJ05CK6d/CLCSjmaRugApQ/0KfjkKqFiY+8BlnN767MHY3zfwj4Np0HLSJzV0zr1syEB75k+rY475GjuTJASXsuJ4zuslTMxUZSmiv93mO7KWKVe2DwsS/HY2RVlmOJnBPFvf/+2BCQdRViEKyt+VOOLgrgCSmILb5WZYdKKvhnoJlPol14aibNCneUI+ChIIcwh5mrU/OzVy9XVreXBgyqH8+dPtyvZ31GgosAOlxmegrcjmp46yez8TzqMGI25CsBdX6ArmppJy8K0AEeWImdMDElE3H4PyJT2ksbrLs6SvUdwOcz/jAY9fCDbUpadg7M0+2y4wJ34aghoJx0Y9OY822Y1NpN45s/7bP87g/WR1Yna+57cCvJS7O2VVK/ZAQU/n/7BCiB7o0PKqXtJJZPEV440B0a0uOR1nZABqQxor4pXsB11A8ASW/WPcb5VqzJibjZ56/pcNQU23Q5Rgg0kPy3VDfDpKnpURhfeybZnHUWZVdEdInuLGXa2pYhEQMRvM9NW9enlVlZoqoqA=
+
+  
