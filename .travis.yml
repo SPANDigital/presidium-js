@@ -13,7 +13,7 @@ jobs:
     services:
     - docker
     script:
-    - "./bin/ci/tag_code.sh"
+    - "./build/tag_code.sh"
   - stage: Bundle JS
     if: tag IS present
     language: node_js
