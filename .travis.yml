@@ -7,7 +7,7 @@ cache:
 jobs:
   include:
   - stage: Tag Develop
-    if: branch IN (develop, master, feat/PRS-2341-deploy) AND type = push
+    if: branch IN (develop, master) AND type = push
     git:
       depth: false
     services:

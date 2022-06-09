@@ -10,7 +10,7 @@ git config --global user.email "build@travis-ci.com"
 git config --global user.name "Travis CI"
 git checkout "${TRAVIS_BRANCH}"
 
-if [[ "${TRAVIS_BRANCH}" = "feat/PRS-2341-deploy" ]]
+if [[ "${TRAVIS_BRANCH}" = "develop" ]]
 then
     TAG=$(docker run --rm -v "$(pwd):/repo" gittools/gitversion:5.5.0-linux-debian.9-x64-netcoreapp3.1 /repo -output json -showvariable FullSemVer)
 elif [[ "${TRAVIS_BRANCH}" = "master" ]]
