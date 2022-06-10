@@ -7,12 +7,12 @@ export function init() {
     var caption = document.querySelector('#presidium-modal .modal-caption');
 
     window.addEventListener('keyup', function(e) {
-        if (e.keyCode === 27) {
+        if (e.key === 'Escape') {
             modal.style.display = 'none';
         }
     });
 
-    document.querySelectorAll('#presidium-content article img').forEach(img => {
+    document.querySelectorAll('#presidium-content img').forEach(img => {
         img.className += ' ' + 'scalable';
         img.onclick = function() {
             modal.style.display = 'block';
