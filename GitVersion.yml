@@ -1,0 +1,10 @@
+mode: ContinuousDelivery
+next-version: 0.0.1
+branches:
+  develop:
+    mode: ContinuousDeployment
+    tag: rfv
+  master:
+    mode: ContinuousDelivery
+ignore:
+  sha: []
