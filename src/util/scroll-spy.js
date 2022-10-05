@@ -22,7 +22,7 @@
 
 		// Nested navigation
 		nested: true,
-		nestedClasses: 'active',
+		nestedClass: 'active',
 
 		// Offset & reflow
 		offset: 0,
