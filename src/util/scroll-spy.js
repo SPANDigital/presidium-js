@@ -21,7 +21,7 @@
 		contentClass: 'active',
 
 		// Nested navigation
-		nested: false,
+		nested: true,
 		nestedClass: 'active',
 
 		// Offset & reflow
@@ -259,6 +259,22 @@
 
 		// Add the active class
 		li.classList.add(settings.nestedClass);
+		li.classList.add('open');
+		li.classList.remove('closed');
+		li.classList.add('in');
+
+		// Loop through all children and expand them since we are browsing through this section
+		li.querySelector('a > .menu-expander > span').classList.remove('glyphicon-chevron-right');
+		li.querySelector('a > .menu-expander > span').classList.add('glyphicon-chevron-down');
+
+		var children = li.querySelector('ul').querySelectorAll(`li.${nav.classList[1]}`);
+		for (let i = 0; i < children.length; i++) {
+			const child = children[i];
+			child.classList.add('in');
+			child.classList.add('open');
+			child.classList.remove('closed');
+			child.style.height = null;
+		}
 
 		// Apply recursively to any parent navigation elements
 		activateNested(li, settings);
