@@ -263,6 +263,7 @@
 		li.classList.remove('closed');
 		li.classList.add('in');
 
+		// Loop through all children and expand them since we are browsing through this section
 		li.querySelector('a > .menu-expander > span').classList.remove('glyphicon-chevron-right');
 		li.querySelector('a > .menu-expander > span').classList.add('glyphicon-chevron-down');
 
