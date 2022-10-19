@@ -4,7 +4,7 @@ React.js components for Presidium.
 
 ## Build and Publish
 
-Requires `npm` to build, test and publish components to a local instance of `presidium-core`.
+Requires `npm` to build, test and publish components to a local instance of `presidium-services`.
 
 Install required dependencies:
 
@@ -12,38 +12,18 @@ Install required dependencies:
 $ npm install
 ```
 
-To start a local server for testing components:
+Provide the location of the Presidium Services repo in your local machine:
+
+- Create a new `.env` file in the root of presidium-js-enterprise (it will automatically be ignored by Git).
+- Add a new environment variable called `API_LOCATION`.
+- Set its value equal to the path of Presidium Services on your local machine. Example: `API_LOCATION = /Users/john/presidium-services`
+
+To watch changes and automatically copy bundle to Presidium Services (or any other library that uses `presidium.js`):
+
 
 ```
-$ npm start
+$ npm run start
 ```
-
-To watch changes and automatically copy bundle to `../presidium-template` (or any other library that uses `presidium.js`):
-
-```
-$ npm run watch:local-copy
-
-//Note: the file copy defaults to "presidium-template". To update, simply edit "webpack.config.js".
-```
-
-
-
-To publish components to a local instance of `../presidium-core`:
-
-```
-$ npm run publish:core
-```
-
-To watch changes and automatically publish to `../presidium-core`:
-
-```
-$ npm run watch:local
-and
-$ npm run watch:core
-```
-
-
-
 
 ## Test
 
