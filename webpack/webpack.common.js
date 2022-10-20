@@ -3,7 +3,7 @@ const webpack = require('webpack');
 const TerserPlugin = require('terser-webpack-plugin');
 require('dotenv').config();
 
-const buildPath = path.join(process.env.API_LOCATION, 'web/static') ?? path.join(__dirname, '../dist');
+const buildPath = process.env.API_LOCATION ?? path.join(__dirname, '../dist');
 const buildFileName = 'presidium.js';
 
 module.exports = {
