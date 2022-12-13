@@ -62,7 +62,7 @@
     "eslint-loader": "^4.0.2",
     "eslint-plugin-react": "^3.6.2",
     "file-loader": "^6.2.0",
-    "mocha": "^3.2.0",
+    "mocha": "^10.2.0",
     "moxios": "^0.4.0",
     "react-addons-update": "^15.4.1",
     "react-hot-loader": "^4.13.0",
