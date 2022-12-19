@@ -30,12 +30,11 @@ jobs:
       bucket: span-presidium
       local-dir: dist
       upload-dir: presidium-js/$TRAVIS_TAG
-      skip_cleanup: 'true'
+      skip_cleanup: true
       on:
         tags: true
 env:
   global:
   - REPO=spandigital/presidium-js
-  - secure: WkckwrxGLm1e7EqIpZsbq1/fhLxAHNN98gztsFA+MLhsYtogyF+QrbXj4K9lXU8ljfZLcX0m7iga4tgSz7WquD+bELz++JWtuKMAdPinBOv9Jinb6oLd3sBbszXJh0MRuRmrpZ+z8GBCX+Pnn/EzwPr94+4m9Jyu1AC2+Qbac8wcRftV20EW0c16DqOTLKgPpP/rfGz+z1oXMEDTsyEeyjp/qZZ+MKSBjiV+t/qTNdLxtIOkZmuCZqNkpfYJW3KAoY1poCB1HcBsBDlAxOsOAwcbM2Pmcf3fTWVCM3xnNPuMKWGiRz6IfX321lXR81kp1EhVczkRxEW4HY8k1mkeZDIbi/LUyq2XGdkMiKcnglIudDW5WGVJcZ6atvrrmVQc3yoLnhOrWYNdf+PFgnSnLLDEzRxqfdcyP0VdmnWjZVoYC4HmPIcvD5r9a53S3L8oAwSQzRXS9BYXnuOE6/cJ81qly7nHU/ZrbduKrzp9X/CHpYJahsY6Oh2PSWSBi2EnlyLKkdDH9qtyxeJ36acPnx0i5r9J9P4EaEEmkrgfb0p8chvlqsq2do3mtYqdgY3UpRh6bdfMt7kq2SAP0CiLe66tXHObCKeWOTNG/27OqOprw0AQCCoAuY5ASuiqhF9pAtcRqL3yoKWUwwAeBj9qSi5i+miA2qGIETnPBcDSLHM=
-
-  
+  # GITHUB_KEY
+  - secure: m43SYbwjPNtLCov0epJTdUPEhMmL1m8A0qW782kxCD5rbuenvtNe/dFficpcBXKFwXlG/wAUIUMkkFtS5EON9Mz6I3lPr6Ux+4WMDH7fM30SsRrjI9CxTxlSn8avtGG2nGk12KNzriyhMBYY5pCRTsRkStqxi3zp5ZQaWRFBw1pu5vGEIwgtIQW/KYboQSqJ08+cRthiInq0laAUX+5XNI7fK1V8IwH8JmNuFHsPVbQnmvSh9g1sq0OGSfQatHjru6x8f9a4s/rQaWZ9YQhAyRHWV/yveszSvzwzUtX/VKfPEG9N2j2CLfbPf5HH2m4ah/n8ZpNOOPk457FMH1meG7hVmwZidf8sTnupUe6lHXV32YANLAyGTMMQh+ylYAHWq5/qhF7dl6SI/xuCd05mp7R6qHCqo/S7HoNOgW7fbRz2XDGaVNu1UWD6himgclXlgJc7oqRc61b2LrKRdh/JUlAFJqCQUTjZ8Oe/PMY9rGiEJ5BY6sZzxExT2DHhjq0jh2nqo7CmZ+1at87S0z/4B8f3lYGzYlVwwxx6YX8pZQbxrn/1bpMEXoTxnezFMGcDF6DChns8JB7xoOAIAm0sGGEL9z0ncRjhzS2u9pAphZ7QP8AxIHuzWjmaMf0MTW8HgEhp9i965yK39RP6FNO1U0Yb0kUvVTKkrZv+SNzuqE0=
