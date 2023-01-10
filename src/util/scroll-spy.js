@@ -249,36 +249,24 @@
 	 * @param  {Object} settings The settings for this instantiation
 	 */
 	var activateNested = function (nav, settings) {
+	 // If nesting isn't activated, bail
+      if (!settings.nested) return;
 
-		// If nesting isn't activated, bail
-		if (!settings.nested) return;
+      // Get the parent navigation
+      var li = nav.parentNode.closest('li');
+      if (!li) return;
 
-		// Get the parent navigation
-		var li = nav.parentNode.closest('li');
-		if (!li) return;
+      // Add the active class
+      li.classList.add(settings.nestedClass);
+      li.classList.add('open');
+      li.classList.remove('closed');
+      li.classList.add('in');
 
-		// Add the active class
-		li.classList.add(settings.nestedClass);
-		li.classList.add('open');
-		li.classList.remove('closed');
-		li.classList.add('in');
+      // Loop through all children and expand them since we are browsing through this section
+      $(li).children('.collapse').first().collapse('show');
 
-		// Loop through all children and expand them since we are browsing through this section
-		li.querySelector('a > .menu-expander > span').classList.remove('glyphicon-chevron-right');
-		li.querySelector('a > .menu-expander > span').classList.add('glyphicon-chevron-down');
-
-		var children = li.querySelector('ul').querySelectorAll(`li.${nav.classList[1]}`);
-		for (let i = 0; i < children.length; i++) {
-			const child = children[i];
-			child.classList.add('in');
-			child.classList.add('open');
-			child.classList.remove('closed');
-			child.style.height = null;
-		}
-
-		// Apply recursively to any parent navigation elements
-		activateNested(li, settings);
-
+      // Apply recursively to any parent navigation elements
+      activateNested(li, settings);
 	};
 
 	/**
