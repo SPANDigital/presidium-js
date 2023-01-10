@@ -262,7 +262,7 @@
       li.classList.remove('closed');
       li.classList.add('in');
 
-      // Loop through all children and expand them since we are browsing through this section
+      // Expand current menu section
       $(li).children('.collapse').first().collapse('show');
 
       // Apply recursively to any parent navigation elements
