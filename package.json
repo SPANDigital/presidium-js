@@ -25,7 +25,7 @@
     "clean": "rimraf dist",
     "lint": "eslint src",
     "start": "webpack --watch --config webpack/webpack.config.js --env env=dev",
-    "build": "webpack --config webpack/webpack.config.js --env env=prod",
+    "build": "set \"CI=false\" && webpack --config webpack/webpack.config.js --env env=prod",
     "build:dev": "webpack --config webpack/webpack.config.js --env env=dev",
     "bundle-stats": "webpack -p --config webpack/webpack.config.js --env env=prod --json > dist/stats.json",
     "cm": "cz"
