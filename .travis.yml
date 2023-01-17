@@ -22,17 +22,6 @@ jobs:
     script:
     - npm run build
     - "./build/github_release.sh"
-    deploy:
-    - provider: s3
-      access_key_id: AKIA2WMSJGXU3J5T27XB
-      secret_access_key:
-        secure: MWxsVyCwNb9/A+mMI3/5Fcgs/HnCisQ1tPXqoXYNiJnlOgQUzd3vbcOFTLm2zu4jKCgspctIv9/zuGPfU/Cgnj3x8mYk3CyKfsaWZ6Dq4DGXHLmxPjpyhheZoN609utnW56otv8pMNpFMsljlZ2nWjET4wNnD0TpxILY0cqvixVCv0Hv0MmjwWx+DMz4NHlKBApp3z7AE7fo052sdN+Z0PNOfJCQfpNlhg1M6b+9g+bDN0jYuLjBNSUw0p3UmBtitYJ8c/RiOrAgsKL6PG6A+8WF+XV/enapDaWL+wcFIrSfIlHMlZ+a5u5Em+DN8FbJfXDqiLBjhBh6yySO7WxzY1oQpyDVkwLFheQ5QjDjMmkwxFTK6cq12sAnwrp7vngadWKgt62Tstm1w2vczEDl7TZUqhrLw8AzVqEw5j5l+ZM+liOeXomYrzYVz/2oh3BunKTfA9mJ8meP1Zvb42PDxQAABHVOI5qArlIAdYLxhdBDONHTtXTU9FMGkn1qplQuEJavJdxrQf1tmiFhCZJiRDlLxMNAuOiuqbGBpm2XqG77L7LRxxIBns5dAcOLSprUVTVE/0r5v6nNSwTPx4TJ9GMOR4EaBVpLX0zR7iPg9BDSLZN7ho7cpRTeCix+NXBugm8UPZAP+N4sS7h6tFq6zZY/q4fkCtoJJGfahWPKNP8=
-      bucket: span-presidium
-      local-dir: dist
-      upload-dir: presidium-js/$TRAVIS_TAG
-      skip_cleanup: true
-      on:
-        tags: true
 env:
   global:
   - REPO=spandigital/presidium-js
