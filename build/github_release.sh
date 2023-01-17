@@ -10,7 +10,7 @@ source "${DIR}/include.sh"
 # TRAVIS_TAG=your_release_version GITHUB_KEY=your_github_key ./build/github_release.sh
 # Before running this script, you will need to run "npm run build" 
 
-if [[ -n "${TRAVIS_TAG}" ]]
+if [[ -n "${TRAVIS_TAG}" && "${TRAVIS_BRANCH}" = "master" ]]
 then
     zip_file=$TRAVIS_TAG.zip
 
