@@ -334,8 +334,9 @@
 
 				// Get the content for the nav item
                 const target = item.getAttribute(options.attribute)
-				var content = document.getElementById(decodeURIComponent(target.substr(1)));
-				if (!content) return;
+				const id = decodeURIComponent(target.substr(1));
+				var content = document.getElementById(id);
+				if (!content || content.tagName !== 'DIV') return;
 
 				// Push to the contents array
 				contents.push({
@@ -358,12 +359,7 @@
 			// Get the active content
 			var active = getActive(contents, settings);
 
-			// if there's no active content, deactivate and bail
 			if (!active) {
-				if (current) {
-					deactivate(current, settings);
-					current = null;
-				}
 				return;
 			}
 
