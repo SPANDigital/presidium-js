@@ -12,7 +12,7 @@ export function init() {
         }
     });
 
-    document.querySelectorAll('#presidium-content img').forEach(img => {
+    document.querySelectorAll('#presidium-content img:not(.no-click)').forEach(img => {
         img.className += ' ' + 'scalable';
         img.onclick = function() {
             modal.style.display = 'block';
