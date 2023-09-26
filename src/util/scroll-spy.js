@@ -334,7 +334,7 @@
 
 				// Get the content for the nav item
                 const target = item.getAttribute(options.attribute)
-				const id = decodeURIComponent(target.substr(1));
+				const id = decodeURIComponent(target?.substr(1));
 				var content = document.getElementById(id);
 				if (!content || content.tagName !== 'DIV') return;
 
