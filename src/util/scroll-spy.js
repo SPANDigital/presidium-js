@@ -188,6 +188,8 @@
 		for (var i = contents.length - 1; i >= 0; i--) {
 			if (isInView(contents[i].content, settings)) return contents[i];
 		}
+		// If no content is in view, return the first item
+		return contents[0];
 	};
 
 	/**
