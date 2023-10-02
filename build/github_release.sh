@@ -26,7 +26,7 @@ if [[ -n "${TRAVIS_TAG}" ]]; then
     zip -r -qq $zip_file dist
 
     # Create a release on GitHub
-    release=$(curl -s -d "{\"tag_name\": \"$TRAVIS_TAG\", \"prerelease\": $prerelease}" -H "Authorization: token ${GITHUB_KEY}" -X POST "https://api.github.com/repos/SPANDigital/presidium-js-enterprise/releases")
+    release=$(curl -s -d "{\"tag_name\": \"$TRAVIS_TAG\", \"prerelease\": $prerelease}" -H "Authorization: token ${GITHUB_KEY}" -X POST "https://api.github.com/repos/SPANDigital/presidium-js/releases")
 
     if [[ $(echo $release | jq -r '.message') = "Not Found" ]]; then
         echo "Error creating release on GitHub"
