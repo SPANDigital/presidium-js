@@ -6,22 +6,22 @@ cache:
   - node_modules
 jobs:
   include:
-  - stage: Tag Develop
-    if: branch IN (develop, master) AND type = push
-    git:
-      depth: false
-    services:
-    - docker
-    script:
-    - "./build/tag_code.sh"
-  - stage: Bundle JS
-    if: tag IS present
-    language: node_js
-    install:
-    - npm install
-    script:
-    - npm run build
-    - "./build/github_release.sh"
+    - stage: Tag Release
+      if: (branch =~ /^(develop|master|feat\/.*)$/) AND type = push
+      git:
+        depth: false
+      services:
+        - docker
+      script:
+        - './build/tag_code.sh'
+    - stage: Bundle JS
+      if: tag IS present
+      language: node_js
+      install:
+      - npm install
+      script:
+      - npm run build
+      - "./build/github_release.sh"
 env:
   global:
   - REPO=spandigital/presidium-js
