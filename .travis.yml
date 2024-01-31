@@ -7,7 +7,7 @@ cache:
 jobs:
   include:
     - stage: Tag Release
-      if: (branch =~ /^(develop|master|feat\/.*)$/) AND type = push
+      if: (branch =~ /^(develop|main|feat\/.*)$/) AND type = push
       git:
         depth: false
       services:
