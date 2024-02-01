@@ -16,7 +16,7 @@ pipeline {
                  sh 'npm install'
             }
         }
-        stage("Build") { 
+        stage("Build") {
             steps {
                 sh 'npm run build'
             }
@@ -36,9 +36,9 @@ pipeline {
                         }
                     }
                 }
-                stage("Tag master") {
+                stage("Tag main") {
                     when {
-                        branch 'master'
+                        branch 'main'
                     }
                     steps {
                         script {

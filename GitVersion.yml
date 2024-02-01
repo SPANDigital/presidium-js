@@ -4,15 +4,15 @@ branches:
   feature:
     mode: ContinuousDeployment
     regex: ^feat[/-]
-    source-branches: ["develop", "master"]
+    source-branches: ["develop", "main"]
     tag: feat-{BranchName}
     increment: Inherit
   develop:
     mode: ContinuousDeployment
     tag: rfv
     regex: (^develop$|^origin\/develop$)
-  master:
+  main:
     mode: ContinuousDelivery
-    regex: (^master$|^origin\/master$)
+    regex: (^main$|^origin\/main$)
 ignore:
   sha: []

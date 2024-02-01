@@ -19,7 +19,7 @@ git checkout "${TRAVIS_BRANCH}"
 if [[ "${TRAVIS_BRANCH}" = "develop" || "${TRAVIS_BRANCH}" =~ ^feat[/-] ]]
 then
     TAG=$(docker run --rm -v "$(pwd):/repo" gittools/gitversion:5.12.0-alpine.3.14-6.0 /repo -output json -showvariable FullSemVer)
-elif [[ "${TRAVIS_BRANCH}" = "master" ]]
+elif [[ "${TRAVIS_BRANCH}" = "main" ]]
 then
     TAG=$(docker run --rm -v "$(pwd):/repo" gittools/gitversion:5.12.0-alpine.3.14-6.0 /repo -output json -showvariable MajorMinorPatch)
 fi
@@ -33,7 +33,7 @@ git tag "v${TAG}"
 git push -q "https://${GITHUB_KEY}@github.com/${TRAVIS_REPO_SLUG}" --tags
 f_success_log "Code taged with version v${TAG}"
 
-if [[ "${TRAVIS_BRANCH}" = "master" ]]
+if [[ "${TRAVIS_BRANCH}" = "main" ]]
 then
   # Remove all old rfv tags
   git fetch
