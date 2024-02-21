@@ -76,7 +76,7 @@
     "webpack-merge": "^5.7.3"
   },
   "dependencies": {
-    "axios": "^0.26.0",
+    "axios": "^0.28.0",
     "classnames": "^2.3.1",
     "commitizen": "^4.2.6",
     "dotenv": "^16.0.1",
