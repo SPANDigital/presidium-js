@@ -6,24 +6,24 @@ cache:
   - node_modules
 jobs:
   include:
-  - stage: Tag Develop
-    if: branch IN (develop, master) AND type = push
-    git:
-      depth: false
-    services:
-    - docker
-    script:
-    - "./build/tag_code.sh"
-  - stage: Bundle JS
-    if: tag IS present
-    language: node_js
-    install:
-    - npm install
-    script:
-    - npm run build
-    - "./build/github_release.sh"
+    - stage: Tag Release
+      if: (branch =~ /^(develop|main|feat\/.*)$/) AND type = push
+      git:
+        depth: false
+      services:
+        - docker
+      script:
+        - './build/tag_code.sh'
+    - stage: Bundle JS
+      if: tag IS present
+      language: node_js
+      install:
+      - npm install
+      script:
+      - npm run build
+      - "./build/github_release.sh"
 env:
   global:
   - REPO=spandigital/presidium-js
   # GITHUB_KEY
-  - secure: m43SYbwjPNtLCov0epJTdUPEhMmL1m8A0qW782kxCD5rbuenvtNe/dFficpcBXKFwXlG/wAUIUMkkFtS5EON9Mz6I3lPr6Ux+4WMDH7fM30SsRrjI9CxTxlSn8avtGG2nGk12KNzriyhMBYY5pCRTsRkStqxi3zp5ZQaWRFBw1pu5vGEIwgtIQW/KYboQSqJ08+cRthiInq0laAUX+5XNI7fK1V8IwH8JmNuFHsPVbQnmvSh9g1sq0OGSfQatHjru6x8f9a4s/rQaWZ9YQhAyRHWV/yveszSvzwzUtX/VKfPEG9N2j2CLfbPf5HH2m4ah/n8ZpNOOPk457FMH1meG7hVmwZidf8sTnupUe6lHXV32YANLAyGTMMQh+ylYAHWq5/qhF7dl6SI/xuCd05mp7R6qHCqo/S7HoNOgW7fbRz2XDGaVNu1UWD6himgclXlgJc7oqRc61b2LrKRdh/JUlAFJqCQUTjZ8Oe/PMY9rGiEJ5BY6sZzxExT2DHhjq0jh2nqo7CmZ+1at87S0z/4B8f3lYGzYlVwwxx6YX8pZQbxrn/1bpMEXoTxnezFMGcDF6DChns8JB7xoOAIAm0sGGEL9z0ncRjhzS2u9pAphZ7QP8AxIHuzWjmaMf0MTW8HgEhp9i965yK39RP6FNO1U0Yb0kUvVTKkrZv+SNzuqE0=
+  - secure: C8YJ/dMQwF858MJ1f/5sS9LoYGIcBivItz1nriAtxKDF9CzkKYiwok8yo9Ujlim+a/l6SK6c9o1RaUmIeZq+pcJh8VzQMFYvZehi+EcBjbRpRyp4LNztA6h/Ai45oplWmJyExefot6UcEcBEerxp3ZcAupQ3WbKsmUWNIng5wpa+ZPBeRRtZXU3cKI1BOYjUDTz6cE3h2OVwZbApFDrDQPZLUd3FXblX7z4hyVYBk3j1VuV1RrzWvebe/rAvpxF6Mo3fJH/iCS3ss4tLcVvvfCRt39SVlrHxUkpQQhusBpAKRMOOZrfRCf/U1vy9tzbC+f20VAg9lPEI0ybe19BY4eQ3IS8wwbouci5grORX0RPaYzypAv0mzGvkBqBY4M2a0xFVPldt6RyL19VS45LMogmx+eGuo8+uiKeXhhdWU+ILgd42OFZassGQ9mGnMW9X9xhhCbNIzOXkZjkLVx2PSRqeOnkFPjI6OD+rwM1lAnnco6Tu/AWRt+zi7iUqG7moMXtaYZhFSx+s6m5Ot0RcZKeNWKn15InksAWGjRzwen2eJAutdUoqEaSchc/tHiQlj0xAVmayWQlvQulKqPmt76vMtNag+WoHj5mEa0Pn5TXK9nFPHSae8taAwd0eGN/ExMDPxXycIYGbFoQ9P4K7zGjniNXPIqXl+facSscUIwc=

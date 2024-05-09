@@ -28,6 +28,7 @@
     "build": "webpack --config webpack/webpack.config.js --env env=prod",
     "build:dev": "webpack --config webpack/webpack.config.js --env env=dev",
     "bundle-stats": "webpack -p --config webpack/webpack.config.js --env env=prod --json > dist/stats.json",
+    "watch": "webpack --watch --config webpack/webpack.config.js --env env=dev",
     "cm": "cz"
   },
   "devDependencies": {
