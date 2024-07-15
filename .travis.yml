@@ -6,16 +6,8 @@ cache:
   - node_modules
 jobs:
   include:
-    - stage: Tag Release
-      if: (branch =~ /^(develop|main|feat\/.*)$/) AND type = push
-      git:
-        depth: false
-      services:
-        - docker
-      script:
-        - './build/tag_code.sh'
     - stage: Bundle JS
-      if: tag IS present
+      if: branch = main OR branch = develop OR branch =~ ^([0-9]+)?\.?([0-9]+|x)\.x$
       language: node_js
       install:
       - npm install
