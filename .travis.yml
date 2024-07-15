@@ -1,6 +1,6 @@
 language: node_js
 node_js:
-- '16'
+- '18'
 cache:
   directories:
   - node_modules
@@ -21,9 +21,9 @@ jobs:
       - npm install
       script:
       - npm run build
-      - "./build/github_release.sh"
+      - npx semantic-release
 env:
   global:
   - REPO=spandigital/presidium-js
-  # GITHUB_KEY
-  - secure: C8YJ/dMQwF858MJ1f/5sS9LoYGIcBivItz1nriAtxKDF9CzkKYiwok8yo9Ujlim+a/l6SK6c9o1RaUmIeZq+pcJh8VzQMFYvZehi+EcBjbRpRyp4LNztA6h/Ai45oplWmJyExefot6UcEcBEerxp3ZcAupQ3WbKsmUWNIng5wpa+ZPBeRRtZXU3cKI1BOYjUDTz6cE3h2OVwZbApFDrDQPZLUd3FXblX7z4hyVYBk3j1VuV1RrzWvebe/rAvpxF6Mo3fJH/iCS3ss4tLcVvvfCRt39SVlrHxUkpQQhusBpAKRMOOZrfRCf/U1vy9tzbC+f20VAg9lPEI0ybe19BY4eQ3IS8wwbouci5grORX0RPaYzypAv0mzGvkBqBY4M2a0xFVPldt6RyL19VS45LMogmx+eGuo8+uiKeXhhdWU+ILgd42OFZassGQ9mGnMW9X9xhhCbNIzOXkZjkLVx2PSRqeOnkFPjI6OD+rwM1lAnnco6Tu/AWRt+zi7iUqG7moMXtaYZhFSx+s6m5Ot0RcZKeNWKn15InksAWGjRzwen2eJAutdUoqEaSchc/tHiQlj0xAVmayWQlvQulKqPmt76vMtNag+WoHj5mEa0Pn5TXK9nFPHSae8taAwd0eGN/ExMDPxXycIYGbFoQ9P4K7zGjniNXPIqXl+facSscUIwc=
+  # GITHUB_TOKEN
+  - secure: YQqqK4k1ihPSlRzn86eXN5yCG/AYK933guTkvdwKz/HabTDVIjoV5VdtbKc+J4MtVA00pex65mIT3/e/JpRgOCj2cqn4SzYC9vuB52I/qH8l4xYmKWZHfnQd21i94nQsK2MoZP0YJXY7tD5oveTTnAceeMZqemsNGlXvrl1IajzyYDcWpmhZlKbHodMTZ6Dom51UWbNqI0tspbif4IVkbOLQSUSM42Iaes8Zly1jz3BS93plQsqfrT4ER84cwAZ1SZd4pfQJleGtGbF+tfSGB4l/BWaY4SMeO7tgZOsEogu9WtroSweShDCJoLnVdMz4+OptjzN/ZhMzjIW0euTfw4FueV4/rzUVzEKeTZ/5uH+n334CFldBBIj+GDwb7L74pXKL0npEFDaeoZhnJ8EpKLHBVIhelU2ce81LaL6UFxAIH0KDnLXEhFtM3ZCWUIXpcKHQ65GRVFsWxssy1/vhV+CynoNA3aw+Pd7b0xA/yNIxdr3xUpBmW92TX5IDRYc61B9adGVNQt8+muox2Cb38ZngFud5JY0cBeVmU23mPmHsXXYy05PzTVqKRwwJEQwboIFWVNe+Ot5n4VIKDYEbSdyH3BKJbUQNj2UBzRnVbXNJDYci/74/qmvqPR+4RGspAnzOwncffOgqKsipKQ9y2vaiI8sB6WVSidQFjuWjkbA=
