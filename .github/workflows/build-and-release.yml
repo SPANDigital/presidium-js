@@ -50,7 +50,7 @@ jobs:
           node-version: 'lts/*'
 
       - name: Install Semantic Release
-        run: npm clean-install
+        run: npm install semantic-release
 
       - name: Semantic Release
         env:
