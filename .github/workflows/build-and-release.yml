@@ -4,7 +4,6 @@ on:
     branches:
       - develop
       - main
-      - PRSDM-5464-setup-semantic-release-for-other-repos
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -57,4 +56,4 @@ jobs:
       - name: Semantic Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: npx semantic-release --dry-run
+        run: npx semantic-release
