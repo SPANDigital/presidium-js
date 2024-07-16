@@ -32,6 +32,8 @@ jobs:
           retention-days: 1
     
   release:
+    needs:
+      - build
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -48,7 +50,7 @@ jobs:
           node-version: 'lts/*'
 
       - name: Install Semantic Release
-        run: npm ci
+        run: npm clean-install
 
       - name: Semantic Release
         env:
