@@ -51,6 +51,8 @@ jobs:
 
       - name: Install Semantic Release
         run: npm install semantic-release
+      - name: Install Semantic Release Exec
+        run: npm install @semantic-release/exec
 
       - name: Semantic Release
         env:
