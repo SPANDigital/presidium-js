@@ -1,4 +1,4 @@
-const branch = process.env.TRAVIS_BRANCH
+const branch = process.env.BRANCH_NAME
 
 const config = {
   branches: ['main', { name: 'develop', prerelease: 'rfv' }, '+([0-9])?(.{+([0-9]),x}).x'],
@@ -28,14 +28,13 @@ const config = {
     "@semantic-release/exec",
     {
       prepareCmd: "zip -r -qq ${nextRelease.version} dist && printf '${nextRelease.version}' > VERSION",
-      successCmd: "TRAVIS_TAG=${nextRelease.gitTag}",
     },
   ],
   [
     '@semantic-release/github',
     {
       "assets": [
-      { "path": "presidium-js.zip", "label": "presidium-js.zip" }
+      { "path": "${nextRelease.version}.zip", "label": "${nextRelease.version}.zip" }
     ]
   }],
 ]}
@@ -52,11 +51,11 @@ if (branch == 'main') {
     },
   ])
 } else {
-  ['@semantic-release/git',
+  config.plugins.push(['@semantic-release/git',
     {
       assets: ['VERSION'],
     },
-  ]
+  ])
 }
 
 module.exports = config
