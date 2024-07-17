@@ -4,6 +4,7 @@ on:
     branches:
       - develop
       - main
+      - PRSDM-5464-setup-semantic-release-for-other-repos
 jobs:
   build-and-release:
     runs-on: ubuntu-latest
