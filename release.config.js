@@ -1,7 +1,7 @@
 const branch = process.env.BRANCH_NAME
 
 const config = {
-  branches: ['main', { name: 'develop', prerelease: 'rfv' }, '+([0-9])?(.{+([0-9]),x}).x'],
+  branches: ['main', { name: 'develop', prerelease: 'rfv' }, '+([0-9])?(.{+([0-9]),x}).x', { name: 'PRSDM-5464-setup-semantic-release-for-other-repos', prerelease: 'test' }],
   plugins: [['@semantic-release/commit-analyzer',
   {
     releaseRules: [
