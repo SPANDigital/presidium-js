@@ -34,7 +34,7 @@ const config = {
     '@semantic-release/github',
     {
       "assets": [
-      { "path": "${nextRelease.version}.zip", "label": "${nextRelease.version}.zip" }
+      { "path": "${nextRelease.gitTag}.zip", "label": "${nextRelease.gitTag}.zip" }
     ]
   }],
 ]}
