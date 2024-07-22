@@ -27,14 +27,14 @@ const config = {
   [
     "@semantic-release/exec",
     {
-      prepareCmd: "zip -r -qq ${nextRelease.version} dist && printf '${nextRelease.version}' > VERSION",
+      prepareCmd: "zip -r -qq presidium-js dist && printf '${nextRelease.version}' > VERSION",
     },
   ],
   [
     '@semantic-release/github',
     {
       "assets": [
-      { "path": "${nextRelease.gitTag}.zip", "label": "${nextRelease.gitTag}.zip" }
+      { "path": "presidium-js.zip", "name":"${nextRelease.gitTag}.zip", "label": "${nextRelease.gitTag}.zip" }
     ]
   }],
 ]}
