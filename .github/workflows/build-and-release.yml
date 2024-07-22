@@ -28,7 +28,7 @@ jobs:
       
       - name: Semantic Release
         env:
-          GITHUB_TOKEN: ${{ repository.PAT }}
+          GITHUB_TOKEN: ${{ vars.PAT }}
           BRANCH_NAME: ${{ github.ref_name }}
         run: npx semantic-release
       
