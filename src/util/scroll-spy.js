@@ -31,8 +31,7 @@
 		// Event support
 		events: true,
 
-        attribute: 'href' 
-
+		attribute: 'href'
 	};
 
 
@@ -157,37 +156,17 @@
 	};
 
 	/**
-	 * Check if at the bottom of the viewport
-	 * @return {Boolean} If true, page is at the bottom of the viewport
-	 */
-	var isAtBottom = function () {
-		if (window.innerHeight + window.pageYOffset >= getDocumentHeight()) return true;
-		return false;
-	};
-
-	/**
-	 * Check if the last item should be used (even if not at the top of the page)
-	 * @param  {Object} item     The last item
-	 * @param  {Object} settings The settings for this instantiation
-	 * @return {Boolean}         If true, use the last item
-	 */
-	var useLastItem = function (item, settings) {
-		if (isAtBottom() && isInView(item.content, settings, true)) return true;
-		return false;
-	};
-
-	/**
 	 * Get the active content
 	 * @param  {Array}  contents The content areas
 	 * @param  {Object} settings The settings for this instantiation
 	 * @return {Object}          The content area and matching navigation link
 	 */
 	var getActive = function (contents, settings) {
-		var last = contents[contents.length-1];
-		if (useLastItem(last, settings)) return last;
 		for (var i = contents.length - 1; i >= 0; i--) {
 			if (isInView(contents[i].content, settings)) return contents[i];
 		}
+
+		return contents[0];
 	};
 
 	/**
@@ -334,7 +313,6 @@
 
 				// Get the content for the nav item
                 const target = item.getAttribute(options.attribute)
-
 				const id = decodeURIComponent(target?.substr(1));
 				var content = document.getElementById(id);
 				if (!content || content.tagName !== 'DIV') return;
