@@ -127,19 +127,6 @@
 	};
 
 	/**
-	 * Get the document element's height
-	 * @private
-	 * @returns {Number}
-	 */
-	var getDocumentHeight = function () {
-		return Math.max(
-			document.body.scrollHeight, document.documentElement.scrollHeight,
-			document.body.offsetHeight, document.documentElement.offsetHeight,
-			document.body.clientHeight, document.documentElement.clientHeight
-		);
-	};
-
-	/**
 	 * Determine if an element is in view
 	 * @param  {Node}    elem     The element
 	 * @param  {Object}  settings The settings for this instantiation
@@ -156,17 +143,36 @@
 	};
 
 	/**
+	 * Check if at the top of the viewport
+	 * @return {Boolean} If true, page is at the bottom of the viewport
+	 */
+	var isAtTop = function () {
+		return window.pageYOffset === 0;
+	};
+
+	/**
+	 * Check if the first item should be used (even if not at the top of the page)
+	 * @param  {Object} item     The first item
+	 * @param  {Object} settings The settings for this instantiation
+	 * @return {Boolean}         If true, use the first item
+	 */
+	var useFirstItem = function (item, settings) {
+		if (isAtTop() && isInView(item.content, settings, true)) return true;
+		return false;
+	};
+
+	/**
 	 * Get the active content
 	 * @param  {Array}  contents The content areas
 	 * @param  {Object} settings The settings for this instantiation
 	 * @return {Object}          The content area and matching navigation link
 	 */
 	var getActive = function (contents, settings) {
+		var first = contents[0];
+		if (useFirstItem(first, settings)) return first;
 		for (var i = contents.length - 1; i >= 0; i--) {
 			if (isInView(contents[i].content, settings)) return contents[i];
 		}
-
-		return contents[0];
 	};
 
 	/**
