@@ -31,8 +31,7 @@
 		// Event support
 		events: true,
 
-        attribute: 'href' 
-
+		attribute: 'href'
 	};
 
 
@@ -128,19 +127,6 @@
 	};
 
 	/**
-	 * Get the document element's height
-	 * @private
-	 * @returns {Number}
-	 */
-	var getDocumentHeight = function () {
-		return Math.max(
-			document.body.scrollHeight, document.documentElement.scrollHeight,
-			document.body.offsetHeight, document.documentElement.offsetHeight,
-			document.body.clientHeight, document.documentElement.clientHeight
-		);
-	};
-
-	/**
 	 * Determine if an element is in view
 	 * @param  {Node}    elem     The element
 	 * @param  {Object}  settings The settings for this instantiation
@@ -157,22 +143,21 @@
 	};
 
 	/**
-	 * Check if at the bottom of the viewport
+	 * Check if at the top of the viewport
 	 * @return {Boolean} If true, page is at the bottom of the viewport
 	 */
-	var isAtBottom = function () {
-		if (window.innerHeight + window.pageYOffset >= getDocumentHeight()) return true;
-		return false;
+	var isAtTop = function () {
+		return window.pageYOffset === 0;
 	};
 
 	/**
-	 * Check if the last item should be used (even if not at the top of the page)
-	 * @param  {Object} item     The last item
+	 * Check if the first item should be used (even if not at the top of the page)
+	 * @param  {Object} item     The first item
 	 * @param  {Object} settings The settings for this instantiation
-	 * @return {Boolean}         If true, use the last item
+	 * @return {Boolean}         If true, use the first item
 	 */
-	var useLastItem = function (item, settings) {
-		if (isAtBottom() && isInView(item.content, settings, true)) return true;
+	var useFirstItem = function (item, settings) {
+		if (isAtTop() && isInView(item.content, settings, true)) return true;
 		return false;
 	};
 
@@ -183,8 +168,8 @@
 	 * @return {Object}          The content area and matching navigation link
 	 */
 	var getActive = function (contents, settings) {
-		var last = contents[contents.length-1];
-		if (useLastItem(last, settings)) return last;
+		var first = contents[0];
+		if (useFirstItem(first, settings)) return first;
 		for (var i = contents.length - 1; i >= 0; i--) {
 			if (isInView(contents[i].content, settings)) return contents[i];
 		}
@@ -334,7 +319,6 @@
 
 				// Get the content for the nav item
                 const target = item.getAttribute(options.attribute)
-
 				const id = decodeURIComponent(target?.substr(1));
 				var content = document.getElementById(id);
 				if (!content || content.tagName !== 'DIV') return;
