@@ -1,0 +1,44 @@
+{
+  "branches": ["main", { "name": "develop", "prerelease": "rfv" }, "+([0-9])?(.{+([0-9]),x}).x"],
+  "plugins": [
+    ["@semantic-release/commit-analyzer",
+      {
+        "releaseRules": [
+          {
+            "type": "refactor",
+            "release": "patch"
+          }
+        ]
+      }
+    ], 
+    ["@semantic-release/release-notes-generator",
+      {
+        "presetConfig": {
+          "types": [
+            {
+              "type": "refactor",
+              "section": "Refactors",
+              "hidden": false
+            }
+          ]
+        }
+      }
+    ],
+    ["@semantic-release/exec",
+      {
+        "prepareCmd": "zip -r -qq presidium-js dist && printf"
+      }
+    ],
+    ["@semantic-release/github",
+      {
+        "assets": [
+          {
+            "path": "presidium-js.zip",
+            "name":"${nextRelease.gitTag}.zip",
+            "label": "${nextRelease.gitTag}.zip"
+          }
+        ]
+      }
+    ]
+  ]
+}
