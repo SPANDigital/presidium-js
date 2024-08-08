@@ -46,7 +46,7 @@ make commitlint
 
 ### Usage
 
-After installation you can use `git cz` and run through the options and it will build your commit message. For example:
+After installation you can use `git cz` and run through the options, it will build your commit message. For example:
 
 ```
 ? Select the type of change that you're committing: refactor: A code change that neither fixes a bug nor adds a feature (formatting, performance improvement, etc)
@@ -90,10 +90,9 @@ This repository uses [Semantic Release](https://semantic-release.gitbook.io/sema
 
 Upon merging into to the main or develop branch, Semantic Release tool will:
 - Calculate the new release version based on the commits
-- Generate the CHANGELOG file
-- Update the VERSION file
 - Create a git commit and a git tag for the release
-- Create a Release on Github
+- Create a Release with release notes from the commit messages
+- Create and publish the container images
 
 ---
 
@@ -102,11 +101,11 @@ Upon merging into to the main or develop branch, Semantic Release tool will:
 Please see this [Presidium Git Strategy Miro board](https://miro.com/app/board/uXjVPK0XxiU=/).
 
 In summary:
-- `main` -> production
+- `main` ⇾ production
   - Only hotfixes or `develop` get merged into `main`
 - `develop`
-  - Feature branches and bugfixes are branched from and merged into `develop`
-- `feat: <TITLE>`
+  - Feature branches and bug fixes are branched from and merged into `develop`
+- `feat/<TITLE>`
   - If there is a feature in development it will be on a feature branch
 
 ---

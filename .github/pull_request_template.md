@@ -1,13 +1,9 @@
-<!-- PRS-123: Short description of change -->
-
 ## Description
-<!-- A longer description of the change -->
 
 ## Issue
 - [ ] :clipboard: JIRA_TICKET_URL
 
 ## Screenshots
-<!-- If relevant -->
 
 ## PR Readiness Checks
 - [ ] Your PR title conforms to conventional commits `<type>: <jira-ticket-num><title>`, for example: `fix: PRSDM-123 issue with login` with a maximum of 100 characters
