@@ -37,7 +37,8 @@
             "name":"${nextRelease.gitTag}.zip",
             "label": "${nextRelease.gitTag}.zip"
           }
-        ]
+        ],
+        "successComment": false
       }
     ]
   ]
