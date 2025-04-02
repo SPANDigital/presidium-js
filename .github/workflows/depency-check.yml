@@ -1,0 +1,35 @@
+name: Dependency Check
+
+on: [push, pull_request]
+
+jobs:
+  depcheck:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Run Dependency Check
+        uses: dependency-check/Dependency-Check_Action@main
+        with:
+          project: 'presidium-js'
+          path: '.'
+          format: 'HTML'
+          out: 'dependency-reports'
+          args: >
+            --failOnCVSS 7
+            --enableRetired
+
+      - name: Upload Dependency Check Report
+        uses: actions/upload-artifact@v3
+        with:
+          name: Dependency Check Report
+          path: ${{github.workspace}}/dependency-reports
