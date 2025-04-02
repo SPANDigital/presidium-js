@@ -29,7 +29,7 @@ jobs:
             --enableRetired
 
       - name: Upload Dependency Check Report
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: Dependency Check Report
           path: ${{github.workspace}}/dependency-reports
