@@ -1,6 +1,6 @@
-name: Dependency Check
+name: OWASP Dependency Check
 
-on: [push, pull_request]
+on: [push]
 
 jobs:
   depcheck:
@@ -28,8 +28,9 @@ jobs:
             --failOnCVSS 7
             --enableRetired
 
-      - name: Upload Dependency Check Report
+      - name: Upload Dependency Check report
+        if: always() # Allow report to be generated even if vulnerabilities are found and the previous step fails
         uses: actions/upload-artifact@v4
         with:
-          name: Dependency Check Report
+          name: Dependency Check report
           path: ${{github.workspace}}/dependency-reports
