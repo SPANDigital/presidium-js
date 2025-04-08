@@ -1,6 +1,9 @@
 name: OWASP Dependency Check
 
-on: [push]
+on:
+  schedule:
+    - cron: '0 5 * * *' # Runs daily at 5 AM UTC
+  workflow_dispatch: # Allows manual triggering
 
 jobs:
   depcheck:
