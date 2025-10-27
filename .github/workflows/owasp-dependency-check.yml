@@ -33,7 +33,7 @@ jobs:
 
       - name: Upload Dependency Check report
         if: always() # Allow report to be generated even if vulnerabilities are found and the previous step fails
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: Dependency Check report
           path: ${{github.workspace}}/dependency-reports
