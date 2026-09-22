@@ -13,6 +13,14 @@ jobs:
         with:
           persist-credentials: false # to disable default GITHUB_TOKEN
 
+      - name: Mint release-bot token
+        id: app_token
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ vars.PRESIDIUM_RELEASE_APP_ID }}
+          private-key: ${{ secrets.PRESIDIUM_RELEASE_APP_PRIVATE_KEY }}
+          repositories: presidium-js
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -27,7 +35,7 @@ jobs:
       
       - name: Semantic Release
         env:
-          GITHUB_TOKEN: ${{ secrets.PAT }}
+          GITHUB_TOKEN: ${{ steps.app_token.outputs.token }}
           BRANCH_NAME: ${{ github.ref_name }}
         run: npx semantic-release
       
