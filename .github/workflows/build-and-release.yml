@@ -33,9 +33,60 @@ jobs:
       - name: Build Project
         run: npm run build
       
+      # semantic-release exposes no outputs here, so compare the latest
+      # release tag before and after to learn whether it published.
+      - name: Record latest release
+        id: before
+        if: github.ref_name == 'develop'
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ steps.app_token.outputs.token }}
+        run: |
+          tag="$(gh release list --limit 1 --json tagName --jq '.[0].tagName // ""')"
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+
       - name: Semantic Release
         env:
           GITHUB_TOKEN: ${{ steps.app_token.outputs.token }}
           BRANCH_NAME: ${{ github.ref_name }}
         run: npx semantic-release
-      
+
+      - name: Detect published release
+        id: after
+        if: github.ref_name == 'develop' && steps.before.outcome == 'success'
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ steps.app_token.outputs.token }}
+          BEFORE_TAG: ${{ steps.before.outputs.tag }}
+        run: |
+          latest="$(gh release list --limit 1 --json tagName --jq '.[0].tagName // ""')"
+          if [ -n "$latest" ] && [ "$latest" != "$BEFORE_TAG" ]; then
+            echo "published=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      # Own token: a missing presidium-services grant must not fail the release.
+      - name: Mint services dispatch token
+        id: dispatch_token
+        if: github.ref_name == 'develop' && steps.after.outputs.published == 'true'
+        continue-on-error: true
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ vars.PRESIDIUM_RELEASE_APP_ID }}
+          private-key: ${{ secrets.PRESIDIUM_RELEASE_APP_PRIVATE_KEY }}
+          repositories: presidium-services
+          permission-actions: write
+
+      # Services CI bundles the newest develop prerelease of this repo, so a
+      # JS-only change reaches dev only if services rebuilds.
+      - name: Dispatch services CI on develop
+        id: dispatch
+        if: steps.dispatch_token.outcome == 'success'
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ steps.dispatch_token.outputs.token }}
+        run: gh workflow run ci.yml -R SPANDigital/presidium-services --ref develop
+
+      - name: Warn when dispatch is unavailable
+        if: steps.dispatch_token.outcome == 'failure' || steps.dispatch.outcome == 'failure'
+        run: |
+          echo "::warning::Could not start presidium-services CI. Grant the release GitHub App Repository permission 'Actions: Read and write' and access to presidium-services (org admin)."
