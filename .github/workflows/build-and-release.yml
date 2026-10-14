@@ -73,5 +73,17 @@ jobs:
 
       - name: Warn when dispatch is unavailable
         if: steps.after.outcome == 'failure' || steps.dispatch_token.outcome == 'failure' || steps.dispatch.outcome == 'failure'
+        env:
+          AFTER_OUTCOME: ${{ steps.after.outcome }}
+          TOKEN_OUTCOME: ${{ steps.dispatch_token.outcome }}
+          DISPATCH_OUTCOME: ${{ steps.dispatch.outcome }}
         run: |
-          echo "::warning::Could not start presidium-services CI; see the failed step above. If the token step failed, the release GitHub App likely lacks 'Actions: Read and write' or access to presidium-services."
+          if [ "$AFTER_OUTCOME" = "failure" ]; then
+            echo "::warning title=services dev build not started::Could not tell whether this run published a release. If it did, run the presidium-services CI workflow on develop by hand."
+          fi
+          if [ "$TOKEN_OUTCOME" = "failure" ]; then
+            echo "::warning title=services dev build not started::Could not mint the dispatch token. Grant the release GitHub App 'Actions: Read and write' on presidium-services (org admin), then re-run this job or run the presidium-services CI workflow on develop by hand."
+          fi
+          if [ "$DISPATCH_OUTCOME" = "failure" ]; then
+            echo "::warning title=services dev build not started::The 'Dispatch services CI on develop' step failed. Re-run this job or run the presidium-services CI workflow on develop by hand."
+          fi
