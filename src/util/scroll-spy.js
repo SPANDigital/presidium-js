@@ -143,13 +143,14 @@
 	/**
 	 * Determine if an element is in view
 	 * @param  {Node}    elem     The element
-	 * @param  {Object}  settings The settings for this instantiation
+	 * @param  {Float}   offset   The number of pixels to offset the calculations, from getOffset().
+	 *                            Resolved by the caller so a single detect pass measures it once
+	 *                            instead of once per content area. Unused when bottom is true.
 	 * @param  {Boolean} bottom   If true, check if element is above bottom of viewport instead
 	 * @return {Boolean}          Returns true if element is in the viewport
 	 */
-	var isInView = function (elem, settings, bottom) {
+	var isInView = function (elem, offset, bottom) {
 		var bounds = elem.getBoundingClientRect();
-		var offset = getOffset(settings);
 		if (bottom) {
 			return parseInt(bounds.bottom, 10) < (window.innerHeight || document.documentElement.clientHeight);
 		}
@@ -172,7 +173,7 @@
 	 * @return {Boolean}         If true, use the last item
 	 */
 	var useLastItem = function (item, settings) {
-		if (isAtBottom() && isInView(item.content, settings, true)) return true;
+		if (isAtBottom() && isInView(item.content, null, true)) return true;
 		return false;
 	};
 
@@ -185,8 +186,9 @@
 	var getActive = function (contents, settings) {
 		var last = contents[contents.length-1];
 		if (useLastItem(last, settings)) return last;
+		var offset = getOffset(settings);
 		for (var i = contents.length - 1; i >= 0; i--) {
-			if (isInView(contents[i].content, settings)) return contents[i];
+			if (isInView(contents[i].content, offset)) return contents[i];
 		}
 	};
 
