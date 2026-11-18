@@ -38,4 +38,52 @@ jobs:
           GITHUB_TOKEN: ${{ steps.app_token.outputs.token }}
           BRANCH_NAME: ${{ github.ref_name }}
         run: npx semantic-release
-      
+
+      # semantic-release has no outputs here; it tags HEAD locally only when this run publishes.
+      - name: Detect published release
+        id: after
+        if: github.ref_name == 'develop'
+        continue-on-error: true
+        run: |
+          if git tag --points-at HEAD | grep -- '-rfv\.' > /dev/null; then
+            echo "published=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      # Own token: a missing presidium-services grant must not fail the release.
+      - name: Mint services dispatch token
+        id: dispatch_token
+        if: github.ref_name == 'develop' && steps.after.outputs.published == 'true'
+        continue-on-error: true
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ vars.PRESIDIUM_RELEASE_APP_ID }}
+          private-key: ${{ secrets.PRESIDIUM_RELEASE_APP_PRIVATE_KEY }}
+          repositories: presidium-services
+          permission-actions: write
+
+      # Services CI bundles the newest develop prerelease of this repo, so a
+      # JS-only change reaches dev only if services rebuilds.
+      - name: Dispatch services CI on develop
+        id: dispatch
+        if: steps.dispatch_token.outcome == 'success'
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ steps.dispatch_token.outputs.token }}
+        run: gh workflow run ci.yml -R SPANDigital/presidium-services --ref develop
+
+      - name: Warn when dispatch is unavailable
+        if: steps.after.outcome == 'failure' || steps.dispatch_token.outcome == 'failure' || steps.dispatch.outcome == 'failure'
+        env:
+          AFTER_OUTCOME: ${{ steps.after.outcome }}
+          TOKEN_OUTCOME: ${{ steps.dispatch_token.outcome }}
+          DISPATCH_OUTCOME: ${{ steps.dispatch.outcome }}
+        run: |
+          if [ "$AFTER_OUTCOME" = "failure" ]; then
+            echo "::warning title=services dev build not started::Could not tell whether this run published a release. If it did, run the presidium-services CI workflow on develop by hand."
+          fi
+          if [ "$TOKEN_OUTCOME" = "failure" ]; then
+            echo "::warning title=services dev build not started::Could not mint the dispatch token. Grant the release GitHub App 'Actions: Read and write' on presidium-services (org admin), then re-run this job or run the presidium-services CI workflow on develop by hand."
+          fi
+          if [ "$DISPATCH_OUTCOME" = "failure" ]; then
+            echo "::warning title=services dev build not started::The 'Dispatch services CI on develop' step failed. Re-run this job or run the presidium-services CI workflow on develop by hand."
+          fi
